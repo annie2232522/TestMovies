@@ -1,19 +1,1724 @@
-body { margin:0; background:#111; color:#fff; font-family:Arial,sans-serif; }
-.navbar {display:flex;justify-content:space-between;align-items:center;padding:15px;background:#000;}
-.logo {font-size:24px;color:red;font-weight:bold;}
-.nav-links a {color:white;margin-right:15px;text-decoration:none;}
-.search-bar {padding:5px;border-radius:5px;border:none;}
-.banner {height:300px;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:20px;}
-.row {padding:20px;}
-.list {display:flex;overflow-x:auto;}
-.list img {width:150px;height:220px;margin:10px;border-radius:10px;cursor:pointer;transition:transform .2s;}
-.list img:hover {transform:scale(1.05);}
-.modal {position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.95);display:none;justify-content:center;align-items:center;z-index:1000;}
-.modal-content {background:#222;padding:20px;border-radius:10px;max-width:800px;width:90%;max-height:90%;overflow-y:auto;}
-.modal-body img {width:100%;border-radius:10px;}
-.modal-text {margin-top:10px;}
-#episode-buttons {margin-top:15px;display:flex;flex-wrap:wrap;gap:10px;}
-#episode-buttons button {background:red;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;}
-#episode-buttons button:hover {background:#e50914;}
-iframe {margin-top:20px;width:100%;border:none;}
-.search-modal {position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:999;}
+body {
+  margin: 0;
+  background-color: #141414;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-family: "DotGothic16", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  overflow-y: auto; 
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 20px;
+  position: relative; 
+}
+
+#spotlight .spotlight-header {
+  display: flex;
+  justify-content: space-between; /* Space between logo and search bar */
+  align-items: center; /* Vertically center the items */
+  padding: 5px;
+  left: 10px;
+}
+
+#spotlight .logo {
+  display: flex;
+  align-items: center;
+}
+
+#logo {
+  height: 30px; /* Adjust the size of the logo */
+  margin-right: 5px; /* Space between logo and title */
+}
+
+#site-title {
+  font-size: 17px; /* Adjust the font size of the title */
+  font-weight: bold;
+  color: #fff; /* Adjust the color of the title */
+  margin-left: 0px; /* Space between logo and title */
+}
+
+#spotlight .search-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  max-width: 230px;
+  width: 50%;
+  padding: 10px;
+}
+
+#searchBar {
+  width: 85%;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #000000;
+  background-color: transparent;
+  color: #f5f4f4;
+}
+
+#searchBar::placeholder {
+  color: #ffffff;
+}
+
+/* Adjustments for small screen devices */
+  @media (max-width: 768px) {
+  #spotlight .spotlight-header {
+    justify-content: space-between; 
+  } 
+
+  #spotlight .search-container {
+    position: absolute; /* Keep it absolute for consistent positioning */
+    top: 10px;
+    right: 0px; /* Align it to the right side */
+    max-width: 220px; /* You can adjust the max width to fit on smaller screens */
+    padding: 5px 10px; /* Adjust padding for smaller screens */
+    margin-left: 0px; /* Add left margin to create spacing between logo/title and search bar */
+  }
+
+  #searchBar {
+    width: 70%; /* Ensure search bar takes up 100% width in mobile */
+    padding: 5px; /* Add more padding for easier typing on mobile */
+    border-radius: 10px;
+  }
+}
+
+.movie-grid, .series-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.movie-card, .series-card {
+  width: 100px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.movie-card img, .series-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.movie-card h3, .series-card h3 {
+  font-size: 14px;
+  margin: 5px 0;
+  text-align: center;
+  color: white;
+  }
+
+.movie-card:hover, .series-card:hover {
+  transform: scale(1.05);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.705);
+  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.modal-content {
+  background: black;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 750px;
+  max-height: 80%;
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow-y: scroll; 
+  overflow-x: hidden; 
+  scrollbar-width: thin; 
+  scrollbar-color: #080808 #000000; 
+}
+
+body.modal-open {
+  overflow: hidden; /* Disable body scrolling */
+}
+
+.modal-content iframe {
+  width: 100%;
+  height: 50%;
+  border-radius: 10px;
+}
+
+.close {
+  position: absolute;
+  top: 25px;
+  right: 20px;
+  font-size: 30px;
+  cursor: pointer;
+  color: white;
+}
+
+#modal-player iframe {
+  width: 100%;
+  height: 500px; 
+}
+
+#episode-list button {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  background: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+
+.episode-image {
+  width: 50px; 
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+#episode-list img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 5px;
+}
+
+#episode-list button:hover {
+  background: none;
+  color: #f0f0f0;
+}
+
+.server-dropdown-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.server-select {
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-close-button:hover {
+  color: #f00;
+}
+
+#series-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px; 
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.series-description {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.series-rating {
+  font-size: 1.2rem;
+  color: gold;
+  margin-bottom: 20px; 
+}
+
+.episode-player-container {
+  margin-bottom: 20px; 
+}
+
+#episode-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; 
+}
+
+#episode-list button {
+  background-color: #1b1b1b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-basis: 50%; 
+}
+
+#episode-list button:hover {
+  background-color: #555;
+}
+
+#episode-list .episode-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+#episode-player {
+  width: 100%;
+  height: 400px;
+}
+
+.season-dropdown-container {
+  margin: 20px 0;
+  padding: 10px;
+  text-align: center;
+  background-color: #353333;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.season-dropdown-container label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.season-select {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  font-size: 16px;
+  background-color: #3d3c3c;
+  color: #fff;
+  border: 1px solid #474545;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.season-select:focus {
+  outline: none;
+  border-color: #f39c12;
+  background-color: #333131;
+}
+
+.season-select:hover {
+  background-color: #4d4a4a;
+}
+
+.server-dropdown-container {
+  margin: 20px 0;
+  padding: 10px;
+  text-align: center;
+  background-color: #353333;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.server-dropdown-container label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.server-select {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  font-size: 16px;
+  background-color: #3d3c3c;
+  color: #fff;
+  border: 1px solid #474545;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.server-select:hover {
+  background-color: #4d4a4a;
+}
+
+.server-select:focus{
+outline: none;
+border-color: #f39c12;  
+background-color: #333131;
+}
+
+.episode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.episode-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.episode-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.episode-image-container {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.episode-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.episode-title {
+  font-size: 14px;
+  color: #333;
+}
+
+#episode-select {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.search-result-card {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  background-color: #918c8c6e;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px); 
+  padding: 10px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: background-color 0.3s ease;
+  transform: translateY(20px);
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+.search-result-card img {
+  width: 50px;
+  height: 75px;
+  margin-right: 10px;
+}
+
+.search-result-card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.search-result-card p {
+  font-size: 14px;
+  color: #555;
+}
+
+.search-results .movie-card,
+.search-results .series-card {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.search-results .movie-card img,
+.search-results .series-card img {
+  width: 60px;  
+  height: 75px;
+  margin-right: 10px;
+}
+
+.search-results .movie-card:hover,
+.search-results .series-card:hover {
+  background-color: #202020;
+}
+
+#searchResults {
+  position: absolute;
+  top: 50px; 
+  width: 70%;
+  max-height: 400px;  
+  background-color: transparent; 
+/*  color: white; */
+  z-index: 10;
+  padding: 15px;
+  border-radius: 10px;
+  overflow-y: auto;  
+  cursor: pointer;
+  -ms-overflow-style: none;  
+  scrollbar-width: none; 
+  z-index: 100;
+}
+
+#searchResults::-webkit-scrollbar {
+  display: none; 
+}
+
+#searchResults .movie-card,
+#searchResults .series-card {
+  display: absolute;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#searchResults img {
+  width: 50px;
+  height: 75px;
+  margin-right: 10px;
+}
+
+#searchResults h3 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.episode-item {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.episode-thumbnail {
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.episode-thumbnail img {
+  width: 120px; 
+  height: auto;
+  border-radius: 8px;
+}
+
+.episode-info {
+  flex-grow: 1;
+}
+
+.episode-info h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+.episode-info button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.episode-info button:hover {
+  background-color: #0056b3;
+}
+
+
+.section-divider {
+  width: 100%;
+  height: 2px; 
+  background-color: #ccc;
+  margin: 30px 0; 
+  border-radius: 5px;
+}
+
+.content {
+  position: relative;
+  z-index: 1; 
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+#spotlight {
+  position: relative;
+  color: white;
+  padding: 40px 40px;
+  text-align: left;
+  background-size: cover;
+  background-position: top center; 
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 55vh; 
+  box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.5); 
+  z-index: 1; 
+  border-bottom-left-radius: 20px;  /* Apply radius to the bottom-left corner */
+  border-bottom-right-radius: 20px; /* Apply radius to the bottom-right corner */
+  border-top-left-radius: 0; /* No border radius on the top-left corner */
+  border-top-right-radius: 0; /* No border radius on the top-right corner */
+}
+
+.spotlight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  padding: 0 20px;
+  z-index: 10; 
+}
+
+.spotlight-content {
+  position: relative;
+  z-index: 5;
+/*  background: rgba(41, 40, 40, 0.6);  */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+}
+
+#spotlight-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); */
+}
+
+#spotlight-description {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  z-index: 0; 
+  /* text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); */
+}
+
+#spotlight-button {
+  display: inline-block;
+  background-color: #e50914;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#spotlight-button:hover {
+  background-color: #b40710;
+}
+
+
+@media (max-width: 768px) {
+  .modal {
+    position: absolute;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #spotlight {
+    min-height: 45vh; 
+    text-align: center;
+    background-position: center; 
+  }
+
+  .spotlight-content {
+    margin: 0 auto;
+    padding: 15px;
+    max-width: 90%;
+  }
+
+  #spotlight-title {
+    font-size: 22px;
+  }
+
+  #spotlight-description {
+    font-size: 14px;
+  }
+
+  #spotlight-button {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+.series-episodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+  gap: 16px; 
+  padding: 20px;
+}
+
+.episode-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.episode-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.episode-details {
+  margin-top: 10px;
+}
+
+.watch-button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.spotlight-rating-imdb {
+  color: #FFD700; 
+  font-weight: bold;
+}
+
+.spotlight-rating-imdb i {
+  color: #FFD700; 
+}
+
+.disclaimer {
+  background-color: #f8f8f8;
+  padding: 15px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+
+.disclaimer p {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 14px;
+  color: #fff; 
+  margin-top: 10px;
+}
+
+.player-container {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#episode-player {
+  width: 100%;
+  height: 400px;
+}
+
+#player-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+#episode-list {
+  width: 100%;
+}
+
+.episode-item img {
+  width: 300px;  
+  height: auto; 
+  object-fit: cover; 
+  margin-right: 10px;  
+}
+
+#modal-player {
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-grid, .series-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.movie-grid, .series-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+#movies, #series {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px; 
+}
+
+#spotlight {
+  transition: background-image 1s ease-in-out; 
+}
+
+#upcoming-movies, #animation-tv-shows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+#upcoming-movies, #animation-tv-shows {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#top-rated-animation, #top-airing-animation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.search-result-card .watch-button {
+  background-color: red;
+  color: white; 
+  border: none;
+  padding: 10px 10px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+.search-result-card .watch-button:hover {
+  background-color: rgb(151, 23, 23); 
+  transform: scale(1.05); 
+}
+
+.search-result-card .watch-button:active {
+  background-color: #a50d0de0; 
+}
+
+.search-result-card .watch-button:focus {
+  outline: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: auto;
+  overflow-x: hidden; 
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.navbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-left: 30px;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.3s;
+}
+
+.navbar a:hover {
+  color: #161616;
+}
+
+.spacer {
+  flex-grow: 1; /* This pushes the search bar to the right */
+}
+
+/* Default (Desktop/Smart TV) */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+}
+
+.navbar-links {
+  display: flex;
+}
+
+.navbar-links a {
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.navbar-links a:hover {
+  color: #000000;
+}
+
+/* Hamburger Menu (Mobile) */
+.hamburger-menu {
+  display: none;
+  margin-left: 10px;
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    width: 60%;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px); 
+    background-color: rgba(148, 144, 144, 0.384);
+    border-radius: 10px;
+    position: absolute;
+    top: 45px; 
+    left: 50px;
+    z-index: 10;
+  }
+
+  .navbar-links a {
+    text-align: center;
+    padding: 10px;
+    width: 94%;
+  }
+
+  .navbar-links a:hover {
+    background-color: #f0f0f07c;
+    border-radius: 10px;
+  }
+
+  .hamburger-menu {
+    display: block;
+    cursor: pointer;
+  }
+
+  .navbar-links.active {
+    display: flex; /* Show links when active */
+  }
+}
+
+.fullscreen-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top: 6px solid red;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fullscreen-loader p {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.content-hidden {
+  display: none; 
+}
+
+.content-visible {
+  display: block;
+}
+
+#loader {
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+.content-hidden {
+  display: none;
+}
+
+#movies, #top-airing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#series {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#airing, #most-watched {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.movie-card {
+  width: 100px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  text-align: center;
+  margin: 0px;
+  position: relative; /* To position the stars and rating over the poster */
+}
+
+.rating-container {
+  position: absolute;
+  top: 5px; /* Position at the top of the poster */
+  left: 5px; /* Small padding from left */
+  background: rgba(49, 48, 48, 0.7); /* Dark background for better contrast */
+  padding: 3px 5px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 12px; /* Make the text smaller */
+}
+
+.stars {
+  font-size: 10px; /* Smaller stars to fit neatly */
+  margin-right: 5px;
+}
+
+.star {
+  color: #FFD700;
+  font-size: 10px; /* Adjust the size of the stars */
+}
+
+.star.full {
+  color: #FFD700;
+}
+
+.star.empty {
+  color: #ccc;
+}
+
+.rating-number {
+  font-size: 10px;
+}
+
+.movie-card h3 {
+  font-size: 14px;
+  margin: 5px 0;
+  color: white;
+}
+
+.series-card {
+  width: 100px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  text-align: center;
+  position: relative; /* To position the stars and rating over the poster */
+}
+
+.series-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.rating-container {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: rgba(150, 148, 148, 0.527);
+  padding: 3px 5px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 12px; /* Smaller text */
+}
+
+.stars {
+  font-size: 5px; /* Smaller stars */
+  margin-right: 5px;
+}
+
+.star {
+  color: #FFD700;
+  font-size: 10px; /* Adjust the size of the stars */
+}
+
+.star.full {
+  color: #FFD700;
+}
+
+.star.empty {
+  color: #ccc;
+}
+
+.rating-number {
+  font-size: 10px;
+}
+
+.series-card h3 {
+  font-size: 14px;
+  margin: 5px 0;
+  color: white;
+}
+
+.actor-carousel {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.actor-card {
+  margin-right: 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.actor-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.actor-name {
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.server-switch-message {
+  font-size: 14px;
+  color: #ff9900; /* Yellow/orange color for warning */
+  margin-bottom: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.server-switch-message i {
+  font-size: 18px; /* Icon size */
+  margin-right: 10px; /* Space between icon and text */
+}
+
+.server-switch-message span {
+  color: #333; /* Text color */
+}
+
+/* Style for the centered content */
+.centered-content {
+  display: flex;
+  flex-direction: column;       /* Stack the content vertically */
+  justify-content: center;      /* Center content vertically */
+  align-items: center;          /* Center content horizontally */
+  text-align: center;           /* Center the text inside the container */
+  height: 45vh;                 /* Take 45% of the viewport height */
+  padding-top: 10px;            /* Add a little padding from the top */
+}
+
+/* Optional styles for the paragraph */
+p {
+  font-size: 1.2em;
+  color: #fcfcfc;
+  max-width: 600px;  /* Optional: limit the width for better readability */
+}
+
+a {
+  color: #1976d2;  /* Blue color for the link */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline; /* Underline the link when hovered */
+}
+
+
+/* Style for the LIVE DOMAIN links container directly below */
+.links-container {
+  display: flex;
+  flex-direction: column;        /* Stack the links vertically */
+  align-items: center;           /* Center the links horizontally */
+  margin-top: 10px;              /* Slightly add some space to separate from content */
+}
+
+/* Style for the links list */
+.links-list {
+  list-style-type: none;  /* Remove default list bullet points */
+  padding: 0;             /* Remove padding */
+  margin: 0;              /* Remove margin */
+  font-size: 1.2em;
+  color: #333;
+}
+
+.links-list li {
+  margin-bottom: 5px;  /* Less space between list items */
+}
+
+/* Style for individual live-domain links */
+.live-domain {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  background-color: green;
+  border-radius: 50%;
+  margin-right: 10px; /* Space between the circle and the text */
+  animation: pulse 1.5s infinite; /* Animation for the circle */
+}
+
+/* Animation for the green circle (pulse effect) */
+@keyframes pulse {
+  0% {
+      transform: scale(1);
+      opacity: 1;
+  }
+  50% {
+      transform: scale(1.5);
+      opacity: 0.7;
+  }
+  100% {
+      transform: scale(1);
+      opacity: 1;
+  }
+}
+
+/* Style for the Back to Home link at the top */
+.back-to-home {
+  position: fixed;  /* Fixed at the top of the page */
+  top: 10px;        /* Add some space from the top */
+  left: 50%;        /* Center it horizontally */
+  transform: translateX(-50%);  /* Offset by 50% of its own width to perfectly center it */
+  background-color: #e9403a; /* Blue background color */
+  padding: 10px 20px;  /* Padding around the text */
+  border-radius: 5px;  /* Rounded corners */
+  z-index: 1000;  /* Make sure it stays on top of other elements */
+}
+
+.back-to-home a {
+  color: white;  /* White text */
+  font-size: 1.2em;
+  text-decoration: none; /* Remove underline */
+}
+
+.back-to-home a:hover {
+  text-decoration: underline; /* Underline the link on hover */
+}
+
+/* Define ang custom font gamit ang @font-face */
+@font-face {
+  font-family: 'Fulcher 3D Font';  /* Name sa imong font */
+  src: url('FulcherExtruderight-e9pEx.otf') format('truetype'); /* Path sa font file */
+}
+
+#movies h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#series h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#animation-tv-shows h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#top-airing h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#upcoming-movies h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#most-watched h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#airing h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#top-rated-animation h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+#top-airing-animation h2 {
+  font-family: 'Fulcher 3D Font', serif;  /* Gamitin ang custom font */
+  padding-left: 10px;  /* Punoan ang padding para magdikit */
+  position: relative;  /* Para sa positioning sa line */
+  margin-bottom: 20px;  /* Magdagdag ng space sa ilalim ng h2 */
+}
+
+/* Basic Styles */
+body {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Default Light Mode Styles (Softer Light Mode) */
+body {
+  background-color: #cfcfcf;  /* Soft light gray instead of pure white */
+  color: #333;  /* Dark gray text for better contrast */
+}
+
+/* Dark Mode Styles (AMOLED-like Dark Mode) */
+body.dark-mode {
+  background-color: #000000;  /* True black background for AMOLED look */
+  color: #e0e0e0;  /* Light gray text for readability on black */
+}
+
+/* Toggle Container */
+#toggle-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;  /* Make sure the toggle and text are above other elements */
+}
+
+/* Text Container */
+.text-container {
+  margin-bottom: 10px; /* Add space between text and switch */
+  z-index: 20;  /* Ensure the text is above the toggle */
+  position: relative; /* Important for z-index to work */
+}
+
+/* Background for better visibility of the text */
+#dark-mode-text {
+  font-size: 14px;  /* Smaller text size */
+  font-weight: bold;
+  color: #fff;  /* White text for contrast */
+  background-color: rgba(0, 0, 0, 0.7);  /* Dark semi-transparent background */
+  padding: 3px 6px;  /* Adjust padding for a smaller background */
+  border-radius: 5px;  /* Rounded corners for the background */
+  z-index: 20;  /* Ensure the text is above */
+  position: relative;
+}
+
+/* Switch Styles (Updated for Smaller Size) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;  /* Smaller width of the toggle switch */
+  height: 30px; /* Smaller height of the toggle switch */
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 30px;  /* Rounded slider for the smaller size */
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;  /* Smaller circular knob */
+  width: 22px;   /* Smaller circular knob */
+  border-radius: 50%;
+  left: 4px;      /* Adjust knob position for small size */
+  bottom: 4px;    /* Adjust knob position for small size */
+  background-color: white;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);  /* Move the knob accordingly */
+}
+
+/* Icon Styles for Sun and Crescent (Updated for Smaller Icons) */
+.icon-sun, .icon-crescent {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px; /* Smaller font size for the icons */
+  font-weight: bold; /* Make icons bold */
+  transition: 0.4s;
+}
+
+.icon-sun {
+  left: 6px;
+  color: #ffcc00; /* Sun icon color (yellow) */
+}
+
+.icon-crescent {
+  right: 6px;
+  opacity: 0; /* Crescent icon starts hidden */
+  color: #000000; /* Crescent icon color (black) */
+}
+
+input:checked + .slider .icon-crescent {
+  opacity: 1; /* Show crescent icon when checked */
+}
+
+input:checked + .slider .icon-sun {
+  opacity: 0; /* Hide sun icon when checked */
+}
+
+/* Adjust spacing within the grids */
+.movie-grid, .series-grid, #animation-tv-shows-grid {
+  gap: 5px; /* Space between grid items */
+  padding-left: 5px; /* Space on the left side */
+  padding-right: 5px; /* Space on the right side */
+}
+
+#top-rated-animation h2, #top-airing-animation h2 {
+  font-size: 40px;
+}
+
+/* Style for the Movies Section */
+#movies h2 {
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#movies h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#series h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#series h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#animation-tv-shows h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#animation-tv-shows h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#top-airing h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#top-airing h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#upcoming-movies h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#upcoming-movies h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#most-watched h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#most-watched h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#airing h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#airing h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#top-rated-animation h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#top-rated-animation h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+#top-airing-animation h2{
+  font-weight: bold;
+  position: relative;
+  display: inline-block;  /* Allow space for the line */
+  padding-bottom: 5px;  /* Add space between the text and the line */
+}
+
+/* Line Below the Heading */
+#top-airing-animation h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;  /* Adjust the height of the line */
+  background-color: #c90505;  /* Change the line color (yellow) */
+}
+
+  /* Styling the disclaimer section */
+  #disclaimer {
+    background-color: transparent;
+    color: rgb(94, 90, 90);
+    padding: 15px 20px;
+    font-size: 14px;  /* Smaller font */
+    font-family: 'Roboto', sans-serif;  /* Aesthetic modern font */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2), 0px 0px 15px rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    margin: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  #disclaimer br {
+    margin-bottom: 8px;
+  }
+
+  /* Emoticon in disclaimer */
+  #disclaimer::before {
+    content: "⚠️ "; /* Adds a warning emoji before the disclaimer */
+    font-size: 18px;  /* Slightly smaller emoticon */
+  }
+
+    /* Styling the copyright section */
+    .copyright {
+      text-align: center;
+      font-size: 12px;
+      background-color: transparent;
+      color: rgb(94, 90, 90);
+      padding: 8px 20px;  /* Added padding for some space around the text */
+      border-radius: 5px;  /* Optional: rounded corners for a smoother look */
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;  /* Adds some spacing from the bottom of the viewport */
+    }
+
+  /* Responsive design for mobile screens */
+  @media (max-width: 600px) {
+    #disclaimer {
+      font-size: 12px;
+      padding: 12px;
+    }
+
+    .copyright {
+      font-size: 10px;
+      padding: 6px 15px;
+    }
+  }
+
+
+.blurred-background {
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /*background-image: url('the_netflix_login_background__canada__2024___by_logofeveryt_dh0w8qv-fullview.jpg');*/
+  background-image: url('AKP.JFIF');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(10px); 
+  z-index: -1; 
+} 
