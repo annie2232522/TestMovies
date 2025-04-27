@@ -65,6 +65,15 @@ const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
       } else if (server === "player.videasy.net") {
         embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
       }
+        else if (server === "https://movies.7xtream.com/") {
+        embedURL = `https://https://movies.7xtream.com//${type}/${currentItem.id}`;
+      }
+        else if (server === "https://flickystream.com/") {
+        embedURL = `https://https://flickystream.com/${type}/${currentItem.id}`;
+      }
+        else if (server === "https://www.mokmobi.ovh/") {
+        embedURL = `https://https://www.mokmobi.ovh/${type}/${currentItem.id}`;
+      }
 
       document.getElementById('modal-video').src = embedURL;
     }
