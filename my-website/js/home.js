@@ -1,134 +1,143 @@
-const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
-    const BASE_URL = 'https://api.themoviedb.org/3';
-    const IMG_URL = 'https://image.tmdb.org/t/p/original';
-    let currentItem;
+// Consts
+const apikey = "7ee3f44e92211fe941b4243a38e99265";
+const apiEndpoint = "https://api.themoviedb.org/3"
+const imgPath = "https://image.tmdb.org/t/p/original";
 
-    async function fetchTrending(type) {
-      const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
-      const data = await res.json();
-      return data.results;
-    }
 
-    async function fetchTrendingAnime() {
-  let allResults = [];
-
-  // Fetch from multiple pages to get more anime (max 3 pages for demo)
-  for (let page = 1; page <= 3; page++) {
-    const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
-    const data = await res.json();
-    const filtered = data.results.filter(item =>
-      item.original_language === 'ja' && item.genre_ids.includes(16)
-    );
-    allResults = allResults.concat(filtered);
-  }
-
-  return allResults;
+const apiPaths = {
+    fetchAllCategories: `${apiEndpoint}/genre/movie/list?api_key=${apikey}`,
+    fetchMoviesList: (id) => `${apiEndpoint}/discover/movie?api_key=${apikey}&with_genres=${id}`,
+    fetchTrending:`${apiEndpoint}/trending/all/day?api_key=${apikey}&language=en-US`,
+    searchOnYoutube: (query) => `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=AIzaSyA_eZ5WJhmYhRQOM8-jAyVIzzdfWUlp_P0`
 }
 
 
-    function displayBanner(item) {
-      document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
-      document.getElementById('banner-title').textContent = item.title || item.name;
-    }
+// Boots up the app
+function init() {
+    fetchTrendingMovies();
+    fetchAndBuildAllSections();
+}
 
-    function displayList(items, containerId) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      items.forEach(item => {
-        const img = document.createElement('img');
-        img.src = `${IMG_URL}${item.poster_path}`;
-        img.alt = item.title || item.name;
-        img.onclick = () => showDetails(item);
-        container.appendChild(img);
-      });
-    }
+function fetchTrendingMovies(){
+    fetchAndbuildMovieSection(apiPaths.fetchTrending, 'Trending Now')
+    .then(list => {
+        const randomIndex = parseInt(Math.random() * list.length);
+        buildBannerSection(list[randomIndex]);
+    }).catch(err=>{
+        console.error(err);
+    });
+}
 
-    function showDetails(item) {
-      currentItem = item;
-      document.getElementById('modal-title').textContent = item.title || item.name;
-      document.getElementById('modal-description').textContent = item.overview;
-      document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
-      document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
-      changeServer();
-      document.getElementById('modal').style.display = 'flex';
-    }
+function buildBannerSection(movie){
+    const bannerCont = document.getElementById('banner-section');
 
-    function changeServer() {
-      const server = document.getElementById('server').value;
-      const type = currentItem.media_type === "movie" ? "movie" : "tv";
-      let embedURL = "";
+    bannerCont.style.backgroundImage = `url('${imgPath}${movie.backdrop_path}')`;
 
-      if (server === "vidsrc.cc") {
-        embedURL = `https://vidsrc.cc/v2/embed/${type}/${currentItem.id}`;
-      } else if (server === "vidsrc.me") {
-        embedURL = `https://vidsrc.net/embed/${type}/?tmdb=${currentItem.id}`;
-      } else if (server === "player.videasy.net") {
-        embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
-      }
-        else if (server === "vidlink.pro") {
-        embedURL = `https://vidlink.pro/${type}/${currentItem.id}`;
-      }
-        else if (server === "vidsrc.dev") {
-        embedURL = `https://vidsrc.dev/embed/${type}/${currentItem.id}`;
-      }
-        else if (server === "111movies.com") {
-        embedURL = `https://111movies.com/${type}/${currentItem.id}`;
-      }
+    const div = document.createElement('div');
 
-      document.getElementById('modal-video').src = embedURL;
-    }
+    div.innerHTML = `
+            <h2 class="banner__title">${movie.title}</h2>
+            <p class="banner__info">Trending in movies | Released - ${movie.release_date} </p>
+            <p class="banner__overview">${movie.overview && movie.overview.length > 200 ? movie.overview.slice(0,200).trim()+ '...':movie.overview}</p>
+            <div class="action-buttons-cont">
+                <button class="action-button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="Hawkins-Icon Hawkins-Icon-Standard"><path d="M4 2.69127C4 1.93067 4.81547 1.44851 5.48192 1.81506L22.4069 11.1238C23.0977 11.5037 23.0977 12.4963 22.4069 12.8762L5.48192 22.1849C4.81546 22.5515 4 22.0693 4 21.3087V2.69127Z" fill="currentColor"></path></svg> &nbsp;&nbsp; Play</button>
+                <button class="action-button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="Hawkins-Icon Hawkins-Icon-Standard"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM13 10V18H11V10H13ZM12 8.5C12.8284 8.5 13.5 7.82843 13.5 7C13.5 6.17157 12.8284 5.5 12 5.5C11.1716 5.5 10.5 6.17157 10.5 7C10.5 7.82843 11.1716 8.5 12 8.5Z" fill="currentColor"></path></svg> &nbsp;&nbsp; More Info</button>
+            </div>
+        `;
+    div.className = "banner-content container";
 
-    function closeModal() {
-      document.getElementById('modal').style.display = 'none';
-      document.getElementById('modal-video').src = '';
-    }
-
-    function openSearchModal() {
-      document.getElementById('search-modal').style.display = 'flex';
-      document.getElementById('search-input').focus();
-    }
-
-    function closeSearchModal() {
-      document.getElementById('search-modal').style.display = 'none';
-      document.getElementById('search-results').innerHTML = '';
-    }
-
-    async function searchTMDB() {
-      const query = document.getElementById('search-input').value;
-      if (!query.trim()) {
-        document.getElementById('search-results').innerHTML = '';
-        return;
-      }
-
-      const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
-      const data = await res.json();
-
-      const container = document.getElementById('search-results');
-      container.innerHTML = '';
-      data.results.forEach(item => {
-        if (!item.poster_path) return;
-        const img = document.createElement('img');
-        img.src = `${IMG_URL}${item.poster_path}`;
-        img.alt = item.title || item.name;
-        img.onclick = () => {
-          closeSearchModal();
-          showDetails(item);
-        };
-        container.appendChild(img);
-      });
-    }
-
-    async function init() {
-      const movies = await fetchTrending('movie');
-      const tvShows = await fetchTrending('tv');
-      const anime = await fetchTrendingAnime();
+    bannerCont.append(div);
+}
 
 
-      displayBanner(movies[Math.floor(Math.random() * movies.length)]);
-      displayList(movies, 'movies-list');
-      displayList(tvShows, 'tvshows-list');
-      displayList(anime, 'anime-list');
+function fetchAndBuildAllSections(){
+    fetch(apiPaths.fetchAllCategories)
+    .then(res => res.json())
+    .then(res => {
+        const categories = res.genres;
+        if (Array.isArray(categories) && categories.length) {
+            categories.forEach(category => {
+                fetchAndbuildMovieSection(
+                    apiPaths.fetchMoviesList(category.id),
+                    category.name
+                );
+            });
+        }
+        // console.table(movies);
+    })
+    .catch(err=>console.error(err));
+}
 
-    }
+function fetchAndbuildMovieSection(fetchUrl, categoryName){
+    console.log(fetchUrl,categoryName);
+    return fetch(fetchUrl)
+    .then(res => res.json())
+    .then(res => {
+        // console.table(res.results);
+        const movies = res.results;
+        if (Array.isArray(movies) && movies.length) {
+            buildMoviesSection(movies.slice(0,6), categoryName);
+        }
+        return movies;
+    })
+    .catch(err=>console.error(err))
+}
 
+function buildMoviesSection(list, categoryName){
+    console.log(list, categoryName);
+
+    const moviesCont = document.getElementById('movies-cont');
+
+    const moviesListHTML = list.map(item => {
+        return `
+        <div class="movie-item" onmouseenter="searchMovieTrailer('${item.title}', 'yt${item.id}')">
+            <img decoding="async" class="move-item-img" src="${imgPath}${item.backdrop_path}" alt="${item.title}" />
+            <div class="iframe-wrap" id="yt${item.id}"></div>
+        </div>`;
+    }).join('');
+
+    const moviesSectionHTML = `
+        <h2 class="movie-section-heading">${categoryName} <span class="explore-nudge">Explore All</span></span></h2>
+        <div class="movies-row">
+            ${moviesListHTML}
+        </div>
+    `
+
+    const div = document.createElement('div');
+    div.className = "movies-section"
+    div.innerHTML = moviesSectionHTML;
+
+    // append html into movies container
+    moviesCont.append(div);
+}
+
+function searchMovieTrailer(movieName, iframId) {
+    if (!movieName) return;
+
+    fetch(apiPaths.searchOnYoutube(movieName))
+    .then(res => res.json())
+    .then(res => {
+        const bestResult = res.items[0];
+
+        const elements = document.getElementById(iframId);
+        console.log(elements, iframId);
+
+        const div = document.createElement('div');
+        div.innerHTML = `<iframe width="245px" height="150px" src="https://www.youtube.com/embed/${bestResult.id.videoId}?autoplay=1&controls=0"></iframe>`
+// window.open(youtubeUrl,'_blank');
+        elements.append(div);
+
+    })
+    .catch(err=>console.log(err));
+}
+
+
+window.addEventListener('load',function() {
     init();
+    window.addEventListener('scroll', function(){
+        // header ui update
+        const header = document.getElementById('header');
+        if (window.scrollY > 5) header.classList.add('black-bg')
+        else header.classList.remove('black-bg');
+    })
+})
