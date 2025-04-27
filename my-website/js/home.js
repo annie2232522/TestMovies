@@ -113,11 +113,19 @@ const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
       const movies = await fetchTrending('movie');
       const tvShows = await fetchTrending('tv');
       const anime = await fetchTrendingAnime();
+      const kdrama = await fetchTrendingKDrama();
+      const horror = await fetchByGenre(27); // Horror Genre
+      const action = await fetchByGenre(28); // Action Genre
+      const romance = await fetchByGenre(10749); // Romance Genre
 
       displayBanner(movies[Math.floor(Math.random() * movies.length)]);
       displayList(movies, 'movies-list');
       displayList(tvShows, 'tvshows-list');
       displayList(anime, 'anime-list');
+     displayList(kdrama, 'kdrama-list');
+     displayList(horror, 'horror-list');
+     displayList(action, 'action-list');
+     displayList(romance, 'romance-list');
     }
 
     init();
