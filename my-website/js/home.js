@@ -65,14 +65,14 @@ const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
       } else if (server === "player.videasy.net") {
         embedURL = `https://player.videasy.net/${type}/${currentItem.id}`;
       }
-        else if (server === "vidsrc.xyz") {
-        embedURL = `https://vidsrc.xyz/${type}/${currentItem.id}`;
+        else if (server === "vidlink.pro") {
+        embedURL = `https://vidlink.pro/${type}/${currentItem.id}`;
       }
-        else if (server === "flickystream.com") {
-        embedURL = `https://flickystream.com/${type}/${currentItem.id}`;
+        else if (server === "vidsrc.dev") {
+        embedURL = `https://vidsrc.dev/embed/${type}/${currentItem.id}`;
       }
-        else if (server === "www.mokmobi.ovh") {
-        embedURL = `https://www.mokmobi.ovh/${type}/${currentItem.id}`;
+        else if (server === "111movies.com") {
+        embedURL = `https://111movies.com/${type}/${currentItem.id}`;
       }
 
       document.getElementById('modal-video').src = embedURL;
