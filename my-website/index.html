@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CornHub</title>
-  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/home.css" />
   <script defer src="js/home.js"></script>
 </head>
 <body>
+
   <div class="navbar">
     <div class="logo">CornHub</div>
     <div class="nav-links">
       <a href="#">Home</a>
-      <input type="text" class="search-bar" placeholder="Search..." onfocus="openSearchModal()" />
+      <input type="text" id="search-input" class="search-bar" placeholder="Search..." onfocus="openSearchModal()" />
     </div>
   </div>
+
   <div class="banner" id="banner"><h1 id="banner-title"></h1></div>
 
   <div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
@@ -34,25 +36,33 @@
           <h2 id="modal-title"></h2>
           <div class="stars" id="modal-rating"></div>
           <p id="modal-description"></p>
-          <div id="season-picker-container" style="margin-top: 15px; display:none;">
-            <label for="season-picker">Select Season:</label>
-            <select id="season-picker" onchange="loadSeasonEpisodes()"></select>
+
+          <div class="selectors">
+            <label for="server-picker">Server:</label>
+            <select id="server-picker" onchange="updateVideo()">
+              <option value="vidsrc.me">vidsrc.me</option>
+              <option value="vidsrc.to">vidsrc.to</option>
+              <option value="vidsrc.cc">vidsrc.cc</option>
+            </select>
+
+            <div id="season-picker-container" style="display:none;">
+              <label for="season-picker">Season:</label>
+              <select id="season-picker" onchange="loadEpisodes()"></select>
+            </div>
           </div>
-          <div id="episode-picker-container" style="margin-top: 15px; display:none;">
-            <label for="episode-picker">Select Episode:</label>
-            <select id="episode-picker"></select>
-          </div>
-          <div id="episode-list"></div>
+
+          <div id="episode-buttons"></div>
         </div>
       </div>
-      <iframe id="modal-video" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
+      <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
     </div>
   </div>
 
   <div class="search-modal" id="search-modal">
     <span class="close" onclick="closeSearchModal()">&times;</span>
-    <input type="text" id="search-input" placeholder="Search..." oninput="searchTMDB()" />
-    <div class="results" id="search-results"></div>
+    <input type="text" id="search-bar-modal" placeholder="Search TMDB..." oninput="searchTMDB()" />
+    <div id="search-results"></div>
   </div>
+
 </body>
 </html>
