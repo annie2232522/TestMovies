@@ -2,132 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="google-site-verification" content="hUpOrZMJQV4YDn3m-7qMFvn5OA8yU5vkZm6ip9VJLpI" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Stream Movies & TV Series Anytime, Anywhere - VILLJROA</title>
-  <meta name="description" content="Enjoy unlimited access to the latest movies and TV shows on Villjr0a. With a simple, fast, and hassle-free streaming experience, you can watch all your favorite films in high-quality without any sign-ups. Start streaming today and never miss out on the best entertainment!">
-  <meta name="keywords" content="alchemy of souls imdb, watch movies tv series online free, where can i watch movies and tv series for free, watch movies and tv series hd online free, watch movies and tv series online free, websites to watch tv series and movies for free, where can i watch movie for free online, watch movies and series for free reddit, soap2day watch movies and series in high quality, watch movies and series online free streaming">
-
-  <link rel="stylesheet" href="styles.css"> 
-  <link rel="preload" href="css/home.css" as="styles">
-  <link rel="preload" href="js/home.js" as="scripts">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
-  <link rel="icon" href="favicon-32x32 (2).png" sizes="32x32" type="image/png">
-  <link rel="icon" href="favicon-16x16 (2).png" sizes="16x16" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CornHub</title>
+  <link rel="stylesheet" href="css/home.css">
+  <script defer src="js/home.js"></script>
 </head>
-  
-  <body id="main-body" onload="hideLoader()">
-
-  <body onload="hideLoader()">
-
-    <!-- Fullscreen Loader -->
-    <div id="loader" class="fullscreen-loader">
-      <div class="spinner"></div>
-      <p>Tell your friends about us!...</p>
+<body>
+  <div class="navbar">
+    <div class="logo">CornHub</div>
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <input type="text" class="search-bar" placeholder="Search..." onfocus="openSearchModal()" />
     </div>
-  
-    <div id="main-content" class="content-hidden">
-      <div class="blurred-background"></div>
-
-<!-- Dark Mode Toggle Switch -->
-<div id="toggle-container">
-  <div class="text-container">
-    <span id="dark-mode-text">DARK MODE</span>
   </div>
-  <label class="switch">
-    <input type="checkbox" id="dark-mode-toggle">
-    <span class="slider">
-      <!-- Sun Icon from Font Awesome -->
-      <span class="icon-sun fas fa-sun"></span>
-      <!-- Moon Icon from Font Awesome -->
-      <span class="icon-crescent fas fa-moon"></span>
-    </span>
-  </label>
-</div>
-  
-      <!-- Spotlight Section -->
-      <section id="spotlight" class="spotlight">
-        <header class="spotlight-header">
-          <div class="logo">
-            <img src="favicon-32x32 (2).png" alt="Logo" id="logo">
-            <h1 id="site-title">VILLJR0A</h1>
-        </div>
-        <div class="hamburger-menu" id="hamburger-menu">
-          <i class="fas fa-bars"></i> <!-- Hamburger Icon -->
-        </div>    
-        
-        <div class="navbar-links" id="navbar-links">
-          <a href='/'><i class="fas fa-home"></i> Home</a>
-          <a href='/movies'><i class="fas fa-film"></i> Movies</a>
-          <a href='/series'><i class="fas fa-tv"></i> TV Shows</a>
-          <a href='/animation-tv-shows'><i class="fas fa-puzzle-piece"></i> Animation</a>
-          <a href="https://t.me/villjr0a" target="_blank"><i class="fab fa-telegram-plane"></i> Telegram</a>
-          <a href='/newpage'><i class="fas fa-exclamation-circle"></i> Read Me</a> <!-- Added attention link -->
-        </div>
-        
-          <div class="spacer"></div>  
-          <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Search for movies and series..." oninput="searchMovies()">
-            <div id="searchResults"></div>
-            </div>      
-             
-        </header>
+  <div class="banner" id="banner"><h1 id="banner-title"></h1></div>
 
-        <div class="spotlight-content">
-          <h1 id="spotlight-title">Spotlight Title</h1>
-          <div class="spotlight-details">
-            <span id="spotlight-rating" class="spotlight-rating-imdb"><i class="fas fa-star"></i> IMDb: 8.5</span>
-              <span id="spotlight-release-date">Release Date: 2024</span>
+  <div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
+  <div class="row"><h2>Trending TV Shows</h2><div class="list" id="tvshows-list"></div></div>
+  <div class="row"><h2>Trending Anime</h2><div class="list" id="anime-list"></div></div>
+  <div class="row"><h2>K-Drama</h2><div class="list" id="kdrama-list"></div></div>
+  <div class="row"><h2>Horror</h2><div class="list" id="horror-list"></div></div>
+  <div class="row"><h2>Action</h2><div class="list" id="action-list"></div></div>
+  <div class="row"><h2>Romance</h2><div class="list" id="romance-list"></div></div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <div class="modal-body">
+        <img id="modal-image" src="" alt="" />
+        <div class="modal-text">
+          <h2 id="modal-title"></h2>
+          <div class="stars" id="modal-rating"></div>
+          <p id="modal-description"></p>
+          <div id="season-picker-container" style="margin-top: 15px; display:none;">
+            <label for="season-picker">Select Season:</label>
+            <select id="season-picker" onchange="loadSeasonEpisodes()"></select>
           </div>
-          <p id="spotlight-description">
-              This is the description of the spotlight movie or series. It highlights the most exciting features or storyline.
-          </p>
-          <button id="spotlight-button" onclick="openSpotlight()">Watch Now</button>
-          </div>   
-      </section>
-
-      <main>
-<!-- Movies Section -->
-<section id="movies">
-  <h2>Top Rated Movies</h2> <!-- The line will be added via CSS -->
-  <div class="movie-grid" id="movie-grid"></div>
-</section>
-
-        <!-- TV Series Section -->
-        <section id="series">
-          <h2>Top Rated TV Series</h2>
-          <div class="series-grid" id="series-grid"></div>
-        </section>
-      </main>
-
-      <!-- Animation TV Shows Section -->
-      <div id="animation-tv-shows">
-        <h2>Animation TV Shows</h2>
-        <div id="animation-tv-shows-grid" class="movie-grid"></div>
-      </div>
-
-      <div id="disclaimer" class="disclaimer">
-          DISCLAIMER! <br>
-          This website's server has no files on it. Only content from third-party websites and services is displayed on this website. We have no control over or endorsement of any of the products, services, or material provided by these websites.
-      </div>
-      
-      <div class="copyright">
-        Copyright © VILLJR0A 2025. All Rights Reserved.
-      </div>
-
-      <div id="modal" class="modal">
-        <div class="modal-content">
-          <span class="close" id="close-modal">&times;</span>
-          <div id="modal-player"></div>
+          <div id="episode-picker-container" style="margin-top: 15px; display:none;">
+            <label for="episode-picker">Select Episode:</label>
+            <select id="episode-picker"></select>
+          </div>
+          <div id="episode-list"></div>
         </div>
       </div>
-
+      <iframe id="modal-video" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
     </div>
+  </div>
 
-    <script src="scripts.js"></script>
-    <script src="ads.js"></script>
-  </body>
+  <div class="search-modal" id="search-modal">
+    <span class="close" onclick="closeSearchModal()">&times;</span>
+    <input type="text" id="search-input" placeholder="Search..." oninput="searchTMDB()" />
+    <div class="results" id="search-results"></div>
+  </div>
+</body>
 </html>
