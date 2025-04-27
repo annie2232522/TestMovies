@@ -16,4 +16,4 @@ body { margin:0; background:#111; color:#fff; font-family:Arial,sans-serif; }
 #episode-buttons button {background:red;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;}
 #episode-buttons button:hover {background:#e50914;}
 iframe {margin-top:20px;width:100%;border:none;}
-.search-modal {top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:999;}
+.search-modal {position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:999;}
