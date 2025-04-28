@@ -1,3 +1,4 @@
+/* General styles */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -54,13 +55,14 @@ body {
   border-radius: 8px;
 }
 
+/* Modal styles */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   display: none;
   align-items: center;
   justify-content: center;
@@ -100,6 +102,34 @@ body {
   float: right;
 }
 
+/* Episode button styles */
+#episode-buttons button {
+  background-color: #add8e6; /* Light blue */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+#episode-buttons button:hover {
+  background-color: #87cefa; /* Slightly darker blue */
+}
+
+/* Selected episode button */
+#episode-buttons button.selected {
+  background-color: #f08080; /* Light red */
+  color: #fff;
+}
+
+#episode-buttons button.selected:hover {
+  background-color: #fa8072; /* Darker red for hover */
+}
+
+/* Loading spinner */
 #loading-spinner {
   position: fixed;
   top: 50%;
@@ -118,32 +148,4 @@ body {
   margin-top: 10px;
   font-size: 14px;
   color: lightgreen;
-}
-
-.search-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.search-modal input {
-  padding: 10px;
-  font-size: 16px;
-  width: 70%;
-}
-
-.search-modal .close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 30px;
-  color: red;
-  cursor: pointer;
 }
