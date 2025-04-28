@@ -51,59 +51,83 @@ function displayList(items, containerId, forceType = null) {
   });
 }
 
+
+
 // edited 2
 
 async function showDetails(item) {
   currentItem = item;
+
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
   document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
   document.getElementById('modal').style.display = 'flex';
 
-  const seasonContainer = document.getElementById('season-picker-container');
-  const serverPicker = document.getElementById('server-picker');
-  currentServer = serverPicker.value;
+  const seasonPickerContainer = document.getElementById('season-picker-container');
+  const seasonPicker = document.getElementById('season-picker');
+  const episodeButtons = document.getElementById('episode-buttons');
+
+  // ✨ IMPORTANT: Always reset first
+  seasonPicker.innerHTML = ''; // Clear previous seasons
+  episodeButtons.innerHTML = ''; // Clear previous episodes
+  seasonPickerContainer.style.display = 'none'; // Hide season picker by default
 
   if (item.media_type === 'tv') {
-    seasonContainer.style.display = 'block';
+    // Only for TV shows
+    seasonPickerContainer.style.display = 'block';
+
     const details = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(res => res.json());
-    const seasonPicker = document.getElementById('season-picker');
-    seasonPicker.innerHTML = '';
 
     details.seasons.forEach(season => {
-      if (season.season_number === 0) return;
+      if (season.season_number === 0) return; // Skip specials
       const option = document.createElement('option');
       option.value = season.season_number;
       option.textContent = `Season ${season.season_number}`;
       seasonPicker.appendChild(option);
     });
 
-    loadEpisodes();
+    currentSeason = seasonPicker.value; // Set the currentSeason
+
+    await loadEpisodes();
   } else {
-    seasonContainer.style.display = 'none';
+    // If movie, update the video immediately
     updateVideo();
   }
 }
 
+// ------ edit here
+
+// edited 2
+
+
 async function loadEpisodes() {
   const seasonNumber = document.getElementById('season-picker').value;
+  currentSeason = seasonNumber;
+
   const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${seasonNumber}?api_key=${API_KEY}`);
   const data = await res.json();
 
   const container = document.getElementById('episode-buttons');
-  container.innerHTML = '';
+  container.innerHTML = ''; // Clear before adding new
+
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
     button.textContent = `E${ep.episode_number}: ${ep.name}`;
-    button.onclick = () => {
-      currentSeason = seasonNumber;
-      updateVideo(ep.episode_number);
-    };
+    button.onclick = () => updateVideo(ep.episode_number);
     container.appendChild(button);
   });
 }
-// ------ edit here
+
+
+
+
+// edited 2
+
+
+
+
+
 function updateVideo(episodeNumber = 1) {
   const server = document.getElementById('server-picker').value;
   let embedUrl = '';
