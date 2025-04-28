@@ -115,9 +115,9 @@ async function autoSelectBestServer(episodeNumber = 1) {
 
 function buildEmbedUrl(server, episodeNumber = 1) {
   if (currentItem.media_type === 'movie') {
-    return `https://${server}/embed/movie/${currentItem.id}`;
+    return `https://${server}/embed/movie/${currentItem.id}?autoplay=1`;
   } else {
-    return `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
+    return `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}?autoplay=1`;
   }
 }
 
