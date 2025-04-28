@@ -34,19 +34,24 @@ function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
 }
-
-function displayList(items, containerId) {
+// edited
+function displayList(items, containerId, forceType = null) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
+
   items.forEach(item => {
-    if (!item.poster_path) return;
     const img = document.createElement('img');
     img.src = `${IMG_URL}${item.poster_path}`;
     img.alt = item.title || item.name;
-    img.onclick = () => showDetails(item);
+    img.onclick = () => {
+      if (forceType) item.media_type = forceType; // 💥 Force set media_type if missing
+      showDetails(item);
+    };
     container.appendChild(img);
   });
 }
+
+// edited 2
 
 async function showDetails(item) {
   currentItem = item;
@@ -182,12 +187,13 @@ async function init() {
   const romance = await fetchByGenre(10749);
 
   displayBanner(movies[Math.floor(Math.random() * movies.length)]);
-  displayList(movies, 'movies-list');
-  displayList(tvshows, 'tvshows-list');
-  displayList(anime, 'anime-list');
-  displayList(horror, 'horror-list');
-  displayList(action, 'action-list');
-  displayList(romance, 'romance-list');
+ displayList(movies, 'movies-list'); // trending movies already have media_type
+displayList(tvshows, 'tvshows-list'); // trending tv already have media_type
+displayList(anime, 'anime-list', 'tv'); // anime trending is tv shows
+displayList(kdrama, 'kdrama-list', 'tv');
+displayList(horror, 'horror-list', 'movie');
+displayList(action, 'action-list', 'movie');
+displayList(romance, 'romance-list', 'movie');
 }
 
 init();
