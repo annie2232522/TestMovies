@@ -8,6 +8,8 @@ let currentServer = '';
 
 const serverPriority = [
   'vidsrc.dev',
+    'vidsrc.me',
+  'Player.Videasy.net',
   'vidsrc.cc',
   'vidsrc.io',
   '2embed.cc',
