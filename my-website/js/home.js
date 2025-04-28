@@ -1,4 +1,4 @@
-const API_KEY = '7ee3f44e92211fe941b4243a38e99265'; // Your TMDB API
+const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
 
@@ -108,7 +108,15 @@ function updateVideo(episodeNumber = 1) {
   let embedUrl = '';
 
   if (currentItem.media_type === 'movie') {
-    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+    if (server.includes('2embed.cc')) {
+      embedUrl = `https://${server}/embed/${currentItem.id}`;
+    } else if (server.includes('vidsrc.cc')) {
+      embedUrl = `https://${server}/v2/embed/movie/${currentItem.id}`;
+    } else if (server.includes('moviesapi.club')) {
+      embedUrl = `https://${server}/movie/${currentItem.id}`;
+    } else {
+      embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+    }
   } else {
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
   }
