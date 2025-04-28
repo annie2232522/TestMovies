@@ -9,6 +9,9 @@ let currentServer = '';
 const serverPriority = [
     'vidsrc.me',
     'vidsrc.to',
+    'ww1.aniapi.com',
+    'aniapi.com',
+    
   'Player.Videasy.net',
   'vidsrc.dev',
   'vidsrc.cc',
