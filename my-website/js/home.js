@@ -5,7 +5,7 @@ const IMG_URL = 'https://image.tmdb.org/t/p/w500';
 let currentItem = null;
 let currentSeason = 1;
 let currentEpisode = 1;
-const servers = ['server1', 'server2', 'server3']; // Dummy servers list
+const servers = ['vidsrc.me', 'vidsrc.xyz', 'vidsrc.cc']; // Dummy servers list
 
 function openModal(item) {
   currentItem = item;
