@@ -102,13 +102,37 @@ async function loadEpisodes() {
 function updateVideo(episodeNumber = 1) {
   const server = document.getElementById('server-picker').value;
   let embedUrl = '';
+
   if (currentItem.media_type === 'movie') {
-    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+    // Prefer video link first
+    embedUrl = `https://${server}/video/${currentItem.id}`;
+    
+    // Insert video player
+    document.getElementById('modal-video').outerHTML = `
+      <video id="modal-video" width="100%" height="400" controls autoplay>
+        <source src="${embedUrl}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    `;
+
+    // Add fallback if error loading video
+    const videoElement = document.getElementById('modal-video');
+    videoElement.onerror = function() {
+      // If error loading video, fallback to embed
+      document.getElementById('modal-video').outerHTML = `
+        <iframe id="modal-video" width="100%" height="400" src="https://${server}/embed/movie/${currentItem.id}" frameborder="0" allowfullscreen></iframe>
+      `;
+    };
+
   } else {
+    // TV Shows (always iframe)
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
+    document.getElementById('modal-video').outerHTML = `
+      <iframe id="modal-video" width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+    `;
   }
-  document.getElementById('modal-video').src = embedUrl;
 }
+
 
 
 
@@ -152,6 +176,7 @@ async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
   const anime = await fetchTrendingAnime();
+  const kdrama = await fetchByGenre(18); // Korean Drama is 18 (Drama)
   const horror = await fetchByGenre(27);
   const action = await fetchByGenre(28);
   const romance = await fetchByGenre(10749);
