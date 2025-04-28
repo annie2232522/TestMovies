@@ -7,8 +7,6 @@ let currentSeason = 1;
 let currentServer = '';
 
 const serverPriority = [
-    'vidsrc.me',
-  'Player.Videasy.net',
   'vidsrc.dev',
   'vidsrc.cc',
   'vidsrc.io',
@@ -97,6 +95,7 @@ async function showDetails(item) {
 }
 
 async function autoSelectBestServer(episodeNumber = 1) {
+  document.getElementById('loading-spinner').style.display = 'block';
   for (const server of serverPriority) {
     const embedUrl = buildEmbedUrl(server, episodeNumber);
     try {
@@ -104,6 +103,7 @@ async function autoSelectBestServer(episodeNumber = 1) {
       document.getElementById('server-picker').value = server;
       document.getElementById('server-status').textContent = `Auto-playing from: ${server}`;
       currentServer = server;
+      document.getElementById('loading-spinner').style.display = 'none';
       return;
     } catch (error) {
       console.error(`Server ${server} failed`);
@@ -111,6 +111,7 @@ async function autoSelectBestServer(episodeNumber = 1) {
   }
   document.getElementById('server-status').textContent = 'No available server found!';
   document.getElementById('modal-video').src = '';
+  document.getElementById('loading-spinner').style.display = 'none';
 }
 
 function buildEmbedUrl(server, episodeNumber = 1) {
