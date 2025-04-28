@@ -9,11 +9,11 @@ let selectedEpisode = 1;
 
 const servers = [
   'vidsrc.me',
-  'Player.Videasy.net',
-  'vidsrc.dev',
-  'vidsrc.cc',
-  'vidsrc.io',
-  'vidsrc.xyz',
+  'vidplay.site',
+  '2embed.to',
+  'upstream.to',
+  'superembed.cc',
+  'vidcloud9.com',
   'vidjoy.pro',
   '2embed.cc',
   'moviesapi.club',
