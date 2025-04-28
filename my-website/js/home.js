@@ -6,28 +6,17 @@ let currentItem = null;
 let currentSeason = 1;
 let currentEpisode = 1;
 let currentServer = '';
+const episodeServers = {};
 
-// List of servers for each episode (we'll dynamically load them based on episode)
-let episodeServers = {};
-
+// List of available servers
 const servers = [
-  'vidsrc.me',
-  'Player.Videasy.net',
-  'vidsrc.dev',
-  'vidsrc.cc',
-  'vidsrc.io',
-  'vidsrc.xyz',
-  'vidjoy.pro',
-  '2embed.cc',
-  'moviesapi.club',
-  'cdn.lbryplayer.xyz',
-  'vidsrc.icu/embed/anime/',
-  'vidsrc.icu/embed/tv/',
-  'vidsrc.icu/embed/movie/'
+  'vidsrc.me', 'Player.Videasy.net', 'vidsrc.dev', 'vidsrc.cc',
+  'vidsrc.io', 'vidsrc.xyz', 'vidjoy.pro', '2embed.cc',
+  'moviesapi.club', 'cdn.lbryplayer.xyz', 'vidsrc.icu/embed/anime/',
+  'vidsrc.icu/embed/tv/', 'vidsrc.icu/embed/movie/'
 ];
 
-// ------------------------ FETCH FUNCTIONS ------------------------
-
+// Fetch functions
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
   return res.json().then(data => data.results);
@@ -63,8 +52,7 @@ async function searchTMDB() {
   });
 }
 
-// ------------------------ DISPLAY FUNCTIONS ------------------------
-
+// Display functions
 function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
@@ -85,8 +73,7 @@ function displayList(items, containerId, forceType = null) {
   });
 }
 
-// ------------------------ DETAIL + SERVER LOAD ------------------------
-
+// Show item details in modal
 async function showDetails(item) {
   currentItem = item;
   currentSeason = 1;
@@ -100,7 +87,6 @@ async function showDetails(item) {
   document.getElementById('season-picker').innerHTML = '';
   document.getElementById('server-picker').innerHTML = '';
 
-  // Fill server picker
   servers.forEach(s => {
     const option = document.createElement('option');
     option.value = s;
@@ -198,10 +184,15 @@ async function loadEpisodes() {
     button.onclick = () => {
       currentEpisode = ep.episode_number;
       testServersForEpisode(ep.episode_number);
+
+      // Add 'selected' class to the clicked episode button
+      document.querySelectorAll('#episode-buttons button').forEach(btn => {
+        btn.classList.remove('selected'); // Remove selected class from all buttons
+      });
+      button.classList.add('selected'); // Add 'selected' class to the clicked button
     };
     container.appendChild(button);
 
-    // Store server availability for each episode
     episodeServers[ep.episode_number] = [];
     servers.forEach(server => {
       episodeServers[ep.episode_number].push({ server, available: false });
@@ -210,58 +201,24 @@ async function loadEpisodes() {
 
   if (data.episodes.length > 0) {
     testServersForEpisode(1); // Test for the first episode
+    document.querySelector('#episode-buttons button').classList.add('selected'); // Select the first episode by default
   }
 }
 
 async function testServersForEpisode(episodeNumber) {
-  const episode = episodeServers[episodeNumber];
+  const testResults = episodeServers[episodeNumber];
 
-  // Check availability of each server for the selected episode
-  for (const serverData of episode) {
-    const testUrl = buildEmbedUrl(serverData.server, episodeNumber);
-    serverData.available = await isUrlAvailable(testUrl);
-
-    if (serverData.available) {
-      currentServer = serverData.server;
-      loadVideo(currentServer, episodeNumber);
-      return;
-    }
+  for (const server of testResults) {
+    const testUrl = buildEmbedUrl(server.server, episodeNumber);
+    server.available = await isUrlAvailable(testUrl);
   }
 
-  alert('No working server found for this episode.');
-}
-
-// Manual Server Change
-function manualServerSelect() {
-  const selected = document.getElementById('server-picker').value;
-  currentServer = selected;
-  loadVideo(currentServer);
-}
-
-// Close modal function
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-  // Clear the video player
-  const videoContainer = document.getElementById('modal-video');
-  if (videoContainer.tagName === 'IFRAME') {
-    videoContainer.src = '';
-  } else if (videoContainer.tagName === 'VIDEO') {
-    videoContainer.pause();
-    videoContainer.src = '';
+  // Try to load video from the first available server
+  const availableServer = testResults.find(server => server.available);
+  if (availableServer) {
+    currentServer = availableServer.server;
+    loadVideo(currentServer, episodeNumber);
+  } else {
+    alert('No working servers found for this episode.');
   }
 }
-
-// ------------------------ INIT ------------------------
-
-async function init() {
-  const movies = await fetchTrending('movie');
-  const tvshows = await fetchTrending('tv');
-  const anime = await fetchTrendingAnime();
-
-  displayBanner(movies[Math.floor(Math.random() * movies.length)]);
-  displayList(movies, 'movies-list', 'movie');
-  displayList(tvshows, 'tvshows-list', 'tv');
-  displayList(anime, 'anime-list', 'tv');
-}
-
-init();
