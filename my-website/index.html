@@ -3,73 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fast Video Streaming</title>
+  <title>Movie & Anime Streaming</title>
   <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
-  <header>
-    <h1>FastStream</h1>
-    <button onclick="openSearchModal()">Search 🔍</button>
-    <button onclick="toggleTheme()">🌙/☀️</button>
-  </header>
 
-  <main>
-    <section id="banner">
-      <h2 id="banner-title"></h2>
-    </section>
+<header>
+  <h1>Movie & Anime Stream</h1>
+  <input type="text" id="search-bar" placeholder="Search for Movies, TV, Anime...">
+  <button id="theme-toggle">🌓</button>
+</header>
 
-    <section>
-      <h3>Movies</h3>
-      <div id="movies-list" class="poster-grid"></div>
-    </section>
+<main>
+  <section id="banner"></section>
 
-    <section>
-      <h3>TV Shows</h3>
-      <div id="tvshows-list" class="poster-grid"></div>
-    </section>
+  <section>
+    <h2>Trending Movies</h2>
+    <div id="movies-list" class="poster-grid"></div>
+  </section>
 
-    <section>
-      <h3>Anime</h3>
-      <div id="anime-list" class="poster-grid"></div>
-    </section>
-  </main>
+  <section>
+    <h2>Trending TV Shows</h2>
+    <div id="tvshows-list" class="poster-grid"></div>
+  </section>
 
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span onclick="closeModal()" class="close-btn">&times;</span>
-      <h2 id="modal-title"></h2>
-      <img id="modal-image" alt="Poster" />
-      <p id="modal-description"></p>
+  <section>
+    <h2>Trending Anime</h2>
+    <div id="anime-list" class="poster-grid"></div>
+  </section>
+</main>
 
-      <div id="season-picker-container">
-        <label>Season:</label>
-        <select id="season-picker" onchange="loadEpisodes()"></select>
-      </div>
+<!-- Modal -->
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <button id="modal-close">✖</button>
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
+    <img id="modal-image" alt="Poster">
 
-      <label>Server:</label>
-      <select id="server-picker" onchange="manualServerSelect()"></select>
+    <div id="server-picker-container">
+      <select id="server-picker"></select>
+      <button id="retry-button">🔄 Retry</button>
+    </div>
 
-      <div id="episode-buttons" class="episode-buttons"></div>
+    <div id="season-picker-container" class="hidden">
+      <select id="season-picker"></select>
+    </div>
 
-      <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
+    <div id="episode-buttons" class="episode-buttons"></div>
 
-      <div id="server-status"></div>
-      <div id="retry-container" style="display:none;">
-        <button onclick="retryFindingServers()">Retry Finding Servers</button>
-      </div>
+    <div id="video-container">
+      <iframe id="modal-video" src="" frameborder="0" allowfullscreen></iframe>
+      <div id="spinner" class="spinner hidden"></div>
+    </div>
 
-      <div id="loading-spinner">Loading...</div>
+    <div id="server-fail" class="hidden">
+      <h3>⚠️ No server found. Please Retry or choose manually!</h3>
     </div>
   </div>
+</div>
 
-  <div id="search-modal" class="modal">
-    <div class="modal-content">
-      <span onclick="closeSearchModal()" class="close-btn">&times;</span>
-      <input id="search-bar-modal" type="text" placeholder="Search..." onkeydown="if(event.key==='Enter'){searchTMDB();}">
-      <div id="search-results" class="poster-grid"></div>
-    </div>
-  </div>
-
-  <script src="js/home.js"></script>
+<script src="js/home.js"></script>
 </body>
 </html>
