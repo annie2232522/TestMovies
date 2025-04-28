@@ -7,30 +7,50 @@ let currentSeason = 1;
 let currentServer = '';
 
 const servers = [
-  'vidsrc.me',
-  'vidsrc.to',
-  'vidsrc.fun',
-  'flixhq.to',
-  'aniwave.to',
-  'gogoanime.pe',
+  { name: 'Vidsrc', url: 'vidsrc.me' },
+  { name: 'FlixHQ', url: 'embed.smashystream.xyz' }, // fake embed API mirror
+  { name: 'Aniwave', url: 'aniwatch.to' } // WARNING: real aniwave uses special backend
 ];
+
+// ------------------------ FETCH FUNCTIONS ------------------------
 
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
+  return res.json().then(data => data.results);
 }
 
 async function fetchTrendingAnime() {
-  let results = [];
+  let allResults = [];
   for (let page = 1; page <= 2; page++) {
     const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
-    const anime = data.results.filter(item => item.original_language === 'ja' && item.genre_ids.includes(16));
-    results = results.concat(anime);
+    const filtered = data.results.filter(item => item.original_language === 'ja' && item.genre_ids.includes(16));
+    allResults = allResults.concat(filtered);
   }
-  return results;
+  return allResults;
 }
+
+async function searchTMDB() {
+  const query = document.getElementById('search-bar-modal').value.trim();
+  if (!query) return;
+  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
+  const data = await res.json();
+  const container = document.getElementById('search-results');
+  container.innerHTML = '';
+  data.results.forEach(item => {
+    if (!item.poster_path) return;
+    const img = document.createElement('img');
+    img.src = `${IMG_URL}${item.poster_path}`;
+    img.alt = item.title || item.name;
+    img.onclick = () => {
+      closeSearchModal();
+      showDetails(item);
+    };
+    container.appendChild(img);
+  });
+}
+
+// ------------------------ DISPLAY FUNCTIONS ------------------------
 
 function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
@@ -52,43 +72,27 @@ function displayList(items, containerId, forceType = null) {
   });
 }
 
-async function searchTMDB() {
-  const query = document.getElementById('search-bar-modal').value.trim();
-  if (!query) return;
-  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
-  const data = await res.json();
-  const container = document.getElementById('search-results');
-  container.innerHTML = '';
-
-  data.results.forEach(item => {
-    if (!item.poster_path) return;
-    const img = document.createElement('img');
-    img.src = `${IMG_URL}${item.poster_path}`;
-    img.alt = item.title || item.name;
-    img.onclick = async () => {
-      closeSearchModal();
-      await showDetails(item);
-    };
-    container.appendChild(img);
-  });
-}
+// ------------------------ MODAL FUNCTIONS ------------------------
 
 async function showDetails(item) {
   currentItem = item;
   currentSeason = 1;
+  currentServer = '';
+
   document.getElementById('modal').style.display = 'flex';
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
-
   document.getElementById('episode-buttons').innerHTML = '';
   document.getElementById('season-picker').innerHTML = '';
   document.getElementById('server-picker').innerHTML = '';
+  document.getElementById('server-status').innerHTML = '';
+  document.getElementById('retry-container').style.display = 'none';
 
   servers.forEach(s => {
     const option = document.createElement('option');
-    option.value = s;
-    option.textContent = s;
+    option.value = s.url;
+    option.textContent = s.name;
     document.getElementById('server-picker').appendChild(option);
   });
 
@@ -103,55 +107,75 @@ async function showDetails(item) {
         document.getElementById('season-picker').appendChild(option);
       }
     });
-    await loadEpisodes();
+    await findBestServer();
   } else {
     document.getElementById('season-picker-container').style.display = 'none';
-    await autoFindServer();
+    await findBestServer();
   }
 }
 
-async function autoFindServer() {
-  document.getElementById('loading-spinner').style.display = 'block';
+// Try all servers in parallel
+async function findBestServer() {
+  const spinner = document.getElementById('loading-spinner');
+  spinner.style.display = 'block';
   document.getElementById('server-status').textContent = 'Finding best server...';
 
-  const promises = servers.map(server => isUrlAvailable(buildEmbedUrl(server)));
-  const results = await Promise.all(promises);
+  const serverChecks = servers.map(server => checkServerAvailable(server.url));
+  const results = await Promise.allSettled(serverChecks);
 
-  const workingIndex = results.findIndex(r => r === true);
-  if (workingIndex !== -1) {
-    currentServer = servers[workingIndex];
-    loadVideo(currentServer);
-  } else {
-    showNoServerFound();
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].status === 'fulfilled' && results[i].value) {
+      currentServer = servers[i].url;
+      loadVideo(currentServer, 1);
+      spinner.style.display = 'none';
+      document.getElementById('server-status').textContent = `Loaded: ${servers[i].name}`;
+      return;
+    }
   }
 
-  document.getElementById('loading-spinner').style.display = 'none';
+  spinner.style.display = 'none';
+  document.getElementById('server-status').innerHTML = '<strong>❗ No working server found.</strong>';
+  document.getElementById('retry-container').style.display = 'block';
+  document.getElementById('modal-video').src = '';
 }
 
-function buildEmbedUrl(server, episodeNumber = 1) {
-  if (currentItem.media_type === 'movie') {
-    return `https://${server}/embed/movie/${currentItem.id}?autoplay=1`;
-  } else {
-    return `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}?autoplay=1`;
-  }
-}
-
-async function isUrlAvailable(url) {
+async function checkServerAvailable(server) {
   try {
-    const controller = new AbortController();
-    setTimeout(() => controller.abort(), 2000); // timeout
-    const res = await fetch(url, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' });
-    return true;
+    const url = buildEmbedUrl(server);
+    const res = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+    return true; // Assume success because no-cors hides real response
   } catch {
     return false;
   }
 }
 
-async function loadVideo(server, episodeNumber = 1) {
-  document.getElementById('modal-video').outerHTML = `<iframe id="modal-video" width="100%" height="400" src="${buildEmbedUrl(server, episodeNumber)}" frameborder="0" allowfullscreen></iframe>`;
-  document.getElementById('server-status').textContent = `Loaded from ${server}`;
+function buildEmbedUrl(server, episode = 1) {
+  if (server.includes('aniwatch.to')) {
+    return `https://${server}/embed/${currentItem.id}/${currentSeason}/${episode}`;
+  }
+  if (server.includes('smashystream.xyz')) {
+    if (currentItem.media_type === 'movie') {
+      return `https://${server}/movie/${currentItem.id}`;
+    } else {
+      return `https://${server}/tv/${currentItem.id}/${currentSeason}/${episode}`;
+    }
+  }
+  return `https://${server}/embed/${currentItem.media_type}/${currentItem.id}?s=${currentSeason}&e=${episode}`;
 }
 
+function loadVideo(server, episode = 1) {
+  const iframe = document.getElementById('modal-video');
+  iframe.src = buildEmbedUrl(server, episode);
+}
+
+// Manual Server Change
+function manualServerSelect() {
+  const selected = document.getElementById('server-picker').value;
+  currentServer = selected;
+  loadVideo(currentServer);
+}
+
+// Load Episodes
 async function loadEpisodes() {
   currentSeason = document.getElementById('season-picker').value;
   const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`);
@@ -161,62 +185,58 @@ async function loadEpisodes() {
 
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
-    button.textContent = ep.episode_number;
     button.className = 'episode-button';
+    button.textContent = ep.episode_number;
     button.onclick = () => {
+      document.querySelectorAll('.episode-button').forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
       loadVideo(currentServer, ep.episode_number);
-      highlightSelected(button);
     };
     container.appendChild(button);
   });
 
   if (data.episodes.length > 0) {
-    loadVideo(currentServer, 1);
+    document.querySelector('.episode-button').click();
   }
 }
 
-function highlightSelected(selectedButton) {
-  document.querySelectorAll('.episode-button').forEach(btn => btn.classList.remove('selected'));
-  selectedButton.classList.add('selected');
+// Retry Finding Servers
+function retryFindingServers() {
+  findBestServer();
 }
 
-function manualServerSelect() {
-  const selected = document.getElementById('server-picker').value;
-  currentServer = selected;
-  loadVideo(currentServer);
-}
-
+// Close modal
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
-  const iframe = document.getElementById('modal-video');
-  if (iframe) iframe.src = '';
+  document.getElementById('modal-video').src = '';
 }
 
+// Search modal open/close
 function openSearchModal() {
-  document.getElementById('search-modal').style.display = 'block';
+  document.getElementById('search-modal').style.display = 'flex';
 }
 
 function closeSearchModal() {
   document.getElementById('search-modal').style.display = 'none';
+  document.getElementById('search-bar-modal').value = '';
+  document.getElementById('search-results').innerHTML = '';
 }
 
-function showNoServerFound() {
-  document.getElementById('modal-video').outerHTML = `
-    <div id="modal-video" style="width:100%;height:400px;display:flex;align-items:center;justify-content:center;color:red;font-size:20px;">
-      ❌ Server Not Found
-      <button onclick="autoFindServer()" style="margin-left:10px;padding:5px 10px;">Retry</button>
-    </div>`;
+// Dark/Light Mode
+function toggleTheme() {
+  document.body.classList.toggle('light');
 }
 
-// Listen for Escape Key
-document.addEventListener('keydown', (e) => {
+// Press Escape key closes modals
+window.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     closeModal();
     closeSearchModal();
   }
 });
 
-// INIT
+// ------------------------ INIT ------------------------
+
 async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
