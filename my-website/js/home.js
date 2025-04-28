@@ -7,7 +7,7 @@ let currentSeason = 1;
 let currentServer = '';
 
 const servers = [
-   'vidsrc.me',
+  'vidsrc.me',
   'Player.Videasy.net',
   'vidsrc.dev',
   'vidsrc.cc',
@@ -233,7 +233,7 @@ async function init() {
   displayList(anime, 'anime-list', 'tv');
   
   // Add event listener for close button
-  document.querySelector('.close-button').addEventListener('click', closeModal);
+  document.querySelector('.close').addEventListener('click', closeModal);
 }
 
 init();
