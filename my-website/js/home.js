@@ -1,11 +1,48 @@
 const BASE_URL = 'https://api.themoviedb.org/3';
-const API_KEY = '7ee3f44e92211fe941b4243a38e99265'; // Replace with your TMDB API Key
+const API_KEY = '7ee3f44e92211fe941b4243a38e99265'; // Your TMDB API Key
 const IMG_URL = 'https://image.tmdb.org/t/p/w500';
 
 let currentItem = null;
 let currentSeason = 1;
 let currentEpisode = 1;
-const servers = ['vidsrc.me', 'vidsrc.xyz', 'vidsrc.cc']; // Dummy servers list
+const servers = ['vidsrc.me', 'vidsrc.xyz', 'vidsrc.cc']; // Server list
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadTrendingMovies();
+  loadTrendingTVShows();
+  loadTrendingAnime();
+});
+
+async function loadTrendingMovies() {
+  const res = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+  const data = await res.json();
+  displayItems(data.results, 'movies-list');
+}
+
+async function loadTrendingTVShows() {
+  const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
+  const data = await res.json();
+  displayItems(data.results, 'tvshows-list');
+}
+
+async function loadTrendingAnime() {
+  const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&with_genres=16`);
+  const data = await res.json();
+  displayItems(data.results, 'anime-list');
+}
+
+function displayItems(items, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  items.forEach(item => {
+    const img = document.createElement('img');
+    img.src = IMG_URL + item.poster_path;
+    img.alt = item.title || item.name;
+    img.addEventListener('click', () => openModal(item));
+    container.appendChild(img);
+  });
+}
 
 function openModal(item) {
   currentItem = item;
@@ -84,7 +121,6 @@ function testServers() {
   document.getElementById('server-status').textContent = 'Testing servers...';
   document.getElementById('loading-spinner').style.display = 'block';
 
-  // Simulating server testing delay
   setTimeout(() => {
     const workingServer = servers[Math.floor(Math.random() * servers.length)];
     loadVideo(workingServer);
@@ -95,11 +131,9 @@ function loadVideo(server) {
   document.getElementById('loading-spinner').style.display = 'none';
   document.getElementById('server-status').textContent = `Loaded from ${server}`;
   
-  // Just simulate URL here
-  document.getElementById('modal-video').src = `https://${server}.com/watch?season=${currentSeason}&episode=${currentEpisode}`;
+  document.getElementById('modal-video').src = `https://${server}/watch?season=${currentSeason}&episode=${currentEpisode}`;
 }
 
-// Dummy Search Modal
 function openSearchModal() {
   document.getElementById('search-modal').style.display = 'block';
 }
@@ -107,5 +141,3 @@ function openSearchModal() {
 function closeSearchModal() {
   document.getElementById('search-modal').style.display = 'none';
 }
-
-// You must replace servers, API Key and complete searchTMDB function yourself
