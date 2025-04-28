@@ -44,21 +44,26 @@ body {
 }
 
 .list img {
-  width: 150px;
-  height: 220px;
+  width: 140px;
+  height: 210px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.list img:hover {
+  transform: scale(1.05);
 }
 
 .modal {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0,0,0,0.95);
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .modal-content {
@@ -67,25 +72,5 @@ body {
   border-radius: 10px;
   width: 90%;
   max-width: 700px;
-}
-
-.modal img {
-  width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-}
-
-#episode-buttons button {
-  background: #444;
-  color: white;
-  margin: 5px;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#episode-buttons button:hover {
-  background: #ffcc00;
-  color: #000;
-}
+  overflow-y: auto;
+  max-height: 90vh
