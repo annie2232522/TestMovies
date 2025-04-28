@@ -7,6 +7,10 @@ let currentSeason = 1;
 let currentServer = '';
 
 const servers = [
+   'vidsrc.me',
+  'Player.Videasy.net',
+  'aniapi.com',
+  'ww1.aniapi.com',
   'vidsrc.dev',
   'vidsrc.cc',
   'vidsrc.io',
