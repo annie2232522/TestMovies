@@ -1,6 +1,5 @@
-// API KEYS and Base URLs
 const TMDB_API = 'https://api.themoviedb.org/3';
-const TMDB_KEY = '7ee3f44e92211fe941b4243a38e99265'; // replace with your TMDB key
+const TMDB_KEY = '7ee3f44e92211fe941b4243a38e99265'; // replace!
 const JIKAN_API = 'https://api.jikan.moe/v4';
 const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 
@@ -21,53 +20,44 @@ const serverFail = document.getElementById('server-fail');
 const themeToggle = document.getElementById('theme-toggle');
 const modalClose = document.getElementById('modal-close');
 
-// Predefined server templates
-const servers = [
-  (id) => `https://vidsrc.me/embed/${id}`,
-  (id) => `https://vidsrc.to/embed/movie/${id}`,
-  (id) => `https://player.videasy.net/movie/${id}`,
-  (id) => `https://player.vidsrc.co/embed/movie/${id}`,
-  (id) => `https://godriveplayer.com/player.php?imdb=${id}`,
-  (id) => `https://vidjoy.pro/embed/movie/${id}`
+const movieServers = [
+  id => `https://vidsrc.me/embed/${id}`,
+  id => `https://player.vidsrc.co/embed/movie/${id}`,
+  id => `https://player.videasy.net/movie/${id}`,
+  id => `https://vidjoy.pro/embed/movie/${id}`,
+  id => `https://godriveplayer.com/player.php?imdb=${id}`
 ];
 
-// Add for TV series
 const tvServers = (id, season, episode) => [
   `https://godriveplayer.com/player.php?type=series&tmdb=${id}&season=${season}&episode=${episode}`,
   `https://player.videasy.net/tv/${id}/${season}/${episode}`
 ];
 
-// Anime servers
-const animeServers = (id, dub = false) => [
+const animeServers = (id, dub=false) => [
   `https://player.videasy.net/anime/${id}${dub ? '?dub=true' : ''}`
 ];
 
-// Modal State
 let currentData = {};
 let activeEpisode = 1;
 
-// Fetch trending Movies
 async function fetchTrendingMovies() {
   const res = await fetch(`${TMDB_API}/trending/movie/week?api_key=${TMDB_KEY}`);
   const data = await res.json();
   renderPosters(data.results, movieList, 'movie');
 }
 
-// Fetch trending TV Shows
 async function fetchTrendingTV() {
   const res = await fetch(`${TMDB_API}/trending/tv/week?api_key=${TMDB_KEY}`);
   const data = await res.json();
   renderPosters(data.results, tvList, 'tv');
 }
 
-// Fetch trending Anime (Jikan + TMDB)
 async function fetchTrendingAnime() {
   const res = await fetch(`${JIKAN_API}/seasons/now?sfw`);
   const data = await res.json();
   renderPosters(data.data, animeList, 'anime');
 }
 
-// Render Posters
 function renderPosters(items, container, type) {
   container.innerHTML = '';
   items.forEach(item => {
@@ -79,7 +69,6 @@ function renderPosters(items, container, type) {
   });
 }
 
-// Open Modal
 function openModal(item, type) {
   modal.classList.remove('hidden');
   modalTitle.textContent = item.title || item.title_english || item.name;
@@ -87,18 +76,13 @@ function openModal(item, type) {
   modalImage.src = type === 'anime' ? item.images.jpg.large_image_url : `${IMG_BASE}${item.backdrop_path}`;
   activeEpisode = 1;
   currentData = { item, type };
+  episodeButtons.innerHTML = '';
 
-  if (type === 'anime') {
-    generateEpisodes(item.episodes || 12);
-  } else if (type === 'tv') {
-    generateEpisodes(10); // default
-  } else {
-    episodeButtons.innerHTML = ''; // Movies have no episodes
-    findWorkingServer(item.id || item.mal_id);
-  }
+  if (type === 'anime') generateEpisodes(item.episodes || 12);
+  else if (type === 'tv') generateEpisodes(10);
+  else findWorkingServer(item.id || item.mal_id);
 }
 
-// Generate Episode Buttons
 function generateEpisodes(total) {
   episodeButtons.innerHTML = '';
   for (let i = 1; i <= total; i++) {
@@ -116,31 +100,25 @@ function generateEpisodes(total) {
   findWorkingServer(currentData.item.id || currentData.item.mal_id, 1);
 }
 
-// Find Working Server (Parallel)
-async function findWorkingServer(id, episode = 1) {
+async function findWorkingServer(id, episode=1) {
   spinner.classList.remove('hidden');
   serverFail.classList.add('hidden');
   modalVideo.src = '';
 
-  let serverUrls = [];
-  if (currentData.type === 'anime') {
-    serverUrls = animeServers(id);
-  } else if (currentData.type === 'tv') {
-    serverUrls = tvServers(id, 1, episode);
-  } else {
-    serverUrls = servers.map(fn => fn(id));
-  }
+  let urls = [];
+  if (currentData.type === 'anime') urls = animeServers(id);
+  else if (currentData.type === 'tv') urls = tvServers(id, 1, episode);
+  else urls = movieServers.map(fn => fn(id));
 
   try {
     const results = await Promise.allSettled(
-      serverUrls.map(url => fetch(url, { method: 'HEAD', mode: 'no-cors' }))
+      urls.map(url => fetch(url, { method: 'HEAD', mode: 'no-cors' }))
     );
 
-    const firstWorking = serverUrls.find((_, i) => results[i].status === 'fulfilled');
-    if (firstWorking) {
-      modalVideo.src = firstWorking;
-      serverPicker.innerHTML = serverUrls.map((url, idx) => 
-        `<option value="${url}">Server ${idx + 1}</option>`).join('');
+    const firstOk = urls.find((_, i) => results[i].status === 'fulfilled');
+    if (firstOk) {
+      modalVideo.src = firstOk;
+      serverPicker.innerHTML = urls.map((url, idx) => `<option value="${url}">Server ${idx+1}</option>`).join('');
     } else {
       serverFail.classList.remove('hidden');
     }
@@ -151,12 +129,10 @@ async function findWorkingServer(id, episode = 1) {
   }
 }
 
-// Retry Button
 retryButton.addEventListener('click', () => {
   findWorkingServer(currentData.item.id || currentData.item.mal_id, activeEpisode);
 });
 
-// Search Feature
 searchBar.addEventListener('keypress', async (e) => {
   if (e.key === 'Enter') {
     const query = searchBar.value.trim();
@@ -175,13 +151,15 @@ searchBar.addEventListener('keypress', async (e) => {
   }
 });
 
-// Close modal
 modalClose.addEventListener('click', () => {
   modal.classList.add('hidden');
   modalVideo.src = '';
 });
 
-// Escape key closes modal
+serverPicker.addEventListener('change', (e) => {
+  modalVideo.src = e.target.value;
+});
+
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     modal.classList.add('hidden');
@@ -189,17 +167,11 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// Server picker manual change
-serverPicker.addEventListener('change', (e) => {
-  modalVideo.src = e.target.value;
-});
-
-// Theme Toggle
 themeToggle.addEventListener('click', () => {
   document.body.classList.toggle('light');
 });
 
-// On Load
+// On load
 fetchTrendingMovies();
 fetchTrendingTV();
 fetchTrendingAnime();
