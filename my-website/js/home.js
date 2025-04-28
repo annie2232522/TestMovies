@@ -23,8 +23,7 @@ const servers = [
   'vidsrc.icu/embed/movie/'
 ];
 
-// ---------------- FETCH FUNCTIONS ----------------
-
+// FETCH FUNCTIONS
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
   const data = await res.json();
@@ -42,8 +41,7 @@ async function fetchTrendingAnime() {
   return allResults;
 }
 
-// ---------------- DISPLAY FUNCTIONS ----------------
-
+// DISPLAY FUNCTIONS
 function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
@@ -64,8 +62,7 @@ function displayList(items, containerId, forceType = null) {
   });
 }
 
-// ---------------- DETAIL + SERVER LOAD ----------------
-
+// DETAIL + SERVER LOAD
 async function showDetails(item) {
   currentItem = item;
   currentSeason = 1;
@@ -80,7 +77,6 @@ async function showDetails(item) {
   document.getElementById('season-picker').innerHTML = '';
   document.getElementById('server-picker').innerHTML = '';
 
-  // Fill server picker manually
   servers.forEach(s => {
     const option = document.createElement('option');
     option.value = s;
@@ -112,7 +108,7 @@ async function autoFindServer() {
     const testUrl = buildEmbedUrl(server, selectedEpisode);
     if (await isUrlAvailable(testUrl)) {
       currentServer = server;
-      document.getElementById('server-picker').value = server; // Update dropdown
+      document.getElementById('server-picker').value = server;
       loadVideo(currentServer, selectedEpisode);
       showSpinner(false);
       return;
@@ -143,7 +139,7 @@ function buildEmbedUrl(server, episodeNumber = 1) {
 async function isUrlAvailable(url) {
   try {
     const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-    return true; // Assume available because no error
+    return true;
   } catch {
     return false;
   }
@@ -176,7 +172,6 @@ async function loadEpisodes() {
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
     button.textContent = `E${ep.episode_number}: ${ep.name}`;
-    button.style.backgroundColor = 'lightblue';
     button.onclick = async () => {
       selectedEpisode = ep.episode_number;
       highlightEpisodeButton(ep.episode_number);
@@ -193,8 +188,7 @@ async function loadEpisodes() {
   }
 }
 
-// ---------------- HELPERS ----------------
-
+// HELPERS
 function manualServerSelect() {
   const selected = document.getElementById('server-picker').value;
   currentServer = selected;
@@ -204,10 +198,9 @@ function manualServerSelect() {
 function highlightEpisodeButton(episodeNumber) {
   const buttons = document.querySelectorAll('#episode-buttons button');
   buttons.forEach(btn => {
+    btn.classList.remove('selected');
     if (parseInt(btn.dataset.episode) === episodeNumber) {
-      btn.style.backgroundColor = 'lightcoral'; // selected = light red
-    } else {
-      btn.style.backgroundColor = 'lightblue'; // default = light blue
+      btn.classList.add('selected');
     }
   });
 }
@@ -237,8 +230,7 @@ function showServerNotFound() {
   `;
 }
 
-// ---------------- INIT ----------------
-
+// INIT
 async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
