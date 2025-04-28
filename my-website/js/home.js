@@ -99,31 +99,30 @@ async function loadEpisodes() {
   });
 }
 // ------ edit here
-function updateVideo(episodeNumber = 1) {
+async function updateVideo(episodeNumber = 1) {
   const server = document.getElementById('server-picker').value;
   let embedUrl = '';
 
   if (currentItem.media_type === 'movie') {
-    // For movies, use /video/ instead of /embed/
-    embedUrl = `https://${server}/video/${currentItem.id}`;
-    
-  } else if (currentItem.media_type === 'movie') {
-    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
-  
-  } else if (currentItem.genre_ids && currentItem.genre_ids.includes(16)) {
-    // If it's anime (animation genre id 16)
-    embedUrl = `https://${server}/embed/anime/${currentItem.id}/${currentSeason}/${episodeNumber}`;
+    // Try direct video first
+    const videoUrl = `https://${server}/video/${currentItem.id}`;
 
-  } else if (currentItem.original_language === 'ko') {
-    // If it's Korean drama
-    embedUrl = `https://${server}/embed/kdrama/${currentItem.id}/${currentSeason}/${episodeNumber}`;
+    // Check if video URL exists
+    const videoExists = await checkUrlExists(videoUrl);
+
+    if (videoExists) {
+      embedUrl = videoUrl;
+    } else {
+      // Fallback to embed if video not found
+      embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+    }
 
   } else {
-    // For normal TV shows
+    // For TV shows, always use embed
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
   }
 
-  // If the URL contains "/video/", assume it's direct video, use <video> tag
+  // Update the iframe or video player
   if (embedUrl.includes('/video/')) {
     document.getElementById('modal-video').outerHTML = `
       <video id="modal-video" width="100%" height="400" controls autoplay>
@@ -132,12 +131,12 @@ function updateVideo(episodeNumber = 1) {
       </video>
     `;
   } else {
-    // Otherwise embed iframe
     document.getElementById('modal-video').outerHTML = `
       <iframe id="modal-video" width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
     `;
   }
 }
+
 
 
 // ------ end here
