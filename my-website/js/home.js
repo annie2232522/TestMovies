@@ -8,14 +8,10 @@ let currentServer = '';
 
 const servers = [
   'vidsrc.me',
-  'aniwave.to',
-  'gogoanime.lu',
   'flixhq.to',
-  'mxdrop.to',
-  'mixdrop.sb',
   'pinoymovies.cfd',
-  'doodstream.com',
-  'pinoymoviepedia.co'
+  'pinoymoviepedia.co',
+  'mixdrop.sb'
 ];
 
 async function fetchTrending(type) {
@@ -120,13 +116,13 @@ async function showDetails(item) {
 
 async function findBestServer() {
   document.getElementById('loading-spinner').style.display = 'block';
-  const checks = servers.map(server => checkServer(server));
-  const results = await Promise.allSettled(checks);
 
-  for (const result of results) {
-    if (result.status === 'fulfilled' && result.value) {
-      currentServer = result.value;
-      loadVideo(currentServer);
+  for (let server of servers) {
+    const url = buildEmbedUrl(server);
+    const result = await testIframe(url);
+    if (result) {
+      currentServer = server;
+      loadVideo(server);
       document.getElementById('loading-spinner').style.display = 'none';
       return;
     }
@@ -137,33 +133,40 @@ async function findBestServer() {
   document.getElementById('retry-container').style.display = 'block';
 }
 
-async function checkServer(server) {
-  const testUrl = buildEmbedUrl(server);
-  try {
-    const res = await fetch(testUrl, { method: 'HEAD', mode: 'no-cors' });
-    return server;
-  } catch {
-    return null;
-  }
+function testIframe(url) {
+  return new Promise(resolve => {
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    iframe.onload = () => {
+      document.body.removeChild(iframe);
+      resolve(true);
+    };
+    setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+        resolve(false);
+      }
+    }, 3000);
+  });
 }
 
 function buildEmbedUrl(server, episode = 1) {
-  if (server.includes('aniwave') || server.includes('gogoanime')) {
-    return `https://${server}/watch/${currentItem.id}-episode-${episode}`;
+  const id = currentItem.id;
+  if (server.includes('vidsrc')) {
+    return `https://${server}/embed/${currentItem.media_type}/${id}`;
   }
   if (server.includes('flixhq')) {
-    return `https://${server}/embed/${currentItem.id}`;
-  }
-  if (server.includes('mxdrop') || server.includes('mixdrop')) {
-    return `https://${server}/f/${currentItem.id}`;
-  }
-  if (server.includes('doodstream')) {
-    return `https://${server}/d/${currentItem.id}`;
+    return `https://${server}/embed/${id}`;
   }
   if (server.includes('pinoymovies') || server.includes('pinoymoviepedia')) {
-    return `https://${server}/embed/${currentItem.id}`;
+    return `https://${server}/embed/${id}`;
   }
-  return `https://${server}/embed/movie/${currentItem.id}?autoplay=1`;
+  if (server.includes('mixdrop')) {
+    return `https://${server}/f/${id}`;
+  }
+  return '';
 }
 
 async function loadVideo(server, episode = 1) {
@@ -191,7 +194,7 @@ async function loadEpisodes() {
   });
 
   if (data.episodes.length > 0) {
-    container.querySelector('button').click(); // auto-load first episode
+    container.querySelector('button').click(); // auto-load first
   }
 }
 
