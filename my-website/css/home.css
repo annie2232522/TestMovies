@@ -1,4 +1,4 @@
-/* Reset basic */
+/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,9 +7,25 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #121212;
-  color: #f5f5f5;
+  background-color: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Light/Dark theme variables */
+:root {
+  --bg: #121212;
+  --text: #f5f5f5;
+  --card: #1f1f1f;
+  --highlight: #00bfff;
+}
+
+body.light {
+  --bg: #f5f5f5;
+  --text: #121212;
+  --card: #ffffff;
+  --highlight: #0077ff;
 }
 
 header {
@@ -17,21 +33,18 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: #1f1f1f;
+  background: var(--card);
   position: sticky;
   top: 0;
   z-index: 999;
 }
 
-header h1 {
-  font-size: 1.5rem;
-}
-
-header button {
-  background: #444;
-  color: white;
-  padding: 0.5rem 1rem;
+.header-actions button {
+  background: var(--highlight);
   border: none;
+  color: white;
+  margin-left: 10px;
+  padding: 0.5rem;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -47,7 +60,7 @@ header button {
 }
 
 .banner-text h2 {
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.5);
   padding: 0.5rem 1rem;
   border-radius: 5px;
 }
@@ -90,7 +103,7 @@ section {
 }
 
 .modal-content {
-  background: #1f1f1f;
+  background: var(--card);
   padding: 20px;
   border-radius: 10px;
   width: 90%;
@@ -103,7 +116,7 @@ section {
 .close {
   background: none;
   border: none;
-  color: white;
+  color: var(--text);
   font-size: 1.5rem;
   position: absolute;
   top: 10px;
@@ -111,23 +124,12 @@ section {
   cursor: pointer;
 }
 
-.modal-content img {
-  width: 100%;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-}
-
-.modal-content p {
-  margin: 1rem 0;
-}
-
-/* Spinner */
 .spinner {
   display: none;
   width: 40px;
   height: 40px;
   border: 4px solid #ccc;
-  border-top: 4px solid #00bfff;
+  border-top: 4px solid var(--highlight);
   border-radius: 50%;
   margin: 1rem auto;
   animation: spin 1s linear infinite;
@@ -137,7 +139,6 @@ section {
   to { transform: rotate(360deg); }
 }
 
-/* Episodes */
 .episode-buttons {
   margin-top: 1rem;
   display: flex;
@@ -164,7 +165,10 @@ section {
   background: lightcoral;
 }
 
-/* Responsive */
+.video-container {
+  margin-top: 1rem;
+}
+
 @media (max-width: 600px) {
   header h1 {
     font-size: 1.2rem;
