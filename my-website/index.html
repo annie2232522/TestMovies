@@ -9,67 +9,58 @@
 </head>
 <body>
 
-  <div class="navbar">
-    <div class="logo">TestMovie</div>
-    <div class="nav-links">
-      <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="openSearchModal()" />
-    </div>
+<div class="navbar">
+  <div class="logo">TestMovies</div>
+  <div class="nav-links">
+    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="openSearchModal()" />
   </div>
+</div>
 
-  <div class="banner" id="banner"><h1 id="banner-title"></h1></div>
+<div class="banner" id="banner"><h1 id="banner-title"></h1></div>
 
-  <div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
-  <div class="row"><h2>Trending TV Shows</h2><div class="list" id="tvshows-list"></div></div>
-  <div class="row"><h2>Trending Anime</h2><div class="list" id="anime-list"></div></div>
-  <div class="row"><h2>K-Drama</h2><div class="list" id="kdrama-list"></div></div>
-  <div class="row"><h2>Horror</h2><div class="list" id="horror-list"></div></div>
-  <div class="row"><h2>Action</h2><div class="list" id="action-list"></div></div>
-  <div class="row"><h2>Romance</h2><div class="list" id="romance-list"></div></div>
+<div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
+<div class="row"><h2>Trending TV Shows</h2><div class="list" id="tvshows-list"></div></div>
+<div class="row"><h2>Trending Anime</h2><div class="list" id="anime-list"></div></div>
+<div class="row"><h2>K-Drama</h2><div class="list" id="kdrama-list"></div></div>
+<div class="row"><h2>Horror</h2><div class="list" id="horror-list"></div></div>
+<div class="row"><h2>Action</h2><div class="list" id="action-list"></div></div>
+<div class="row"><h2>Romance</h2><div class="list" id="romance-list"></div></div>
 
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <div class="modal-body">
-        <img id="modal-image" src="" alt="" />
-        <div class="modal-text">
-          <h2 id="modal-title"></h2>
-          <div id="modal-rating"></div>
-          <p id="modal-description"></p>
-          <div class="selectors">
-            <label for="server-picker">Server:</label>
-            <select id="server-picker" onchange="updateVideo()">
-              <option value="vidsrc.me">Server 1</option>
-              <option value="vidsrc.to">Server 2</option>
-              <option value="vidsrc.cc">Server 3</option>
-              <option value="vidlink.pro">Server 5</option>
-              <option value="vidsrc.dev">Server 6</option>
-              <option value="111movies.com">Server 7</option>
-              <option value="vidjoy.pro">Server 8</option>
-              <option value="vidsrc.io">Server 9</option>
-              <option value="vidsrc.cc">Server 10</option>
-              <option value="vidsrc.xyz">Server 11</option>
-              <option value="www.2embed.cc">Server 12</option>
-              <option value="moviesapi.club">Server 13</option>
-            </select>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <div class="modal-body">
+      <img id="modal-image" src="" alt="" />
+      <div class="modal-text">
+        <h2 id="modal-title"></h2>
+        <div id="modal-rating"></div>
+        <p id="modal-description"></p>
 
-            <div id="season-picker-container" style="display:none;">
-              <label for="season-picker">Season:</label>
-              <select id="season-picker" onchange="loadEpisodes()"></select>
-            </div>
+        <div class="selectors">
+          <label for="server-picker">Server:</label>
+          <select id="server-picker" onchange="updateVideo()">
+            <option value="">Auto-Select</option>
+            <!-- Servers will be inserted automatically -->
+          </select>
+
+          <div id="season-picker-container" style="display:none;">
+            <label for="season-picker">Season:</label>
+            <select id="season-picker" onchange="loadEpisodes()"></select>
           </div>
-
-          <div id="episode-buttons"></div>
         </div>
-      </div>
-      <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
-    </div>
-  </div>
 
-  <div class="search-modal" id="search-modal">
-    <span class="close" onclick="closeSearchModal()">&times;</span>
-    <input type="text" id="search-bar-modal" placeholder="Search TMDB..." oninput="searchTMDB()" />
-    <div id="search-results"></div>
+        <div id="episode-buttons"></div>
+      </div>
+    </div>
+    <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
   </div>
+</div>
+
+<div class="search-modal" id="search-modal">
+  <span class="close" onclick="closeSearchModal()">&times;</span>
+  <input type="text" id="search-bar-modal" placeholder="Search TMDB..." oninput="searchTMDB()" />
+  <div id="search-results"></div>
+</div>
 
 </body>
 </html>
