@@ -12,11 +12,9 @@
   <div class="navbar">
     <div class="logo">TestMovie</div>
     <div class="nav-links">
-      <a href="https://testmovies-cih.pages.dev/">Home</a>
-      <input type="text" id="search-input" class="search-bar" placeholder="Search..." onfocus="openSearchModal()" />
+      <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="openSearchModal()" />
     </div>
   </div>
- 
 
   <div class="banner" id="banner"><h1 id="banner-title"></h1></div>
 
@@ -35,32 +33,14 @@
         <img id="modal-image" src="" alt="" />
         <div class="modal-text">
           <h2 id="modal-title"></h2>
-          <div class="stars" id="modal-rating"></div>
+          <div id="modal-rating"></div>
           <p id="modal-description"></p>
           <div class="selectors">
-
             <label for="server-picker">Server:</label>
             <select id="server-picker" onchange="updateVideo()">
               <option value="vidsrc.me">Server 1</option>
-              <option value="superembed.stream">Server 2</option>
+              <option value="vidsrc.to">Server 2</option>
               <option value="vidsrc.cc">Server 3</option>
-              <option value="2embed.cc">Server 4</option>
-              <option value="vidsrc.pm">Server 5</option>
-              <option value="vidsrc.xyz">Server 6</option>
-              <option value="vidsrc.net">Server 7</option>
-              <option value="vidjoy.pro">Server 8</option>
-              <option value="vidlink.pro">Server 9</option>
-              <option value="vidsrc.io">Server 10</option>
-              <option value="Player.Videasy.net">Server 11</option>
-              <option value="2anime.xyz">Server 12</option>
-              <option value="doodstream.com">Server 13</option>
-              <option value="pinoymoviepedia.co">Server 14</option>
-              <option value="pinoymovies.cfd">Server 15</option>
-              <option value="mxdrop.to">Server 16</option>
-              <option value="mixdrop.sb">Server 17</option>
-              <option value="vidplay.net">Server 18</option>
-              <option value="dood.la">Server 19</option>
-              <option value="pinoymovies.cfd">Server 20</option>
             </select>
 
             <div id="season-picker-container" style="display:none;">
