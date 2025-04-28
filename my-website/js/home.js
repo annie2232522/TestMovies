@@ -4,11 +4,23 @@ const IMG_URL = 'https://image.tmdb.org/t/p/original';
 
 let currentItem = null;
 let currentSeason = 1;
+let currentServer = '';
+
+const serverPriority = [
+  'vidsrc.dev',
+  'vidsrc.cc',
+  'vidsrc.io',
+  '2embed.cc',
+  'vidsrc.xyz',
+  'vidjoy.pro',
+  '111movies.com',
+  'vidlink.pro',
+  'moviesapi.club'
+];
 
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
+  return await res.json().then(data => data.results);
 }
 
 async function fetchTrendingAnime() {
@@ -16,9 +28,7 @@ async function fetchTrendingAnime() {
   for (let page = 1; page <= 2; page++) {
     const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
-    const filtered = data.results.filter(item =>
-      item.original_language === 'ja' && item.genre_ids.includes(16)
-    );
+    const filtered = data.results.filter(item => item.original_language === 'ja' && item.genre_ids.includes(16));
     allResults = allResults.concat(filtered);
   }
   return allResults;
@@ -26,8 +36,7 @@ async function fetchTrendingAnime() {
 
 async function fetchByGenre(genreId) {
   const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
-  const data = await res.json();
-  return data.results;
+  return await res.json().then(data => data.results);
 }
 
 function displayBanner(item) {
@@ -38,10 +47,8 @@ function displayBanner(item) {
 function displayList(items, containerId, forceType = null) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
-
   items.forEach(item => {
     const img = document.createElement('img');
-    img.loading = 'lazy';
     img.src = `${IMG_URL}${item.poster_path}`;
     img.alt = item.title || item.name;
     img.onclick = () => {
@@ -50,6 +57,29 @@ function displayList(items, containerId, forceType = null) {
     };
     container.appendChild(img);
   });
+}
+
+async function autoSelectBestServer() {
+  for (const server of serverPriority) {
+    let testUrl = '';
+    if (currentItem.media_type === 'movie') {
+      testUrl = `https://${server}/embed/movie/${currentItem.id}`;
+    } else {
+      testUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/1`;
+    }
+
+    try {
+      // Try lightweight request (will not error even if no-cors)
+      await fetch(testUrl, { mode: 'no-cors' });
+      currentServer = server;
+      document.getElementById('server-picker').value = server;
+      updateVideo();
+      return;
+    } catch (error) {
+      console.log(`Server failed: ${server}`);
+    }
+  }
+  console.error('No working server found!');
 }
 
 async function showDetails(item) {
@@ -61,35 +91,41 @@ async function showDetails(item) {
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
   document.getElementById('modal').style.display = 'flex';
 
-  const seasonPicker = document.getElementById('season-picker');
-  const episodeButtons = document.getElementById('episode-buttons');
+  const serverPicker = document.getElementById('server-picker');
+  serverPicker.innerHTML = '';
 
-  seasonPicker.innerHTML = '';
-  episodeButtons.innerHTML = '';
+  serverPriority.forEach(server => {
+    const option = document.createElement('option');
+    option.value = server;
+    option.textContent = server;
+    serverPicker.appendChild(option);
+  });
+
+  document.getElementById('episode-buttons').innerHTML = '';
+  document.getElementById('season-picker').innerHTML = '';
 
   if (item.media_type === 'tv') {
+    document.getElementById('season-picker-container').style.display = 'block';
     const details = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(res => res.json());
     details.seasons.forEach(season => {
-      if (season.season_number === 0) return;
-      const option = document.createElement('option');
-      option.value = season.season_number;
-      option.textContent = `Season ${season.season_number}`;
-      seasonPicker.appendChild(option);
+      if (season.season_number !== 0) {
+        const option = document.createElement('option');
+        option.value = season.season_number;
+        option.textContent = `Season ${season.season_number}`;
+        document.getElementById('season-picker').appendChild(option);
+      }
     });
-
-    document.getElementById('season-picker-container').style.display = 'block';
     await loadEpisodes();
   } else {
     document.getElementById('season-picker-container').style.display = 'none';
-    updateVideo();
   }
+
+  await autoSelectBestServer();
 }
 
 async function loadEpisodes() {
-  const seasonNumber = document.getElementById('season-picker').value;
-  currentSeason = seasonNumber;
-
-  const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${seasonNumber}?api_key=${API_KEY}`);
+  currentSeason = document.getElementById('season-picker').value;
+  const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`);
   const data = await res.json();
 
   const container = document.getElementById('episode-buttons');
@@ -104,21 +140,21 @@ async function loadEpisodes() {
 }
 
 function updateVideo(episodeNumber = 1) {
-  const server = document.getElementById('server-picker').value;
+  const selectedServer = document.getElementById('server-picker').value || currentServer;
   let embedUrl = '';
 
   if (currentItem.media_type === 'movie') {
-    if (server.includes('2embed.cc')) {
-      embedUrl = `https://${server}/embed/${currentItem.id}`;
-    } else if (server.includes('vidsrc.cc')) {
-      embedUrl = `https://${server}/v2/embed/movie/${currentItem.id}`;
-    } else if (server.includes('moviesapi.club')) {
-      embedUrl = `https://${server}/movie/${currentItem.id}`;
+    if (selectedServer.includes('2embed.cc')) {
+      embedUrl = `https://${selectedServer}/embed/${currentItem.id}`;
+    } else if (selectedServer.includes('vidsrc.cc')) {
+      embedUrl = `https://${selectedServer}/v2/embed/movie/${currentItem.id}`;
+    } else if (selectedServer.includes('moviesapi.club')) {
+      embedUrl = `https://${selectedServer}/movie/${currentItem.id}`;
     } else {
-      embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+      embedUrl = `https://${selectedServer}/embed/movie/${currentItem.id}`;
     }
   } else {
-    embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
+    embedUrl = `https://${selectedServer}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
   }
 
   document.getElementById('modal-video').src = embedUrl;
@@ -131,17 +167,10 @@ function closeModal() {
 
 function openSearchModal() {
   document.getElementById('search-modal').style.display = 'flex';
-  const navbarInput = document.getElementById('search-input').value;
-  document.getElementById('search-bar-modal').value = navbarInput;
-  if (navbarInput.trim() !== "") {
-    searchTMDB();
-  }
 }
 
 function closeSearchModal() {
   document.getElementById('search-modal').style.display = 'none';
-  document.getElementById('search-bar-modal').value = '';
-  document.getElementById('search-results').innerHTML = '';
 }
 
 async function searchTMDB() {
@@ -156,7 +185,6 @@ async function searchTMDB() {
   data.results.forEach(item => {
     if (!item.poster_path) return;
     const img = document.createElement('img');
-    img.loading = 'lazy';
     img.src = `${IMG_URL}${item.poster_path}`;
     img.alt = item.title || item.name;
     img.onclick = () => {
