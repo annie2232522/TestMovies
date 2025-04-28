@@ -7,20 +7,21 @@ let currentSeason = 1;
 let currentServer = '';
 
 const servers = [
-   'vidsrc.me',
+  'vidsrc.me',
   'Player.Videasy.net',
   'aniapi.com',
   'ww1.aniapi.com',
   'vidsrc.dev',
   'vidsrc.cc',
   'vidsrc.io',
-  '2embed.cc',
   'vidsrc.xyz',
   'vidjoy.pro',
-  '111movies.com',
-  'vidlink.pro',
-  'moviesapi.club'
+  '2embed.cc',
+  'moviesapi.club',
+  'cdn.lbryplayer.xyz' // special
 ];
+
+// ------------------------  FETCH FUNCTIONS ------------------------
 
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
@@ -37,6 +38,27 @@ async function fetchTrendingAnime() {
   }
   return allResults;
 }
+
+async function searchTMDB() {
+  const query = document.getElementById('search-bar-modal').value.trim();
+  if (!query) return;
+  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
+  const data = await res.json();
+  const container = document.getElementById('search-results');
+  container.innerHTML = '';
+  data.results.forEach(item => {
+    if (!item.poster_path) return;
+    const img = document.createElement('img');
+    img.src = `${IMG_URL}${item.poster_path}`;
+    img.alt = item.title || item.name;
+    img.onclick = () => {
+      showDetails(item);
+    };
+    container.appendChild(img);
+  });
+}
+
+// ------------------------ DISPLAY FUNCTIONS ------------------------
 
 function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
@@ -58,9 +80,12 @@ function displayList(items, containerId, forceType = null) {
   });
 }
 
+// ------------------------ DETAIL + SERVER LOAD ------------------------
+
 async function showDetails(item) {
   currentItem = item;
   currentSeason = 1;
+
   document.getElementById('modal').style.display = 'flex';
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
@@ -68,57 +93,82 @@ async function showDetails(item) {
 
   document.getElementById('episode-buttons').innerHTML = '';
   document.getElementById('season-picker').innerHTML = '';
+  document.getElementById('server-picker').innerHTML = '';
+
+  // Fill server picker
+  servers.forEach(s => {
+    const option = document.createElement('option');
+    option.value = s;
+    option.textContent = s;
+    document.getElementById('server-picker').appendChild(option);
+  });
 
   if (item.media_type === 'tv') {
     document.getElementById('season-picker-container').style.display = 'block';
-    await autoFindServerAndLoadSeasons();
+    const details = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(res => res.json());
+    details.seasons.forEach(season => {
+      if (season.season_number !== 0) {
+        const option = document.createElement('option');
+        option.value = season.season_number;
+        option.textContent = `Season ${season.season_number}`;
+        document.getElementById('season-picker').appendChild(option);
+      }
+    });
+    await loadEpisodes();
   } else {
     document.getElementById('season-picker-container').style.display = 'none';
-    await autoFindServerAndPlayMovie();
+    await autoFindServer();
   }
 }
 
-async function autoFindServerAndPlayMovie() {
+async function autoFindServer() {
   for (const server of servers) {
-    const url = `https://${server}/embed/movie/${currentItem.id}?autoplay=1`;
-    if (await isUrlAvailable(url)) {
-      document.getElementById('modal-video').src = url;
-      currentServer = server;
-      return;
-    }
-  }
-  document.getElementById('modal-video').src = '';
-  alert("No server found for this movie.");
-}
-
-async function autoFindServerAndLoadSeasons() {
-  for (const server of servers) {
-    const testUrl = `https://${server}/embed/tv/${currentItem.id}/1/1?autoplay=1`; // test season 1 episode 1
+    const testUrl = buildEmbedUrl(server);
     if (await isUrlAvailable(testUrl)) {
       currentServer = server;
-      await loadSeasons();
+      loadVideo(server);
       return;
     }
   }
   document.getElementById('modal-video').src = '';
-  alert("No server found for this TV show.");
+  alert('No working server found.');
 }
 
-async function loadSeasons() {
-  const details = await fetch(`${BASE_URL}/tv/${currentItem.id}?api_key=${API_KEY}`).then(res => res.json());
-  const seasonPicker = document.getElementById('season-picker');
-  seasonPicker.innerHTML = '';
+function buildEmbedUrl(server, episodeNumber = 1) {
+  if (server.includes('cdn.lbryplayer.xyz')) {
+    return `https://${server}/api/v3/streams/free/${currentItem.id}`; // special for lbry
+  }
+  if (currentItem.media_type === 'movie') {
+    return `https://${server}/embed/movie/${currentItem.id}?autoplay=1`;
+  } else {
+    return `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}?autoplay=1`;
+  }
+}
 
-  details.seasons.forEach(season => {
-    if (season.season_number !== 0) {
-      const option = document.createElement('option');
-      option.value = season.season_number;
-      option.textContent = `Season ${season.season_number}`;
-      seasonPicker.appendChild(option);
-    }
-  });
+async function isUrlAvailable(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
-  await loadEpisodes();
+async function loadVideo(server, episodeNumber = 1) {
+  const iframe = document.getElementById('modal-video');
+  if (server.includes('cdn.lbryplayer.xyz')) {
+    const res = await fetch(`https://${server}/api/v3/streams/free/${currentItem.id}`);
+    const data = await res.json();
+    const videoUrl = data.streaming_url;
+    iframe.outerHTML = `
+      <video id="modal-video" width="100%" height="400" controls autoplay>
+        <source src="${videoUrl}" type="video/mp4">
+        Your browser does not support HTML5 video.
+      </video>
+    `;
+  } else {
+    iframe.outerHTML = `<iframe id="modal-video" width="100%" height="400" src="${buildEmbedUrl(server, episodeNumber)}" frameborder="0" allowfullscreen></iframe>`;
+  }
 }
 
 async function loadEpisodes() {
@@ -131,63 +181,25 @@ async function loadEpisodes() {
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
     button.textContent = `E${ep.episode_number}: ${ep.name}`;
-    button.onclick = () => playEpisode(ep.episode_number);
+    button.onclick = () => {
+      loadVideo(currentServer, ep.episode_number);
+    };
     container.appendChild(button);
   });
 
-  // Auto play first episode
   if (data.episodes.length > 0) {
-    playEpisode(1);
+    loadVideo(currentServer, 1); // play first episode
   }
 }
 
-function playEpisode(episodeNumber = 1) {
-  const url = `https://${currentServer}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}?autoplay=1`;
-  document.getElementById('modal-video').src = url;
+// Manual Server Change
+function manualServerSelect() {
+  const selected = document.getElementById('server-picker').value;
+  currentServer = selected;
+  loadVideo(currentServer);
 }
 
-async function isUrlAvailable(url) {
-  try {
-    const response = await fetch(url, { method: 'HEAD' });
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-  document.getElementById('modal-video').src = '';
-}
-
-function openSearchModal() {
-  document.getElementById('search-modal').style.display = 'flex';
-}
-
-function closeSearchModal() {
-  document.getElementById('search-modal').style.display = 'none';
-}
-
-async function searchTMDB() {
-  const query = document.getElementById('search-bar-modal').value.trim();
-  if (!query) return;
-
-  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
-  const data = await res.json();
-  const container = document.getElementById('search-results');
-  container.innerHTML = '';
-
-  data.results.forEach(item => {
-    if (!item.poster_path) return;
-    const img = document.createElement('img');
-    img.src = `${IMG_URL}${item.poster_path}`;
-    img.alt = item.title || item.name;
-    img.onclick = () => {
-      showDetails(item);
-    };
-    container.appendChild(img);
-  });
-}
+// ------------------------ INIT ------------------------
 
 async function init() {
   const movies = await fetchTrending('movie');
