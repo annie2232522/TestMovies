@@ -7,10 +7,6 @@ let currentSeason = 1;
 let currentServer = '';
 
 const servers = [
-  'vidsrc.me',
-  'Player.Videasy.net',
-  'aniapi.com',
-  'ww1.aniapi.com',
   'vidsrc.dev',
   'vidsrc.cc',
   'vidsrc.io',
@@ -18,7 +14,10 @@ const servers = [
   'vidjoy.pro',
   '2embed.cc',
   'moviesapi.club',
-  'cdn.lbryplayer.xyz' // special
+  'cdn.lbryplayer.xyz', // special
+  'vidsrc.icu/embed/anime/',
+  'vidsrc.icu/embed/tv/',
+  'vidsrc.icu/embed/movie/'
 ];
 
 // ------------------------  FETCH FUNCTIONS ------------------------
@@ -138,6 +137,13 @@ function buildEmbedUrl(server, episodeNumber = 1) {
   if (server.includes('cdn.lbryplayer.xyz')) {
     return `https://${server}/api/v3/streams/free/${currentItem.id}`; // special for lbry
   }
+  if (server.includes('vidsrc.icu')) {
+    if (currentItem.media_type === 'movie') {
+      return `https://${server}${currentItem.id}`;
+    } else {
+      return `https://${server}${currentItem.id}/${currentSeason}/${episodeNumber}`;
+    }
+  }
   if (currentItem.media_type === 'movie') {
     return `https://${server}/embed/movie/${currentItem.id}?autoplay=1`;
   } else {
@@ -199,6 +205,19 @@ function manualServerSelect() {
   loadVideo(currentServer);
 }
 
+// Close modal function
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+  // Clear the video player
+  const videoContainer = document.getElementById('modal-video');
+  if (videoContainer.tagName === 'IFRAME') {
+    videoContainer.src = '';
+  } else if (videoContainer.tagName === 'VIDEO') {
+    videoContainer.pause();
+    videoContainer.src = '';
+  }
+}
+
 // ------------------------ INIT ------------------------
 
 async function init() {
@@ -210,6 +229,9 @@ async function init() {
   displayList(movies, 'movies-list', 'movie');
   displayList(tvshows, 'tvshows-list', 'tv');
   displayList(anime, 'anime-list', 'tv');
+  
+  // Add event listener for close button
+  document.querySelector('.close-button').addEventListener('click', closeModal);
 }
 
 init();
