@@ -1,4 +1,4 @@
-const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
+const API_KEY = '7ee3f44e92211fe941b4243a38e99265'; // Your TMDB API
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
 
@@ -77,8 +77,10 @@ async function showDetails(item) {
       seasonPicker.appendChild(option);
     });
 
+    document.getElementById('season-picker-container').style.display = 'block';
     await loadEpisodes();
   } else {
+    document.getElementById('season-picker-container').style.display = 'none';
     updateVideo();
   }
 }
@@ -119,9 +121,23 @@ function closeModal() {
   document.getElementById('modal-video').src = '';
 }
 
-// 🔥 ADD SEARCH FUNCTION
+function openSearchModal() {
+  document.getElementById('search-modal').style.display = 'flex';
+  const navbarInput = document.getElementById('search-input').value;
+  document.getElementById('search-bar-modal').value = navbarInput;
+  if (navbarInput.trim() !== "") {
+    searchTMDB();
+  }
+}
+
+function closeSearchModal() {
+  document.getElementById('search-modal').style.display = 'none';
+  document.getElementById('search-bar-modal').value = '';
+  document.getElementById('search-results').innerHTML = '';
+}
+
 async function searchTMDB() {
-  const query = document.getElementById('search-input').value.trim();
+  const query = document.getElementById('search-bar-modal').value.trim();
   if (!query) return;
 
   const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
