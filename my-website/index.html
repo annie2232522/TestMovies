@@ -3,34 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Movie & Anime Streaming</title>
+  <title>My Movie Site</title>
   <link rel="stylesheet" href="css/home.css">
 </head>
-<body>
+<body class="dark">
 
 <header>
-  <h1>Movie & Anime Stream</h1>
-  <input type="text" id="search-bar" placeholder="Search for Movies, TV, Anime...">
-  <button id="theme-toggle">🌓</button>
+  <input id="search-bar" type="text" placeholder="Search movies, TV shows, anime..." />
+  <button id="theme-toggle">🌗</button>
 </header>
 
 <main>
-  <section id="banner"></section>
+  <h2>Trending Movies</h2>
+  <div id="movies-list" class="poster-list"></div>
 
-  <section>
-    <h2>Trending Movies</h2>
-    <div id="movies-list" class="poster-grid"></div>
-  </section>
+  <h2>Trending TV Shows</h2>
+  <div id="tvshows-list" class="poster-list"></div>
 
-  <section>
-    <h2>Trending TV Shows</h2>
-    <div id="tvshows-list" class="poster-grid"></div>
-  </section>
-
-  <section>
-    <h2>Trending Anime</h2>
-    <div id="anime-list" class="poster-grid"></div>
-  </section>
+  <h2>Trending Anime</h2>
+  <div id="anime-list" class="poster-list"></div>
 </main>
 
 <!-- Modal -->
@@ -38,28 +29,20 @@
   <div class="modal-content">
     <button id="modal-close">✖</button>
     <h2 id="modal-title"></h2>
+    <img id="modal-image" alt="">
     <p id="modal-description"></p>
-    <img id="modal-image" alt="Poster">
 
-    <div id="server-picker-container">
-      <select id="server-picker"></select>
-      <button id="retry-button">🔄 Retry</button>
+    <div class="episode-buttons" id="episode-buttons"></div>
+
+    <select id="server-picker"></select>
+
+    <div id="spinner" class="spinner hidden"></div>
+    <div id="server-fail" class="server-fail hidden">
+      Server not found 😔<br>
+      <button id="retry-button">Retry</button>
     </div>
 
-    <div id="season-picker-container" class="hidden">
-      <select id="season-picker"></select>
-    </div>
-
-    <div id="episode-buttons" class="episode-buttons"></div>
-
-    <div id="video-container">
-      <iframe id="modal-video" src="" frameborder="0" allowfullscreen></iframe>
-      <div id="spinner" class="spinner hidden"></div>
-    </div>
-
-    <div id="server-fail" class="hidden">
-      <h3>⚠️ No server found. Please Retry or choose manually!</h3>
-    </div>
+    <iframe id="modal-video" allowfullscreen></iframe>
   </div>
 </div>
 
