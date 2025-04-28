@@ -1,148 +1,142 @@
-/* style.css */
-:root {
-  --bg: #111;
-  --text: #eee;
-  --accent: #ff4b2b;
-  --light-bg: #fff;
-  --light-text: #111;
-}
-
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #111;
+  color: #fff;
 }
-
+body.light {
+  background: #f5f5f5;
+  color: #111;
+}
 header {
+  padding: 10px;
   display: flex;
-  align-items: center;
-  padding: 1rem;
-  gap: 1rem;
-  background: var(--accent);
-  color: white;
+  gap: 10px;
 }
-
-header input {
+#search-bar {
   flex: 1;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: none;
+  padding: 8px;
+  font-size: 16px;
 }
-
-.poster-grid {
+#theme-toggle {
+  padding: 8px 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+h2 {
+  padding: 10px;
+}
+.poster-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  padding: 10px;
 }
-
-.poster-grid img {
+.poster-list img {
   width: 100%;
+  height: 180px;
+  object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s;
 }
-
-.poster-grid img:hover {
-  transform: scale(1.05);
-}
-
 .modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0,0,0,0.8);
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-y: auto;
-  z-index: 1000;
+  z-index: 999;
 }
-
-.modal-content {
-  background: var(--bg);
-  padding: 1rem;
-  width: 90%;
-  max-width: 800px;
-  border-radius: 10px;
-  position: relative;
-}
-
-#modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--text);
-  cursor: pointer;
-}
-
-#modal-image {
-  width: 100%;
-  border-radius: 10px;
-  margin-top: 1rem;
-}
-
-#modal-video {
-  width: 100%;
-  height: 400px;
-  margin-top: 1rem;
-  border-radius: 10px;
-}
-
-.episode-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.episode-buttons button {
-  background: lightblue;
-  border: none;
-  padding: 0.5rem 0.8rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.episode-buttons button.active {
-  background: lightcoral;
-}
-
-#server-picker-container,
-#season-picker-container {
-  margin-top: 1rem;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 5px solid #ccc;
-  border-top: 5px solid var(--accent);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-}
-
-.hidden {
+.modal.hidden {
   display: none;
 }
-
-@keyframes spin {
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
-}
-
-/* Light Mode */
-body.light {
-  background: var(--light-bg);
-  color: var(--light-text);
-}
-body.light header {
-  background: var(--accent);
+.modal-content {
+  background: #222;
+  padding: 20px;
+  width: 95%;
+  max-width: 600px;
+  position: relative;
+  border-radius: 8px;
+  overflow-y: auto;
+  max-height: 90vh;
 }
 body.light .modal-content {
-  background: var(--light-bg);
+  background: #fff;
+}
+#modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: crimson;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+#modal-image {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+#modal-video {
+  width: 100%;
+  height: 300px;
+  border: none;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+.episode-buttons {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.episode-buttons button {
+  padding: 5px 10px;
+  border: none;
+  background: lightblue;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.episode-buttons button.active {
+  background: lightcoral;
+  color: white;
+}
+#server-picker {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  font-size: 16px;
+}
+.spinner {
+  margin-top: 10px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-left: auto;
+  margin-right: auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.server-fail {
+  margin-top: 10px;
+  color: crimson;
+  text-align: center;
+}
+.server-fail button {
+  background: crimson;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
 }
