@@ -3,50 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Streaming Site</title>
-  <link rel="stylesheet" href="css/home.css">
+  <title>My Movie Site</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="dark">
 
-  <header>
-    <h1>StreamFlix</h1>
-    <input type="text" id="search-bar" placeholder="Search movies, TV shows, anime...">
-    <button id="theme-toggle">🌙/☀️</button>
-  </header>
+<header>
+  <input id="search-bar" type="text" placeholder="Search movies, TV shows, anime..." />
+  <button id="theme-toggle">🌗</button>
+</header>
 
-  <main>
-    <h2>Trending Movies</h2>
-    <div id="movies-list" class="poster-grid"></div>
+<main>
+  <h2>Trending Movies</h2>
+  <div id="movies-list" class="poster-list"></div>
 
-    <h2>Trending TV Shows</h2>
-    <div id="tvshows-list" class="poster-grid"></div>
+  <h2>Trending TV Shows</h2>
+  <div id="tvshows-list" class="poster-list"></div>
 
-    <h2>Trending Anime</h2>
-    <div id="anime-list" class="poster-grid"></div>
-  </main>
+  <h2>Trending Anime</h2>
+  <div id="anime-list" class="poster-list"></div>
+</main>
 
-  <!-- Modal for Player -->
-  <div id="modal" class="hidden">
-    <div id="modal-content">
-      <button id="modal-close">✖️</button>
-      <h2 id="modal-title"></h2>
-      <img id="modal-image" alt="Thumbnail">
-      <p id="modal-description"></p>
+<!-- Modal -->
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <button id="modal-close">✖</button>
+    <h2 id="modal-title"></h2>
+    <img id="modal-image" alt="">
+    <p id="modal-description"></p>
 
-      <div class="controls">
-        <select id="server-picker"></select>
-        <button id="retry-button">Retry Servers 🔄</button>
-      </div>
+    <div class="episode-buttons" id="episode-buttons"></div>
 
-      <div id="spinner" class="hidden">Loading...</div>
-      <div id="server-fail" class="hidden">⚠️ No working servers found.</div>
+    <select id="server-picker"></select>
 
-      <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
-
-      <div id="episode-buttons" class="episode-buttons"></div>
+    <div id="spinner" class="spinner hidden"></div>
+    <div id="server-fail" class="server-fail hidden">
+      Server not found 😔<br>
+      <button id="retry-button">Retry</button>
     </div>
-  </div>
 
-  <script src="js/home.js"></script>
+    <iframe id="modal-video" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
