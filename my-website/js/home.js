@@ -104,14 +104,12 @@ function updateVideo(episodeNumber = 1) {
   let embedUrl = '';
   if (currentItem.media_type === 'movie') {
     embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
-  } else if {
     embedUrl = `https://${server}/movies/${currentItem.id}`;
     
   else {
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
   }
   document.getElementById('modal-video').src = embedUrl;
-}
 }
 
 function closeModal() {
