@@ -8,24 +8,28 @@ let currentServer = '';
 
 const servers = [
   'vidsrc.me',
-  'api.consumet.org/movies/flixhq',
-  'api.consumet.org/anime/gogoanime',
+  'vidsrc.to',
+  'vidsrc.fun',
+  'flixhq.to',
+  'aniwave.to',
+  'gogoanime.pe',
 ];
 
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
-  return res.json().then(data => data.results);
+  const data = await res.json();
+  return data.results;
 }
 
 async function fetchTrendingAnime() {
-  let allResults = [];
+  let results = [];
   for (let page = 1; page <= 2; page++) {
     const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
-    const filtered = data.results.filter(item => item.original_language === 'ja' && item.genre_ids.includes(16));
-    allResults = allResults.concat(filtered);
+    const anime = data.results.filter(item => item.original_language === 'ja' && item.genre_ids.includes(16));
+    results = results.concat(anime);
   }
-  return allResults;
+  return results;
 }
 
 function displayBanner(item) {
@@ -37,7 +41,6 @@ function displayList(items, containerId, forceType = null) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
   items.forEach(item => {
-    if (!item.poster_path) return;
     const img = document.createElement('img');
     img.src = `${IMG_URL}${item.poster_path}`;
     img.alt = item.title || item.name;
@@ -49,23 +52,43 @@ function displayList(items, containerId, forceType = null) {
   });
 }
 
+async function searchTMDB() {
+  const query = document.getElementById('search-bar-modal').value.trim();
+  if (!query) return;
+  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
+  const data = await res.json();
+  const container = document.getElementById('search-results');
+  container.innerHTML = '';
+
+  data.results.forEach(item => {
+    if (!item.poster_path) return;
+    const img = document.createElement('img');
+    img.src = `${IMG_URL}${item.poster_path}`;
+    img.alt = item.title || item.name;
+    img.onclick = async () => {
+      closeSearchModal();
+      await showDetails(item);
+    };
+    container.appendChild(img);
+  });
+}
+
 async function showDetails(item) {
   currentItem = item;
   currentSeason = 1;
   document.getElementById('modal').style.display = 'flex';
-
   document.getElementById('modal-title').textContent = item.title || item.name;
-  document.getElementById('modal-description').textContent = item.overview || 'No description available.';
+  document.getElementById('modal-description').textContent = item.overview;
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
 
-  document.getElementById('server-picker').innerHTML = '';
-  document.getElementById('season-picker').innerHTML = '';
   document.getElementById('episode-buttons').innerHTML = '';
+  document.getElementById('season-picker').innerHTML = '';
+  document.getElementById('server-picker').innerHTML = '';
 
-  servers.forEach(server => {
+  servers.forEach(s => {
     const option = document.createElement('option');
-    option.value = server;
-    option.textContent = server.includes('api.') ? server.split('/')[2] : server;
+    option.value = s;
+    option.textContent = s;
     document.getElementById('server-picker').appendChild(option);
   });
 
@@ -88,38 +111,36 @@ async function showDetails(item) {
 }
 
 async function autoFindServer() {
-  showSpinner(true);
-  for (const server of servers) {
-    const testUrl = buildEmbedUrl(server);
-    if (await isUrlAvailable(testUrl)) {
-      currentServer = server;
-      loadVideo(server);
-      showSpinner(false);
-      return;
-    }
+  document.getElementById('loading-spinner').style.display = 'block';
+  document.getElementById('server-status').textContent = 'Finding best server...';
+
+  const promises = servers.map(server => isUrlAvailable(buildEmbedUrl(server)));
+  const results = await Promise.all(promises);
+
+  const workingIndex = results.findIndex(r => r === true);
+  if (workingIndex !== -1) {
+    currentServer = servers[workingIndex];
+    loadVideo(currentServer);
+  } else {
+    showNoServerFound();
   }
-  showSpinner(false);
-  showNotFound();
+
+  document.getElementById('loading-spinner').style.display = 'none';
 }
 
 function buildEmbedUrl(server, episodeNumber = 1) {
-  const query = encodeURIComponent((currentItem.title || currentItem.name));
-  if (server.includes('vidsrc.me')) {
-    return currentItem.media_type === 'movie' ?
-      `https://${server}/embed/movie/${currentItem.id}` :
-      `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
-  }
-  if (server.includes('flixhq')) {
-    return `https://${server}/watch?title=${query}`;
-  }
-  if (server.includes('gogoanime')) {
-    return `https://${server}/watch/${query.replace(/\s/g, "-").toLowerCase()}`;
+  if (currentItem.media_type === 'movie') {
+    return `https://${server}/embed/movie/${currentItem.id}?autoplay=1`;
+  } else {
+    return `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}?autoplay=1`;
   }
 }
 
 async function isUrlAvailable(url) {
   try {
-    await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 2000); // timeout
+    const res = await fetch(url, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' });
     return true;
   } catch {
     return false;
@@ -127,8 +148,8 @@ async function isUrlAvailable(url) {
 }
 
 async function loadVideo(server, episodeNumber = 1) {
-  const iframe = document.getElementById('modal-video');
-  iframe.src = buildEmbedUrl(server, episodeNumber);
+  document.getElementById('modal-video').outerHTML = `<iframe id="modal-video" width="100%" height="400" src="${buildEmbedUrl(server, episodeNumber)}" frameborder="0" allowfullscreen></iframe>`;
+  document.getElementById('server-status').textContent = `Loaded from ${server}`;
 }
 
 async function loadEpisodes() {
@@ -141,32 +162,22 @@ async function loadEpisodes() {
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
     button.textContent = ep.episode_number;
-    button.onclick = async () => {
-      document.querySelectorAll('#episode-buttons button').forEach(btn => btn.classList.remove('selected'));
-      button.classList.add('selected');
-      await tryFindEpisode(ep.episode_number);
+    button.className = 'episode-button';
+    button.onclick = () => {
+      loadVideo(currentServer, ep.episode_number);
+      highlightSelected(button);
     };
     container.appendChild(button);
   });
 
   if (data.episodes.length > 0) {
-    document.getElementById('episode-buttons').firstChild.click(); // auto click first
+    loadVideo(currentServer, 1);
   }
 }
 
-async function tryFindEpisode(episodeNumber) {
-  showSpinner(true);
-  for (const server of servers) {
-    const testUrl = buildEmbedUrl(server, episodeNumber);
-    if (await isUrlAvailable(testUrl)) {
-      currentServer = server;
-      loadVideo(server, episodeNumber);
-      showSpinner(false);
-      return;
-    }
-  }
-  showSpinner(false);
-  showNotFound();
+function highlightSelected(selectedButton) {
+  document.querySelectorAll('.episode-button').forEach(btn => btn.classList.remove('selected'));
+  selectedButton.classList.add('selected');
 }
 
 function manualServerSelect() {
@@ -177,56 +188,35 @@ function manualServerSelect() {
 
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
-  document.getElementById('modal-video').src = '';
-}
-
-function showSpinner(show) {
-  document.getElementById('loading-spinner').style.display = show ? 'block' : 'none';
-}
-
-function showNotFound() {
   const iframe = document.getElementById('modal-video');
-  iframe.srcdoc = `<div style="color: white; background: black; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 24px;">
-    ⚠️ Server Not Found
-    <br><button onclick="retryFinding()" style="margin-top:10px;padding:10px 20px;">Retry</button>
-  </div>`;
+  if (iframe) iframe.src = '';
 }
 
-function retryFinding() {
-  autoFindServer();
-}
-
-// Search Modal functions
 function openSearchModal() {
-  document.getElementById('search-modal').style.display = 'flex';
+  document.getElementById('search-modal').style.display = 'block';
 }
 
 function closeSearchModal() {
   document.getElementById('search-modal').style.display = 'none';
 }
 
-async function searchTMDB() {
-  const query = document.getElementById('search-bar-modal').value.trim();
-  if (!query) return;
-  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
-  const data = await res.json();
-  const container = document.getElementById('search-results');
-  container.innerHTML = '';
-
-  data.results.forEach(item => {
-    if (!item.poster_path) return;
-    const img = document.createElement('img');
-    img.src = `${IMG_URL}${item.poster_path}`;
-    img.alt = item.title || item.name;
-    img.onclick = () => {
-      showDetails(item);
-      closeSearchModal();
-    };
-    container.appendChild(img);
-  });
+function showNoServerFound() {
+  document.getElementById('modal-video').outerHTML = `
+    <div id="modal-video" style="width:100%;height:400px;display:flex;align-items:center;justify-content:center;color:red;font-size:20px;">
+      ❌ Server Not Found
+      <button onclick="autoFindServer()" style="margin-left:10px;padding:5px 10px;">Retry</button>
+    </div>`;
 }
 
-// Init
+// Listen for Escape Key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closeSearchModal();
+  }
+});
+
+// INIT
 async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
@@ -236,8 +226,6 @@ async function init() {
   displayList(movies, 'movies-list', 'movie');
   displayList(tvshows, 'tvshows-list', 'tv');
   displayList(anime, 'anime-list', 'tv');
-
-  document.querySelector('.close').addEventListener('click', closeModal);
 }
 
 init();
