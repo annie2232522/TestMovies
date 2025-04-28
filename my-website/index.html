@@ -36,9 +36,8 @@
           <h2 id="modal-title"></h2>
           <div class="stars" id="modal-rating"></div>
           <p id="modal-description"></p>
-
           <div class="selectors">
-            <select id="season-picker" onchange="loadEpisodes()"></select>
+
             <label for="server-picker">Server:</label>
             <select id="server-picker" onchange="updateVideo()">
               <option value="vidsrc.me">Server 1</option>
@@ -63,7 +62,7 @@
               <option value="pinoymovies.cfd">Server 20</option>
             </select>
 
-            <div id="season-picker-container" onchange="loadEpisodes()" style="display:none;">
+            <div id="season-picker-container" style="display:none;">
               <label for="season-picker">Season:</label>
               <select id="season-picker" onchange="loadEpisodes()"></select>
             </div>
