@@ -106,6 +106,9 @@ function updateVideo(episodeNumber = 1) {
   if (currentItem.media_type === 'movie') {
     // For movies, use /video/ instead of /embed/
     embedUrl = `https://${server}/video/${currentItem.id}`;
+    
+  } else if (currentItem.media_type === 'movie') {
+    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
   
   } else if (currentItem.genre_ids && currentItem.genre_ids.includes(16)) {
     // If it's anime (animation genre id 16)
@@ -135,6 +138,7 @@ function updateVideo(episodeNumber = 1) {
     `;
   }
 }
+
 
 // ------ end here
 
