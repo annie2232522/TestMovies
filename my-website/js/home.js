@@ -2,7 +2,6 @@ const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
 let currentItem = null;
-let currentServer = "vidsrc.me";
 let currentSeason = 1;
 
 async function fetchTrending(type) {
@@ -13,7 +12,7 @@ async function fetchTrending(type) {
 
 async function fetchTrendingAnime() {
   let allResults = [];
-  for (let page = 1; page <= 5; page++) {
+  for (let page = 1; page <= 3; page++) {
     const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
     const filtered = data.results.filter(item =>
@@ -41,10 +40,11 @@ function displayList(items, containerId, forceType = null) {
 
   items.forEach(item => {
     const img = document.createElement('img');
+    img.loading = 'lazy';
     img.src = `${IMG_URL}${item.poster_path}`;
     img.alt = item.title || item.name;
     img.onclick = () => {
-      if (forceType) item.media_type = forceType; // 💥 Force set media_type if missing
+      if (forceType) item.media_type = forceType;
       showDetails(item);
     };
     container.appendChild(img);
@@ -53,40 +53,31 @@ function displayList(items, containerId, forceType = null) {
 
 async function showDetails(item) {
   currentItem = item;
+  currentSeason = 1;
 
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
-  document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
   document.getElementById('modal').style.display = 'flex';
 
-  const seasonPickerContainer = document.getElementById('season-picker-container');
   const seasonPicker = document.getElementById('season-picker');
   const episodeButtons = document.getElementById('episode-buttons');
 
-  // ✨ IMPORTANT: Always reset first
-  seasonPicker.innerHTML = ''; // Clear previous seasons
-  episodeButtons.innerHTML = ''; // Clear previous episodes
-  seasonPickerContainer.style.display = 'none'; // Hide season picker by default
+  seasonPicker.innerHTML = '';
+  episodeButtons.innerHTML = '';
 
   if (item.media_type === 'tv') {
-    // Only for TV shows
-    seasonPickerContainer.style.display = 'block';
-
     const details = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(res => res.json());
-
     details.seasons.forEach(season => {
-      if (season.season_number === 0) return; // Skip specials
+      if (season.season_number === 0) return;
       const option = document.createElement('option');
       option.value = season.season_number;
       option.textContent = `Season ${season.season_number}`;
       seasonPicker.appendChild(option);
     });
 
-    currentSeason = seasonPicker.value; // Set the currentSeason
     await loadEpisodes();
   } else {
-    // For movies, directly update video
     updateVideo();
   }
 }
@@ -99,7 +90,7 @@ async function loadEpisodes() {
   const data = await res.json();
 
   const container = document.getElementById('episode-buttons');
-  container.innerHTML = ''; // Clear before adding new
+  container.innerHTML = '';
 
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
@@ -114,31 +105,11 @@ function updateVideo(episodeNumber = 1) {
   let embedUrl = '';
 
   if (currentItem.media_type === 'movie') {
-    // Movie case
     embedUrl = `https://${server}/video/${currentItem.id}`;
-    
-    // Insert video player
-    document.getElementById('modal-video').outerHTML = `
-      <video id="modal-video" width="100%" height="400" controls autoplay>
-        <source src="${embedUrl}" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-    `;
-
-    const videoElement = document.getElementById('modal-video');
-    videoElement.onerror = function() {
-      // Fallback in case of video error
-      document.getElementById('modal-video').outerHTML = `
-        <iframe id="modal-video" width="100%" height="400" src="https://${server}/embed/movie/${currentItem.id}" frameborder="0" allowfullscreen></iframe>
-      `;
-    };
-
+    document.getElementById('modal-video').src = embedUrl;
   } else {
-    // TV Show case
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
-    document.getElementById('modal-video').outerHTML = `
-      <iframe id="modal-video" width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
-    `;
+    document.getElementById('modal-video').src = embedUrl;
   }
 }
 
@@ -147,48 +118,19 @@ function closeModal() {
   document.getElementById('modal-video').src = '';
 }
 
-function openSearchModal() {
-  document.getElementById('search-modal').style.display = 'flex';
-}
-
-function closeSearchModal() {
-  document.getElementById('search-modal').style.display = 'none';
-}
-
-async function searchTMDB() {
-  const query = document.getElementById('search-bar-modal').value.trim();
-  if (!query) return;
-
-  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
-  const data = await res.json();
-  const results = document.getElementById('search-results');
-  results.innerHTML = '';
-  data.results.forEach(item => {
-    if (!item.poster_path) return;
-    const img = document.createElement('img');
-    img.src = `${IMG_URL}${item.poster_path}`;
-    img.alt = item.title || item.name;
-    img.onclick = () => {
-      closeSearchModal();
-      showDetails(item);
-    };
-    results.appendChild(img);
-  });
-}
-
 async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
   const anime = await fetchTrendingAnime();
-  const kdrama = await fetchByGenre(18); // Korean Drama is 18 (Drama)
+  const kdrama = await fetchByGenre(18);
   const horror = await fetchByGenre(27);
   const action = await fetchByGenre(28);
   const romance = await fetchByGenre(10749);
 
   displayBanner(movies[Math.floor(Math.random() * movies.length)]);
-  displayList(movies, 'movies-list'); // trending movies already have media_type
-  displayList(tvshows, 'tvshows-list'); // trending tv already have media_type
-  displayList(anime, 'anime-list', 'tv'); // anime trending is tv shows
+  displayList(movies, 'movies-list', 'movie');
+  displayList(tvshows, 'tvshows-list', 'tv');
+  displayList(anime, 'anime-list', 'tv');
   displayList(kdrama, 'kdrama-list', 'tv');
   displayList(horror, 'horror-list', 'movie');
   displayList(action, 'action-list', 'movie');
