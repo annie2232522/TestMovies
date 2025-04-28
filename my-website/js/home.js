@@ -99,43 +99,15 @@ async function loadEpisodes() {
   });
 }
 // ------ edit here
-async function updateVideo(episodeNumber = 1) {
+function updateVideo(episodeNumber = 1) {
   const server = document.getElementById('server-picker').value;
   let embedUrl = '';
-
   if (currentItem.media_type === 'movie') {
-    // Try direct video first
     embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
-    
-
-    // Check if video URL exists
-    const videoExists = await checkUrlExists(videoUrl);
-
-    if (videoExists) {
-      embedUrl = videoUrl;
-    } else {
-      // Fallback to embed if video not found
-     const videoUrl = `https://${server}/video/${currentItem.id}`;
-    }
-
   } else {
-    // For TV shows, always use embed
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
   }
-
-  // Update the iframe or video player
-  if (embedUrl.includes('/video/')) {
-    document.getElementById('modal-video').outerHTML = `
-      <video id="modal-video" width="100%" height="400" controls autoplay>
-        <source src="${embedUrl}" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-    `;
-  } else {
-    document.getElementById('modal-video').outerHTML = `
-      <iframe id="modal-video" width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
-    `;
-  }
+  document.getElementById('modal-video').src = embedUrl;
 }
 
 
