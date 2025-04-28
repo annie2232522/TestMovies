@@ -1,6 +1,7 @@
 const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
+
 let currentItem = null;
 let currentSeason = 1;
 
@@ -12,7 +13,7 @@ async function fetchTrending(type) {
 
 async function fetchTrendingAnime() {
   let allResults = [];
-  for (let page = 1; page <= 3; page++) {
+  for (let page = 1; page <= 2; page++) {
     const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
     const filtered = data.results.filter(item =>
@@ -105,17 +106,40 @@ function updateVideo(episodeNumber = 1) {
   let embedUrl = '';
 
   if (currentItem.media_type === 'movie') {
-    embedUrl = `https://${server}/video/${currentItem.id}`;
-    document.getElementById('modal-video').src = embedUrl;
+    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
   } else {
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
-    document.getElementById('modal-video').src = embedUrl;
   }
+
+  document.getElementById('modal-video').src = embedUrl;
 }
 
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
   document.getElementById('modal-video').src = '';
+}
+
+// 🔥 ADD SEARCH FUNCTION
+async function searchTMDB() {
+  const query = document.getElementById('search-input').value.trim();
+  if (!query) return;
+
+  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
+  const data = await res.json();
+  const container = document.getElementById('search-results');
+  container.innerHTML = '';
+
+  data.results.forEach(item => {
+    if (!item.poster_path) return;
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.src = `${IMG_URL}${item.poster_path}`;
+    img.alt = item.title || item.name;
+    img.onclick = () => {
+      showDetails(item);
+    };
+    container.appendChild(img);
+  });
 }
 
 async function init() {
