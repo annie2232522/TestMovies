@@ -34,7 +34,7 @@ function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
 }
-// edited
+
 function displayList(items, containerId, forceType = null) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
@@ -50,10 +50,6 @@ function displayList(items, containerId, forceType = null) {
     container.appendChild(img);
   });
 }
-
-
-
-// edited 2
 
 async function showDetails(item) {
   currentItem = item;
@@ -88,18 +84,12 @@ async function showDetails(item) {
     });
 
     currentSeason = seasonPicker.value; // Set the currentSeason
-
     await loadEpisodes();
   } else {
-    // If movie, update the video immediately
+    // For movies, directly update video
     updateVideo();
   }
 }
-
-// ------ edit here
-
-// edited 2
-
 
 async function loadEpisodes() {
   const seasonNumber = document.getElementById('season-picker').value;
@@ -119,21 +109,12 @@ async function loadEpisodes() {
   });
 }
 
-
-
-
-// edited 2
-
-
-
-
-
 function updateVideo(episodeNumber = 1) {
   const server = document.getElementById('server-picker').value;
   let embedUrl = '';
 
   if (currentItem.media_type === 'movie') {
-    // Prefer video link first
+    // Movie case
     embedUrl = `https://${server}/video/${currentItem.id}`;
     
     // Insert video player
@@ -144,28 +125,22 @@ function updateVideo(episodeNumber = 1) {
       </video>
     `;
 
-    // Add fallback if error loading video
     const videoElement = document.getElementById('modal-video');
     videoElement.onerror = function() {
-      // If error loading video, fallback to embed
+      // Fallback in case of video error
       document.getElementById('modal-video').outerHTML = `
         <iframe id="modal-video" width="100%" height="400" src="https://${server}/embed/movie/${currentItem.id}" frameborder="0" allowfullscreen></iframe>
       `;
     };
 
   } else {
-    // TV Shows (always iframe)
+    // TV Show case
     embedUrl = `https://${server}/embed/tv/${currentItem.id}/${currentSeason}/${episodeNumber}`;
     document.getElementById('modal-video').outerHTML = `
       <iframe id="modal-video" width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
     `;
   }
 }
-
-
-
-
-// ------ end here
 
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
@@ -211,13 +186,13 @@ async function init() {
   const romance = await fetchByGenre(10749);
 
   displayBanner(movies[Math.floor(Math.random() * movies.length)]);
- displayList(movies, 'movies-list'); // trending movies already have media_type
-displayList(tvshows, 'tvshows-list'); // trending tv already have media_type
-displayList(anime, 'anime-list', 'tv'); // anime trending is tv shows
-displayList(kdrama, 'kdrama-list', 'tv');
-displayList(horror, 'horror-list', 'movie');
-displayList(action, 'action-list', 'movie');
-displayList(romance, 'romance-list', 'movie');
+  displayList(movies, 'movies-list'); // trending movies already have media_type
+  displayList(tvshows, 'tvshows-list'); // trending tv already have media_type
+  displayList(anime, 'anime-list', 'tv'); // anime trending is tv shows
+  displayList(kdrama, 'kdrama-list', 'tv');
+  displayList(horror, 'horror-list', 'movie');
+  displayList(action, 'action-list', 'movie');
+  displayList(romance, 'romance-list', 'movie');
 }
 
 init();
