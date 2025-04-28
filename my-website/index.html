@@ -2,72 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Movie App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/home.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Streamify</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="header">
-  <div class="logo">MyMovieApp</div>
-  <input type="text" id="search-input" placeholder="Search..." oninput="openSearchModal()" />
-</header>
+  <!-- Top Bar -->
+  <header>
+    <h1>Streamify</h1>
+    <button onclick="openSearchModal()">🔍 Search</button>
+  </header>
 
-<!-- Spinner -->
-<div id="loading-spinner">Loading...</div>
-
-<!-- Banner -->
-<section id="banner">
-  <h1 id="banner-title">Banner Title</h1>
-</section>
-
-<!-- Trending Sections -->
-<section class="list-section">
-  <h2>Trending Movies</h2>
-  <div id="movies-list" class="list-container"></div>
-</section>
-
-<section class="list-section">
-  <h2>Trending TV Shows</h2>
-  <div id="tvshows-list" class="list-container"></div>
-</section>
-
-<section class="list-section">
-  <h2>Trending Anime</h2>
-  <div id="anime-list" class="list-container"></div>
-</section>
-
-<!-- Modal -->
-<div id="modal">
-  <div class="modal-header">
-    <span class="close" onclick="closeModal()">&times;</span>
-  </div>
-  <div id="modal-content">
-    <img id="modal-image" src="" alt="Poster">
-    <h2 id="modal-title"></h2>
-    <p id="modal-description"></p>
-
-    <select id="server-picker" onchange="manualServerSelect()"></select>
-
-    <div id="season-picker-container">
-      <select id="season-picker" onchange="loadEpisodes()"></select>
+  <!-- Banner -->
+  <section id="banner">
+    <div class="banner-text">
+      <h2 id="banner-title"></h2>
     </div>
+  </section>
 
-    <div id="episode-buttons"></div>
+  <!-- Content Sections -->
+  <main>
+    <section>
+      <h3>Trending Movies</h3>
+      <div id="movies-list" class="poster-grid"></div>
+    </section>
 
-    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
+    <section>
+      <h3>Trending TV Shows</h3>
+      <div id="tvshows-list" class="poster-grid"></div>
+    </section>
+
+    <section>
+      <h3>Trending Anime</h3>
+      <div id="anime-list" class="poster-grid"></div>
+    </section>
+  </main>
+
+  <!-- Movie/TV Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <button class="close" onclick="closeModal()">✖</button>
+      <h2 id="modal-title"></h2>
+      <img id="modal-image" src="" alt="Poster">
+      <p id="modal-description"></p>
+
+      <div id="season-picker-container">
+        <label>Season:</label>
+        <select id="season-picker" onchange="loadEpisodes()"></select>
+      </div>
+
+      <div>
+        <label>Server:</label>
+        <select id="server-picker" onchange="manualServerSelect()"></select>
+      </div>
+
+      <div id="server-status"></div>
+      <div id="loading-spinner" class="spinner"></div>
+
+      <div id="episode-buttons" class="episode-buttons"></div>
+
+      <div class="video-container">
+        <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Search Modal -->
-<div id="search-modal" class="search-modal">
-  <div class="search-modal-content">
-    <span class="close" onclick="closeSearchModal()">&times;</span>
-    <input type="text" id="search-bar-modal" placeholder="Search Movies/Shows..." oninput="searchTMDB()" />
-    <div id="search-results"></div>
+  <!-- Search Modal -->
+  <div id="search-modal" class="modal">
+    <div class="modal-content">
+      <button class="close" onclick="closeSearchModal()">✖</button>
+      <input type="text" id="search-bar-modal" placeholder="Search for movies, TV shows..." onkeydown="if(event.key==='Enter') searchTMDB()">
+      <div id="search-results" class="poster-grid"></div>
+    </div>
   </div>
-</div>
 
-<script src="js/home.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
