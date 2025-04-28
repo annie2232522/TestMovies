@@ -105,7 +105,8 @@ async function updateVideo(episodeNumber = 1) {
 
   if (currentItem.media_type === 'movie') {
     // Try direct video first
-    const videoUrl = `https://${server}/video/${currentItem.id}`;
+    embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+    
 
     // Check if video URL exists
     const videoExists = await checkUrlExists(videoUrl);
@@ -114,7 +115,7 @@ async function updateVideo(episodeNumber = 1) {
       embedUrl = videoUrl;
     } else {
       // Fallback to embed if video not found
-      embedUrl = `https://${server}/embed/movie/${currentItem.id}`;
+     const videoUrl = `https://${server}/video/${currentItem.id}`;
     }
 
   } else {
