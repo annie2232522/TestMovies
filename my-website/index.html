@@ -1,48 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
-    <link rel="stylesheet" href="css/home.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TestMovies</title>
+  <link rel="stylesheet" href="css/home.css" />
+  <script defer src="js/home.js"></script>
 </head>
 <body>
 
-    <!-- Dark Mode Toggle -->
-    <button id="theme-toggle">Toggle Dark Mode</button>
+<div class="navbar">
+  <div class="logo">TestMovies</div>
+  <div class="nav-links">
+    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="openSearchModal()" />
+  </div>
+</div>
 
-    <!-- Search Bar -->
-    <div id="search-bar-container">
-        <input type="text" id="search-bar" placeholder="Search Movies, TV Shows, Anime">
-        <button id="search-toggle">Search</button>
-    </div>
+<div class="banner" id="banner"><h1 id="banner-title"></h1></div>
 
-    <!-- Tabs for Movies, TV Shows, and Anime -->
-    <div class="tabs">
-        <button class="tab-button active" data-tab="movies">Movies</button>
-        <button class="tab-button" data-tab="tvshows">TV Shows</button>
-        <button class="tab-button" data-tab="anime">Anime</button>
-    </div>
+<div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
+<div class="row"><h2>Trending TV Shows</h2><div class="list" id="tvshows-list"></div></div>
+<div class="row"><h2>Trending Anime</h2><div class="list" id="anime-list"></div></div>
 
-    <!-- Movie, TV Show, and Anime Listings -->
-    <div id="movies" class="tab-page"></div>
-    <div id="tvshows" class="tab-page hidden"></div>
-    <div id="anime" class="tab-page hidden"></div>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <div class="modal-body">
+      <img id="modal-image" src="" alt="" />
+      <div class="modal-text">
+        <h2 id="modal-title"></h2>
+        <div id="modal-rating"></div>
+        <p id="modal-description"></p>
 
-    <!-- Modal for Video Player -->
-    <div id="modal" class="hidden">
-        <button id="close-modal">Close</button>
-        <div id="modal-title"></div>
-        <img id="modal-image" src="" alt="Movie Poster">
-        <div id="modal-description"></div>
-        <iframe id="modal-video" width="100%" height="400"></iframe>
-        <div id="server-picker-container">
-            <select id="server-picker"></select>
-            <button id="retry-button">Retry</button>
+        <div id="season-picker-container" style="display: none;">
+          <label for="season-picker">Season:</label>
+          <select id="season-picker" onchange="loadEpisodes()"></select>
         </div>
-        <div id="server-status"></div>
+
+        <div id="server-picker-container">
+          <label for="server-picker">Server:</label>
+          <select id="server-picker" onchange="manualServerSelect()">
+            <!-- Servers will be loaded dynamically -->
+          </select>
+        </div>
+
+        <div id="episode-buttons"></div>
+        <p id="server-status"></p>
+      </div>
     </div>
 
-    <script src="js/home.js"></script>
+    <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+  </div>
+</div>
+
+<div class="search-modal" id="search-modal">
+  <span class="close" onclick="closeSearchModal()">&times;</span>
+  <input type="text" id="search-bar-modal" placeholder="Search TMDB..." oninput="searchTMDB()" />
+  <div id="search-results"></div>
+</div>
+
 </body>
 </html>
