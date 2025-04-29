@@ -50,11 +50,18 @@ async function searchItems(query) {
 // Display Items (Movies, TV Shows, or Anime)
 function displayItems(items, tab) {
     const container = document.getElementById(tab);
-    container.innerHTML = '';
+    container.innerHTML = ''; // Clear existing content
+
+    // Check if there are items
+    if (!items || items.length === 0) {
+        container.innerHTML = '<p>No results found</p>';
+        return;
+    }
+
     items.forEach(item => {
         const img = document.createElement('img');
-        img.src = `https://image.tmdb.org/t/p/w200${item.poster_path}`;
-        img.alt = item.title || item.name;
+        img.src = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/200x300?text=No+Image';
+        img.alt = item.title || item.name || item.title_english;
         img.classList.add(`${tab}-poster`);
         img.onclick = () => showDetails(item);
         container.appendChild(img);
@@ -66,8 +73,8 @@ async function showDetails(item) {
     const modal = document.getElementById('modal');
     modal.classList.remove('hidden');
     document.getElementById('modal-title').textContent = item.title || item.name;
-    document.getElementById('modal-image').src = `https://image.tmdb.org/t/p/original${item.poster_path}`;
-    document.getElementById('modal-description').textContent = item.overview;
+    document.getElementById('modal-image').src = item.poster_path ? `https://image.tmdb.org/t/p/original${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
+    document.getElementById('modal-description').textContent = item.overview || 'No description available';
 
     const servers = ['vidsrc.me', 'vidjoy.pro', 'flixhq.to', 'gogoanime', 'mixdrop.sb'];
 
@@ -131,3 +138,17 @@ async function fetchMovies() {
     const data = await res.json();
     displayItems(data.results, 'movies');
 }
+
+async function fetchTVShows() {
+    const res = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbApiKey}`);
+    const data = await res.json();
+    displayItems(data.results, 'tvshows');
+}
+
+async function fetchAnime() {
+    const res = await fetch('https://api.jikan.moe/v4/anime');
+    const data = await res.json();
+    displayItems(data.data, 'anime');
+}
+
+init();
