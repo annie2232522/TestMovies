@@ -1,113 +1,71 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    transition: background-color 0.3s ease;
+/* Modal Styles */
+.modal {
+  display: none;  /* Initially hidden */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);  /* Background overlay */
+  justify-content: center;
+  align-items: center;
 }
 
-body.dark {
-    background-color: #121212;
-    color: white;
+.modal-content {
+  background: white;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
 }
 
-#search-bar-container {
-    padding: 10px;
-    background-color: #f1f1f1;
-    display: flex;
-    justify-content: space-between;
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  cursor: pointer;
 }
 
-#search-bar {
-    width: 70%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-button {
-    padding: 10px;
-    cursor: pointer;
-    border: none;
-    background-color: #007BFF;
-    color: white;
-    border-radius: 5px;
+.modal-body img {
+  width: 100%;
+  max-width: 300px;
 }
 
-.tabs {
-    margin-top: 20px;
-    text-align: center;
+.modal-body .modal-text {
+  text-align: center;
 }
 
-.tab-button {
-    padding: 10px 20px;
-    cursor: pointer;
-    background-color: #ddd;
-    margin-right: 10px;
-    border: none;
+/* Search Modal Styles */
+.search-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Background overlay */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
 }
 
-.tab-button.active {
-    background-color: #007BFF;
-    color: white;
+.search-modal input {
+  padding: 10px;
+  width: 300px;
 }
 
-.tab-page {
-    display: none;
-}
-
-.tab-page.hidden {
-    display: block;
-}
-
-#modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    display: none;
-}
-
-#close-modal {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: red;
-    color: white;
-    border: none;
-}
-
-#server-picker-container {
-    margin-top: 10px;
-}
-
-#server-status {
-    margin-top: 10px;
-    font-size: 1rem;
-}
-
-.hidden {
-    display: none;
-}
-
-.movie-poster, .tv-poster, .anime-poster {
-    width: 100%;
-    max-width: 150px; /* Limit the size of the posters */
-    height: auto;
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-.movie-poster:hover, .tv-poster:hover, .anime-poster:hover {
-    transform: scale(1.05); /* Slightly enlarge poster on hover */
-}
-
-#modal-image {
-    width: 100%;
-    max-height: 500px;
-    object-fit: contain;
-    margin-bottom: 20px;
+.search-modal .close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 30px;
+  cursor: pointer;
 }
