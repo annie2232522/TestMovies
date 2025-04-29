@@ -38,6 +38,15 @@
       cursor: pointer;
       border-radius: 10px;
     }
+    /* Search input */
+    #search-input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: none;
+    }
     /* Modal */
     #modal {
       position: fixed;
@@ -125,6 +134,14 @@
   <div id="banner-title">Banner Title</div>
 </div>
 
+<!-- Search Bar -->
+<div class="list-section">
+  <h2>Search</h2>
+  <input type="text" id="search-input" placeholder="Search for a movie, TV show...">
+  <div id="search-results" class="list-container"></div>
+  <div id="no-results" style="display:none;text-align:center;margin-top:10px;color:red;">No results found.</div>
+</div>
+
 <!-- Trending Sections -->
 <div class="list-section">
   <h2>Movies</h2>
@@ -159,8 +176,6 @@
 
 <!-- SCRIPT -->
 <script>
-// YOUR FULL FIXED JAVASCRIPT INSERTED HERE:
-
 const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
@@ -354,8 +369,30 @@ async function loadEpisodes() {
   }
 }
 
-// HELPERS
+// SEARCH FUNCTIONS
+async function searchMovies(query) {
+  if (!query) return;
+  showSpinner(true);
+  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+  const data = await res.json();
+  showSpinner(false);
+  if (data.results.length > 0) {
+    document.getElementById('no-results').style.display = 'none';
+    displayList(data.results, 'search-results');
+  } else {
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('no-results').style.display = 'block';
+  }
+}
 
+document.getElementById('search-input').addEventListener('keypress', function (e) {
+  if (e.key === 'Enter') {
+    const query = e.target.value.trim();
+    searchMovies(query);
+  }
+});
+
+// HELPERS
 function manualServerSelect() {
   const selected = document.getElementById('server-picker').value;
   currentServer = selected;
@@ -398,7 +435,6 @@ function showServerNotFound() {
 }
 
 // INIT
-
 async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
