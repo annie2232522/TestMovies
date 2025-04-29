@@ -38,15 +38,6 @@
       cursor: pointer;
       border-radius: 10px;
     }
-    /* Search input */
-    #search-input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      font-size: 1em;
-      border-radius: 5px;
-      border: none;
-    }
     /* Modal */
     #modal {
       position: fixed;
@@ -122,6 +113,34 @@
       color: white;
       z-index: 2000;
     }
+    /* Toast */
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #e74c3c;
+      color: white;
+      text-align: center;
+      border-radius: 5px;
+      padding: 16px;
+      position: fixed;
+      z-index: 3000;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 17px;
+    }
+    #toast.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein {
+      from { bottom: 0; opacity: 0; } 
+      to { bottom: 30px; opacity: 1; }
+    }
+    @keyframes fadeout {
+      from { bottom: 30px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -132,14 +151,6 @@
 <!-- Banner -->
 <div id="banner">
   <div id="banner-title">Banner Title</div>
-</div>
-
-<!-- Search Bar -->
-<div class="list-section">
-  <h2>Search</h2>
-  <input type="text" id="search-input" placeholder="Search for a movie, TV show...">
-  <div id="search-results" class="list-container"></div>
-  <div id="no-results" style="display:none;text-align:center;margin-top:10px;color:red;">No results found.</div>
 </div>
 
 <!-- Trending Sections -->
@@ -160,12 +171,23 @@
 
 <!-- Modal -->
 <div id="modal">
-  <div class="close">&times;</div>
+  <div class="close" onclick="closeModal()">&times;</div>
   <div id="modal-content">
     <img id="modal-image" src="" alt="">
     <div id="modal-title"></div>
     <div id="modal-description"></div>
+
     <select id="server-picker" onchange="manualServerSelect()"></select>
+
+    <div style="font-size: 14px; margin-top: 5px; color: lightgray;">
+      Please switch to other servers if default server doesn't work.
+    </div>
+
+    <div style="margin-top: 10px;">
+      <button onclick="closeModal()" style="padding:8px 15px;margin-right:10px;background:red;color:white;border:none;border-radius:5px;">Close</button>
+      <button onclick="goBack()" style="padding:8px 15px;background:gray;color:white;border:none;border-radius:5px;">Back</button>
+    </div>
+
     <div id="season-picker-container">
       <select id="season-picker" onchange="loadEpisodes()"></select>
     </div>
@@ -173,6 +195,9 @@
     <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
   </div>
 </div>
+
+<!-- Toast -->
+<div id="toast">Server not found! Please change the server.</div>
 
 <!-- SCRIPT -->
 <script>
@@ -248,7 +273,7 @@ async function showDetails(item) {
   currentItem = item;
   currentSeason = 1;
   selectedEpisode = 1;
-  
+
   document.getElementById('modal').style.display = 'flex';
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview || 'No description.';
@@ -296,6 +321,7 @@ async function autoFindServer() {
     }
   }
   showSpinner(false);
+  showToast();
   showServerNotFound();
 }
 
@@ -369,30 +395,8 @@ async function loadEpisodes() {
   }
 }
 
-// SEARCH FUNCTIONS
-async function searchMovies(query) {
-  if (!query) return;
-  showSpinner(true);
-  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  showSpinner(false);
-  if (data.results.length > 0) {
-    document.getElementById('no-results').style.display = 'none';
-    displayList(data.results, 'search-results');
-  } else {
-    document.getElementById('search-results').innerHTML = '';
-    document.getElementById('no-results').style.display = 'block';
-  }
-}
-
-document.getElementById('search-input').addEventListener('keypress', function (e) {
-  if (e.key === 'Enter') {
-    const query = e.target.value.trim();
-    searchMovies(query);
-  }
-});
-
 // HELPERS
+
 function manualServerSelect() {
   const selected = document.getElementById('server-picker').value;
   currentServer = selected;
@@ -420,6 +424,10 @@ function closeModal() {
   }
 }
 
+function goBack() {
+  document.getElementById('modal').style.display = 'none';
+}
+
 function showSpinner(show) {
   const spinner = document.getElementById('loading-spinner');
   spinner.style.display = show ? 'block' : 'none';
@@ -434,7 +442,14 @@ function showServerNotFound() {
   `;
 }
 
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.className = "show";
+  setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+}
+
 // INIT
+
 async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
@@ -444,8 +459,6 @@ async function init() {
   displayList(movies, 'movies-list', 'movie');
   displayList(tvshows, 'tvshows-list', 'tv');
   displayList(anime, 'anime-list', 'tv');
-
-  document.querySelector('.close').addEventListener('click', closeModal);
 }
 
 init();
