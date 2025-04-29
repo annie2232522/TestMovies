@@ -4,33 +4,52 @@ const IMG_URL = 'https://image.tmdb.org/t/p/original';
 let currentItem = null;
 
 async function fetchTrending(type) {
-    const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
-    const data = await res.json();
-    return data.results;
+    try {
+        const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.status_message);
+        return data.results;
+    } catch (error) {
+        console.error("Error fetching trending:", error);
+        return [];
+    }
 }
 
 async function fetchTrendingAnime() {
     let allResults = [];
     for (let page = 1; page <= 5; page++) {
-        const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
-        const data = await res.json();
-        const filtered = data.results.filter(item => 
-            item.original_language === 'ja' && item.genre_ids.includes(16)
-        );
-        allResults = allResults.concat(filtered);
+        try {
+            const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.status_message);
+            const filtered = data.results.filter(item =>
+                item.original_language === 'ja' && item.genre_ids.includes(16)
+            );
+            allResults = allResults.concat(filtered);
+        } catch (error) {
+            console.error("Error fetching trending anime:", error);
+        }
     }
     return allResults;
 }
 
 async function fetchTrendingKDrama() {
-    const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
-    const data = await res.json();
-    return data.results.filter(item => item.original_language === 'ko');
+    try {
+        const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.status_message);
+        return data.results.filter(item => item.original_language === 'ko');
+    } catch (error) {
+        console.error("Error fetching K-Drama:", error);
+        return [];
+    }
 }
 
 function displayBanner(item) {
-    document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
-    document.getElementById('banner-title').textContent = item.title || item.name;
+    if (item) {
+        document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
+        document.getElementById('banner-title').textContent = item.title || item.name;
+    }
 }
 
 function displayList(items, containerId) {
@@ -74,14 +93,26 @@ async function showDetails(item) {
 }
 
 async function fetchShowDetails(tvId) {
-    const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}`);
-    return await res.json();
+    try {
+        const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.status_message);
+        return data;
+    } catch (error) {
+        console.error("Error fetching show details:", error);
+    }
 }
 
 async function fetchEpisodes(tvId, seasonNumber = 1) {
-    const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}`);
-    const data = await res.json();
-    return data.episodes;
+    try {
+        const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.status_message);
+        return data.episodes;
+    } catch (error) {
+        console.error("Error fetching episodes:", error);
+        return [];
+    }
 }
 
 async function loadSeasonEpisodes() {
@@ -149,21 +180,26 @@ async function searchTMDB() {
         document.getElementById('search-results').innerHTML = '';
         return;
     }
-    const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
-    const data = await res.json();
-    const container = document.getElementById('search-results');
-    container.innerHTML = '';
-    data.results.forEach(item => {
-        if (!item.poster_path) return;
-        const img = document.createElement('img');
-        img.src = `${IMG_URL}${item.poster_path}`;
-        img.alt = item.title || item.name;
-        img.onclick = () => {
-            closeSearchModal();
-            showDetails(item);
-        };
-        container.appendChild(img);
-    });
+    try {
+        const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.status_message);
+        const container = document.getElementById('search-results');
+        container.innerHTML = '';
+        data.results.forEach(item => {
+            if (!item.poster_path) return;
+            const img = document.createElement('img');
+            img.src = `${IMG_URL}${item.poster_path}`;
+            img.alt = item.title || item.name;
+            img.onclick = () => {
+                closeSearchModal();
+                showDetails(item);
+            };
+            container.appendChild(img);
+        });
+    } catch (error) {
+        console.error("Error searching TMDB:", error);
+    }
 }
 
 async function init() {
@@ -171,18 +207,12 @@ async function init() {
     const tvShows = await fetchTrending('tv');
     const anime = await fetchTrendingAnime();
     const kdrama = await fetchTrendingKDrama();
-    const horror = await fetchByGenre(27); // Horror Genre
-    const action = await fetchByGenre(28); // Action Genre
-    const romance = await fetchByGenre(10749); // Romance Genre
-
+    
     displayBanner(movies[Math.floor(Math.random() * movies.length)]);
     displayList(movies, 'movies-list');
     displayList(tvShows, 'tvshows-list');
     displayList(anime, 'anime-list');
     displayList(kdrama, 'kdrama-list');
-    displayList(horror, 'horror-list');
-    displayList(action, 'action-list');
-    displayList(romance, 'romance-list');
 }
 
 init();
