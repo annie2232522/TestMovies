@@ -1,55 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Streaming App</title>
-  <link rel="stylesheet" href="css/home.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Streaming App</title>
+    <link rel="stylesheet" href="css/home.css">
 </head>
+
 <body>
-  <header>
-    <h1>StreamIt</h1>
-    <div class="actions">
-      <button id="theme-toggle">🌗</button>
-      <input id="search-bar" type="text" placeholder="Search..." class="hidden">
-      <button id="search-toggle">🔍</button>
+    <header>
+        <h1>StreamIt</h1>
+        <div class="actions">
+            <button id="theme-toggle">🌗</button>
+            <input id="search-bar" type="text" placeholder="Search..." class="hidden">
+            <button id="search-toggle">🔍</button>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-button active" data-tab="movies">Movies</button>
+        <button class="tab-button" data-tab="tvshows">TV Shows</button>
+        <button class="tab-button" data-tab="anime">Anime</button>
+        <button class="tab-button" data-tab="favorites">Favorites</button>
+        <button class="tab-button" data-tab="watchlist">Watchlist</button>
+    </nav>
+
+    <main>
+        <section id="movies" class="tab-page"></section>
+        <section id="tvshows" class="tab-page hidden"></section>
+        <section id="anime" class="tab-page hidden"></section>
+        <section id="favorites" class="tab-page hidden"></section>
+        <section id="watchlist" class="tab-page hidden"></section>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="hidden">
+        <div class="modal-content">
+            <button id="close-modal">❌</button>
+            <h2 id="modal-title"></h2>
+            <img id="modal-image" alt="">
+            <div id="modal-description-container">
+                <p id="modal-description"></p>
+            </div>
+
+            <div id="server-picker-area">
+                <select id="server-picker"></select>
+                <button id="retry-button">Retry</button>
+            </div>
+
+            <div id="server-status"></div>
+            <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
+        </div>
     </div>
-  </header>
 
-  <nav>
-    <button class="tab-button active" data-tab="movies">Movies</button>
-    <button class="tab-button" data-tab="tvshows">TV Shows</button>
-    <button class="tab-button" data-tab="anime">Anime</button>
-    <button class="tab-button" data-tab="favorites">Favorites</button>
-    <button class="tab-button" data-tab="watchlist">Watchlist</button>
-  </nav>
-
-  <main>
-    <section id="movies" class="tab-page"></section>
-    <section id="tvshows" class="tab-page hidden"></section>
-    <section id="anime" class="tab-page hidden"></section>
-    <section id="favorites" class="tab-page hidden"></section>
-    <section id="watchlist" class="tab-page hidden"></section>
-  </main>
-
-  <!-- Modal -->
-  <div id="modal" class="hidden">
-    <div class="modal-content">
-      <button id="close-modal">❌</button>
-      <h2 id="modal-title"></h2>
-      <img id="modal-image" alt="">
-      <p id="modal-description"></p>
-
-      <div id="server-picker-area">
-        <select id="server-picker"></select>
-        <button id="retry-button">Retry</button>
-      </div>
-
-      <div id="server-status"></div>
-      <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <script src="js/home.js"></script>
+    <script src="js/home.js"></script>
 </body>
+
 </html>
