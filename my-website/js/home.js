@@ -53,8 +53,9 @@ function displayItems(items, tab) {
     container.innerHTML = '';
     items.forEach(item => {
         const img = document.createElement('img');
-        img.src = `https://image.tmdb.org/t/p/original${item.poster_path}`;
+        img.src = `https://image.tmdb.org/t/p/w200${item.poster_path}`;
         img.alt = item.title || item.name;
+        img.classList.add(`${tab}-poster`);
         img.onclick = () => showDetails(item);
         container.appendChild(img);
     });
@@ -130,17 +131,3 @@ async function fetchMovies() {
     const data = await res.json();
     displayItems(data.results, 'movies');
 }
-
-async function fetchTVShows() {
-    const res = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbApiKey}`);
-    const data = await res.json();
-    displayItems(data.results, 'tvshows');
-}
-
-async function fetchAnime() {
-    const res = await fetch('https://api.jikan.moe/v4/top/anime?type=movie');
-    const data = await res.json();
-    displayItems(data.data, 'anime');
-}
-
-init();
