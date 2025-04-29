@@ -10,6 +10,8 @@ let currentServer = '';
 const servers = [
   'vidsrc.me',
   'moviesapi.club',
+  'embed.vidsrc.pk',
+  'vidsrc.wtf/api/3/',
   'www.2embed.cc',
   '2embed.cc/embedtvfull',
   '2anime.xyz',
