@@ -1,51 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Smart Movie App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/home.css" />
+  <meta charset="UTF-8">
+  <title>Movie App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+    .list-section, #banner {
+      padding: 20px;
+    }
+    #banner {
+      height: 400px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding-left: 30px;
+    }
+    #banner-title {
+      font-size: 2em;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+    .list-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+    }
+    .list-container img {
+      height: 200px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    #modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding: 20px;
+      z-index: 1000;
+    }
+    #modal-content {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #modal-image {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+    #modal-video {
+      width: 100%;
+      height: 400px;
+      margin: 10px 0;
+    }
+    #episode-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    #episode-buttons button {
+      padding: 5px 10px;
+      border-radius: 5px;
+      background: #3498db;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    select {
+      padding: 8px;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    #server-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .control-button {
+      background: #e74c3c;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .back-button {
+      background: #7f8c8d;
+    }
+    #server-note {
+      margin: 10px 0;
+      font-size: 14px;
+      color: #ccc;
+      text-align: center;
+      max-width: 600px;
+    }
+    #search-container {
+      padding: 20px;
+      text-align: center;
+    }
+    #search-input {
+      width: 60%;
+      padding: 12px;
+      border-radius: 20px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+    #search-results img {
+      height: 150px;
+      margin: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 16px;
+      display: none;
+    }
+    #toast.show {
+      display: block;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Search -->
 <div id="search-container">
-  <input type="text" id="search-input" placeholder="Search for movies, shows, anime...">
+  <input type="text" id="search-input" placeholder="Search for movies, TV shows, or anime...">
   <div id="search-results"></div>
 </div>
 
-<!-- Banner -->
 <div id="banner">
   <div id="banner-title">Banner Title</div>
 </div>
 
-<!-- Rows -->
-<div class="list-section">
-  <h2>Trending Movies</h2>
-  <div id="movies-list" class="list-container"></div>
-</div>
-<div class="list-section">
-  <h2>Trending TV Shows</h2>
-  <div id="tvshows-list" class="list-container"></div>
-</div>
-<div class="list-section">
-  <h2>Trending Anime</h2>
-  <div id="anime-list" class="list-container"></div>
-</div>
+<div class="list-section"><h2>Movies</h2><div id="movies-list" class="list-container"></div></div>
+<div class="list-section"><h2>TV Shows</h2><div id="tvshows-list" class="list-container"></div></div>
+<div class="list-section"><h2>Anime</h2><div id="anime-list" class="list-container"></div></div>
 
 <!-- Modal -->
 <div id="modal">
-  <div class="close" onclick="closeModal()">&times;</div>
   <div id="modal-content">
     <img id="modal-image" src="" alt="">
-    <div id="modal-title"></div>
-    <div id="modal-description"></div>
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
 
-    <label for="server-picker">Server:</label>
+    <div id="server-controls">
+      <button class="control-button" onclick="closeModal()">Close</button>
+      <button class="control-button back-button" onclick="closeModal()">Back</button>
+    </div>
+
+    <div id="server-note">
+      Please switch to other servers if default server doesn't work.<br>
+      If the server isn't working, try a different browser or disable your ad blocker.
+    </div>
+
     <select id="server-picker" onchange="manualServerSelect()"></select>
 
-    <div id="season-picker-container" style="display:none;">
-      <label for="season-picker">Season:</label>
+    <div id="season-picker-container" style="display: none;">
       <select id="season-picker" onchange="loadEpisodes()"></select>
     </div>
 
@@ -54,8 +187,7 @@
   </div>
 </div>
 
-<!-- Toast -->
-<div id="toast">No available servers found.</div>
+<div id="toast"></div>
 
 <script src="js/home.js"></script>
 </body>
