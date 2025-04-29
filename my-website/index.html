@@ -1,59 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TestMovies</title>
-  <link rel="stylesheet" href="css/home.css" />
-  <script defer src="js/home.js"></script>
+  <meta charset="UTF-8">
+  <title>Movie App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+    #banner {
+      height: 400px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+    }
+    #banner-title {
+      font-size: 2em;
+    }
+    .list-section {
+      margin: 20px;
+    }
+    .list-section h2 {
+      margin-bottom: 10px;
+    }
+    .list-container {
+      display: flex;
+      overflow-x: auto;
+    }
+    .list-container img {
+      height: 200px;
+      margin-right: 10px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    /* Modal */
+    #modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding: 20px;
+      z-index: 1000;
+    }
+    .close {
+      align-self: flex-end;
+      font-size: 2em;
+      cursor: pointer;
+    }
+    #modal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+    }
+    #modal-image {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+    #modal-title {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    #modal-description {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    #modal-video {
+      width: 100%;
+      height: 400px;
+      margin-bottom: 20px;
+    }
+    #server-picker, #season-picker {
+      margin: 10px;
+      padding: 5px;
+      font-size: 1em;
+    }
+    #episode-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    #episode-buttons button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      background: lightblue;
+      cursor: pointer;
+    }
+    #episode-buttons button.selected {
+      background: lightcoral;
+    }
+    /* Spinner */
+    #loading-spinner {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 24px;
+      color: white;
+      z-index: 2000;
+    }
+  </style>
 </head>
 <body>
 
-<div class="navbar">
-  <div class="logo">TestMovies</div>
-  <div class="nav-links">
-    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="openSearchModal()" />
-  </div>
-</div>
-
-<div class="banner" id="banner"><h1 id="banner-title"></h1></div>
-
-<div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
-<div class="row"><h2>Trending TV Shows</h2><div class="list" id="tvshows-list"></div></div>
-<div class="row"><h2>Trending Anime</h2><div class="list" id="anime-list"></div></div>
-
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <div class="modal-body">
-      <img id="modal-image" src="" alt="" />
-      <div class="modal-text">
-        <h2 id="modal-title"></h2>
-        <div id="modal-rating"></div>
-        <p id="modal-description"></p>
-
-        <div id="season-picker-container" style="display: none;">
-          <label for="season-picker">Season:</label>
-          <select id="season-picker" onchange="loadEpisodes()"></select>
-        </div>
-
-        <div id="episode-buttons"></div>
-        <p id="server-status"></p>
-      </div>
-    </div>
-
-    <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
-  </div>
-</div>
-
-<div class="search-modal" id="search-modal">
-  <span class="close" onclick="closeSearchModal()">&times;</span>
-  <input type="text" id="search-bar-modal" placeholder="Search TMDB..." oninput="searchTMDB()" />
-  <div id="search-results"></div>
-</div>
-
-<!-- Loading Spinner -->
+<!-- Spinner -->
 <div id="loading-spinner">Loading...</div>
 
-</body>
-</html>
+<!-- Banner -->
+<div id="banner">
+  <div id="banner-title">Banner Title</div>
+</div>
+
+<!-- Trending Sections -->
+<div class="list-section">
+  <h2>Movies</h2>
+  <div id="movies-list" class="list-container"></div>
+</div>
+
+<div class="list-section">
+  <h2>TV Shows</h2>
+  <div id="tvshows-list" class="list-container"></div>
+</div>
+
+<div class="list-section">
+  <h2>Anime</h2>
+  <div id="anime-list" class="list-container"></div>
+</div>
+
+<!-- Modal -->
+<div id="modal">
+  <div class="close">&times;</div>
+  <div id="modal-content">
+    <img id="modal-image" src="" alt="">
+    <div id="modal-title"></div>
+    <div id="modal-description"></div>
+    <select id="server-picker" onchange="manualServerSelect()"></select>
+    <div id="season-picker-container">
+      <select id="season-picker" onchange="loadEpisodes()"></select>
+    </div>
+    <div id="episode-buttons"></div>
+    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
