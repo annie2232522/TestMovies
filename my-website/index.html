@@ -141,12 +141,65 @@
       from { bottom: 30px; opacity: 1; }
       to { bottom: 0; opacity: 0; }
     }
+     /* Add this to your <style> section */
+  
+  #search-container {
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    backdrop-filter: blur(10px);
+  }
+
+  #search-results {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  #search-results img {
+    height: 150px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  #search-results img:hover {
+    transform: scale(1.05);
+  }
   </style>
 </head>
 <body>
 
 <!-- Spinner -->
 <div id="loading-spinner">Loading...</div>
+  <!-- Add this inside <body>, above the Banner -->
+<div id="search-container">
+  <input type="text" id="search-input" placeholder="Search for movies, TV shows, or anime...">
+  <div id="search-results"></div>
+</div>
+
 
 <!-- Banner -->
 <div id="banner">
@@ -462,6 +515,30 @@ async function init() {
 }
 
 init();
+  // Add this below your other functions (like after showToast())
+
+  document.getElementById('search-input').addEventListener('input', async function() {
+    const query = this.value.trim();
+    const resultsContainer = document.getElementById('search-results');
+    resultsContainer.innerHTML = '';
+
+    if (query.length < 2) return;
+
+    const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+    const data = await res.json();
+
+    const filtered = data.results.filter(item => item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv'));
+
+    filtered.forEach(item => {
+      const img = document.createElement('img');
+      img.src = `${IMG_URL}${item.poster_path}`;
+      img.alt = item.title || item.name;
+      img.onclick = () => {
+        showDetails(item);
+      };
+      resultsContainer.appendChild(img);
+    });
+  });
 
 </script>
 
