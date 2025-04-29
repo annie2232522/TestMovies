@@ -13,24 +13,33 @@ body.dark {
 #search-bar-container {
     padding: 10px;
     background-color: #f1f1f1;
+    display: flex;
+    justify-content: space-between;
 }
 
 #search-bar {
-    width: 80%;
+    width: 70%;
     padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 button {
     padding: 10px;
     cursor: pointer;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 5px;
 }
 
 .tabs {
     margin-top: 20px;
+    text-align: center;
 }
 
 .tab-button {
-    padding: 10px;
+    padding: 10px 20px;
     cursor: pointer;
     background-color: #ddd;
     margin-right: 10px;
@@ -77,8 +86,28 @@ button {
 
 #server-status {
     margin-top: 10px;
+    font-size: 1rem;
 }
 
 .hidden {
     display: none;
+}
+
+.movie-poster, .tv-poster, .anime-poster {
+    width: 100%;
+    max-width: 150px; /* Limit the size of the posters */
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.movie-poster:hover, .tv-poster:hover, .anime-poster:hover {
+    transform: scale(1.05); /* Slightly enlarge poster on hover */
+}
+
+#modal-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    margin-bottom: 20px;
 }
