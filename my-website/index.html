@@ -1,33 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Movie App</title>
+  <meta charset="UTF-8" />
+  <title>Smart Movie App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/home.css" />
-  <script defer src="js/home.js"></script>
 </head>
 <body>
-  <div id="loading-spinner">Loading...</div>
-  <div id="search-container">
-    <input type="text" id="search-input" placeholder="Search...">
-    <div id="search-results"></div>
-  </div>
-  <div id="banner"><div id="banner-title"></div></div>
-  <div class="list-section"><h2>Movies</h2><div id="movies-list" class="list-container"></div></div>
-  <div class="list-section"><h2>TV Shows</h2><div id="tvshows-list" class="list-container"></div></div>
-  <div class="list-section"><h2>Anime</h2><div id="anime-list" class="list-container"></div></div>
-  <div id="modal">
-    <div class="close" onclick="closeModal()">&times;</div>
-    <div id="modal-content">
-      <img id="modal-image" src="" alt="">
-      <div id="modal-title"></div>
-      <div id="modal-description"></div>
-      <select id="server-picker" onchange="manualServerSelect()"></select>
-      <div id="season-picker-container"><select id="season-picker" onchange="loadEpisodes()"></select></div>
-      <div id="episode-buttons"></div>
-      <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
+
+<!-- Search -->
+<div id="search-container">
+  <input type="text" id="search-input" placeholder="Search for movies, shows, anime...">
+  <div id="search-results"></div>
+</div>
+
+<!-- Banner -->
+<div id="banner">
+  <div id="banner-title">Banner Title</div>
+</div>
+
+<!-- Rows -->
+<div class="list-section">
+  <h2>Trending Movies</h2>
+  <div id="movies-list" class="list-container"></div>
+</div>
+<div class="list-section">
+  <h2>Trending TV Shows</h2>
+  <div id="tvshows-list" class="list-container"></div>
+</div>
+<div class="list-section">
+  <h2>Trending Anime</h2>
+  <div id="anime-list" class="list-container"></div>
+</div>
+
+<!-- Modal -->
+<div id="modal">
+  <div class="close" onclick="closeModal()">&times;</div>
+  <div id="modal-content">
+    <img id="modal-image" src="" alt="">
+    <div id="modal-title"></div>
+    <div id="modal-description"></div>
+
+    <label for="server-picker">Server:</label>
+    <select id="server-picker" onchange="manualServerSelect()"></select>
+
+    <div id="season-picker-container" style="display:none;">
+      <label for="season-picker">Season:</label>
+      <select id="season-picker" onchange="loadEpisodes()"></select>
     </div>
+
+    <div id="episode-buttons"></div>
+    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
   </div>
-  <div id="toast">Server not found! Please change the server.</div>
+</div>
+
+<!-- Toast -->
+<div id="toast">No available servers found.</div>
+
+<script src="js/home.js"></script>
 </body>
 </html>
