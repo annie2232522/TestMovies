@@ -128,4 +128,19 @@ function init() {
 async function fetchMovies() {
     const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${tmdbApiKey}`);
     const data = await res.json();
-    displayItems(data.results, 'movies
+    displayItems(data.results, 'movies');
+}
+
+async function fetchTVShows() {
+    const res = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbApiKey}`);
+    const data = await res.json();
+    displayItems(data.results, 'tvshows');
+}
+
+async function fetchAnime() {
+    const res = await fetch('https://api.jikan.moe/v4/top/anime?type=movie');
+    const data = await res.json();
+    displayItems(data.data, 'anime');
+}
+
+init();
