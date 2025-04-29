@@ -2,276 +2,210 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Movie App</title>
+  <title>Media Site</title>
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: #0e0e0e;
-      color: #fff;
+      background: linear-gradient(135deg, #141E30, #243B55);
+      color: white;
+      overflow-x: hidden;
     }
 
     header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       padding: 20px;
-      background: rgba(20, 20, 20, 0.8);
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.05);
       backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    #search-container {
+      margin: 20px auto;
+      max-width: 500px;
+      position: relative;
     }
 
     #search-input {
-      width: 300px;
-      padding: 10px;
-      border: none;
+      width: 100%;
+      padding: 12px 20px;
       border-radius: 10px;
+      border: none;
       outline: none;
       font-size: 16px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      backdrop-filter: blur(5px);
     }
 
     #search-results {
       position: absolute;
-      background: #1a1a1a;
-      width: 300px;
-      max-height: 400px;
-      overflow-y: auto;
-      margin-top: 10px;
+      top: 110%;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(5px);
       border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
       display: none;
       flex-direction: column;
-      z-index: 200;
+      z-index: 10;
     }
 
     #search-results div {
       padding: 10px;
       cursor: pointer;
-      border-bottom: 1px solid #333;
     }
 
     #search-results div:hover {
-      background: #333;
+      background: rgba(255,255,255,0.2);
     }
 
-    #banner {
-      height: 400px;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+    .section {
       padding: 20px;
-      background-repeat: no-repeat;
     }
 
-    #banner-title {
-      font-size: 2em;
-      text-shadow: 2px 2px 5px #000;
-    }
-
-    .list-section {
-      margin: 20px;
-    }
-
-    .list-section h2 {
+    .section h2 {
       margin-bottom: 10px;
-      font-weight: 600;
+      font-size: 24px;
     }
 
-    .list-container {
+    .list {
       display: flex;
       overflow-x: auto;
-      gap: 10px;
-      padding-bottom: 10px;
+      gap: 15px;
     }
 
-    .list-container img {
-      height: 220px;
-      border-radius: 15px;
+    .list img {
+      width: 150px;
+      height: 225px;
+      object-fit: cover;
+      border-radius: 12px;
       cursor: pointer;
-      transition: transform 0.3s;
+      transition: transform 0.2s;
     }
 
-    .list-container img:hover {
+    .list img:hover {
       transform: scale(1.05);
     }
 
-    /* Modal */
     #modal {
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      backdrop-filter: blur(10px);
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
       display: none;
-      flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      overflow-y: auto;
+      justify-content: center;
+      flex-direction: column;
       padding: 20px;
-      z-index: 1000;
-    }
-
-    .close {
-      align-self: flex-end;
-      font-size: 2em;
-      cursor: pointer;
-      margin-bottom: 10px;
+      z-index: 100;
     }
 
     #modal-content {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 600px;
+      width: 100%;
+      color: white;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      gap: 15px;
+      position: relative;
+    }
+
+    #modal-content img {
       width: 100%;
-      max-width: 800px;
-    }
-
-    #modal-image {
-      width: 200px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-    }
-
-    #modal-title {
-      font-size: 2em;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    #modal-description {
-      margin-bottom: 20px;
-      text-align: center;
-      max-width: 600px;
-      font-size: 15px;
-      opacity: 0.8;
-    }
-
-    #modal-video {
-      width: 100%;
-      height: 400px;
       border-radius: 15px;
-      margin-bottom: 20px;
     }
 
-    #server-picker, #season-picker {
-      margin: 10px;
+    #server-instruction {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    select {
       padding: 10px;
-      font-size: 1em;
-      border-radius: 10px;
-      background: #222;
+      background: rgba(255,255,255,0.2);
       color: white;
-      border: none;
-    }
-
-    #episode-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin: 10px 0;
-    }
-
-    #episode-buttons button {
-      padding: 7px 12px;
       border: none;
       border-radius: 8px;
-      background: #444;
-      color: white;
-      cursor: pointer;
+      backdrop-filter: blur(5px);
     }
 
-    #episode-buttons button.selected {
-      background: #ff5555;
-    }
-
-    .info-text {
-      margin-top: 10px;
-      font-size: 14px;
-      opacity: 0.7;
-      text-align: center;
-    }
-
-    #buttons-container {
+    .modal-buttons {
       display: flex;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-top: 15px;
+      justify-content: center;
     }
 
-    .action-button {
-      background: #555;
+    .modal-buttons button {
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.2);
       color: white;
-      padding: 8px 15px;
-      border-radius: 8px;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.2s;
     }
 
-    .action-button:hover {
-      background: #777;
+    .modal-buttons button:hover {
+      background: rgba(255,255,255,0.3);
     }
   </style>
 </head>
+
 <body>
 
-<!-- Header -->
-<header>
-  <h1>Movie App</h1>
-  <div style="position: relative;">
-    <input id="search-input" type="text" placeholder="Search movies, tv shows, anime...">
-    <div id="search-results"></div>
-  </div>
-</header>
+<header>Media Explorer</header>
 
-<!-- Banner -->
-<div id="banner">
-  <div id="banner-title">Banner Title</div>
+<div id="search-container">
+  <input id="search-input" type="text" placeholder="Search movies, tv shows, anime...">
+  <div id="search-results"></div>
 </div>
 
-<!-- Trending Sections -->
-<div class="list-section">
+<div class="section">
   <h2>Movies</h2>
-  <div id="movies-list" class="list-container"></div>
+  <div id="movies-list" class="list"></div>
 </div>
 
-<div class="list-section">
+<div class="section">
   <h2>TV Shows</h2>
-  <div id="tvshows-list" class="list-container"></div>
+  <div id="tvshows-list" class="list"></div>
 </div>
 
-<div class="list-section">
+<div class="section">
   <h2>Anime</h2>
-  <div id="anime-list" class="list-container"></div>
+  <div id="anime-list" class="list"></div>
 </div>
 
 <!-- Modal -->
 <div id="modal">
-  <div class="close">&times;</div>
   <div id="modal-content">
-    <img id="modal-image" src="" alt="">
-    <div id="modal-title"></div>
-    <div id="modal-description"></div>
-    <div id="buttons-container">
-      <button class="action-button" onclick="goBack()">Back</button>
-      <button class="action-button" onclick="closeModal()">Close</button>
-    </div>
+    <img id="modal-image" src="">
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
+    <iframe id="modal-video" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
     <select id="server-picker" onchange="manualServerSelect()"></select>
-    <div class="info-text">Please switch to other servers if default server doesn't work.</div>
-    <div id="season-picker-container" style="margin-top:10px;">
-      <select id="season-picker" onchange="loadEpisodes()"></select>
+    <div id="server-instruction">Please switch to other servers if default server doesn't work.</div>
+    <div class="modal-buttons">
+      <button onclick="goBack()">Back</button>
+      <button onclick="closeModal()">Close</button>
     </div>
-    <div id="episode-buttons"></div>
-    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
   </div>
 </div>
 
 <script>
-// Insert the JavaScript file contents you already have working here
-// (I will send the complete updated JS in the next message immediately!)
-
-  // Example dummy data
+// Example dummy data
 const movies = [
   { title: "Inception", poster: "https://image.tmdb.org/t/p/w500/8s4h9friP6Ci3adRGahHARVd76E.jpg", description: "A mind-bending thriller.", trailer: "https://www.youtube.com/embed/YoHD9XEInc0", servers: ["https://server1.example", "https://server2.example"] },
   { title: "Interstellar", poster: "https://image.tmdb.org/t/p/w500/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg", description: "Space exploration epic.", trailer: "https://www.youtube.com/embed/zSWdZVtXT7E", servers: ["https://server1.example", "https://server2.example"] }
@@ -287,7 +221,7 @@ const anime = [
 
 const allItems = [...movies, ...tvshows, ...anime];
 
-// Load data into lists
+// Load posters into sections
 function loadList(data, elementId) {
   const container = document.getElementById(elementId);
   data.forEach(item => {
@@ -303,7 +237,7 @@ loadList(movies, "movies-list");
 loadList(tvshows, "tvshows-list");
 loadList(anime, "anime-list");
 
-// Open modal with item info
+// Modal functions
 let previousScrollY = 0;
 function openModal(item) {
   previousScrollY = window.scrollY;
@@ -322,33 +256,26 @@ function openModal(item) {
     option.text = `Server ${index + 1}`;
     serverPicker.appendChild(option);
   });
-
-  // Hide season picker & episode buttons initially
-  document.getElementById("season-picker-container").style.display = "none";
-  document.getElementById("episode-buttons").style.display = "none";
 }
 
-// Close Modal
 function closeModal() {
   document.body.style.overflow = '';
   document.getElementById("modal").style.display = "none";
   document.getElementById("modal-video").src = "";
 }
 
-// Go back to previous scroll position
 function goBack() {
   closeModal();
   window.scrollTo(0, previousScrollY);
 }
 
-// Switch server manually
 function manualServerSelect() {
   const serverPicker = document.getElementById("server-picker");
   const selectedServer = serverPicker.value;
   document.getElementById("modal-video").src = selectedServer;
 }
 
-// Search bar functionality
+// Search functionality
 const searchInput = document.getElementById("search-input");
 const searchResults = document.getElementById("search-results");
 
@@ -380,26 +307,12 @@ searchInput.addEventListener("input", () => {
   }
 });
 
-// Hide search results when clicking outside
+// Hide search results on outside click
 document.addEventListener("click", (event) => {
   if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
     searchResults.style.display = "none";
   }
 });
-
-// Banner
-const banner = document.getElementById("banner");
-const bannerTitle = document.getElementById("banner-title");
-
-function loadBanner(item) {
-  banner.style.backgroundImage = `url(${item.poster})`;
-  bannerTitle.textContent = item.title;
-}
-
-loadBanner(movies[0]); // Default banner load
-
-
-
 </script>
 
 </body>
