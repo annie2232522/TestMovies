@@ -214,3 +214,20 @@ function saveFavorites() {
 function saveWatchlist() {
   localStorage.setItem('watchlist', JSON.stringify(watchlist));
 }
+// Search Open / Close Toggle
+document.getElementById('search-toggle').addEventListener('click', () => {
+  const searchBar = document.getElementById('search-bar');
+  searchBar.classList.toggle('hidden');
+
+  if (!searchBar.classList.contains('hidden')) {
+    searchBar.focus();
+  }
+});
+
+// Escape Closes Search too
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('search-bar').classList.add('hidden');
+    modal.classList.add('hidden');
+  }
+});
