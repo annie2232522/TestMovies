@@ -120,29 +120,17 @@ body {
   color: lightgreen;
 }
 
-/* Episode button styles */
-#episode-buttons button {
-  background-color: #add8e6; /* Light blue */
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* Episodes Styling */
+.episode-button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
   margin: 5px;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-#episode-buttons button:hover {
-  background-color: #87cefa; /* Slightly darker blue */
-}
-
-/* Selected episode button */
-#episode-buttons button.selected {
-  background-color: #f08080; /* Light red */
-  color: #fff;
-}
-
-#episode-buttons button.selected:hover {
-  background-color: #fa8072; /* Darker red for hover */
+.episode-button.selected {
+  background-color: #ff4d4d;
 }
