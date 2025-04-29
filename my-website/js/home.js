@@ -1,5 +1,10 @@
-// Add your TMDB API key here
+// TMDB API Key
 const tmdbApiKey = '7ee3f44e92211fe941b4243a38e99265'; // Replace with your actual TMDB API key
+
+// Toggle Dark/Light Mode
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+});
 
 // Toggle Search Bar visibility
 document.getElementById('search-toggle').addEventListener('click', () => {
@@ -7,13 +12,6 @@ document.getElementById('search-toggle').addEventListener('click', () => {
     searchBar.classList.toggle('hidden');
     if (!searchBar.classList.contains('hidden')) {
         searchBar.focus();
-    }
-});
-
-// Close modal on Escape
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        document.getElementById('modal').classList.add('hidden');
     }
 });
 
@@ -28,10 +26,39 @@ document.querySelectorAll('.tab-button').forEach(button => {
     });
 });
 
-// Toggle Dark/Light Mode
-document.getElementById('theme-toggle').addEventListener('click', () => {
-    document.body.classList.toggle('dark');
+// Search Bar Functionality
+document.getElementById('search-bar').addEventListener('input', async () => {
+    const query = document.getElementById('search-bar').value.trim();
+    if (query) {
+        await searchItems(query);
+    }
 });
+
+async function searchItems(query) {
+    const movieRes = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&query=${query}`);
+    const movieData = await movieRes.json();
+    const tvRes = await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${tmdbApiKey}&query=${query}`);
+    const tvData = await tvRes.json();
+    const animeRes = await fetch(`https://api.jikan.moe/v4/anime?search=${query}`);
+    const animeData = await animeRes.json();
+    
+    displayItems(movieData.results, 'movies');
+    displayItems(tvData.results, 'tvshows');
+    displayItems(animeData.data, 'anime');
+}
+
+// Display Items (Movies, TV Shows, or Anime)
+function displayItems(items, tab) {
+    const container = document.getElementById(tab);
+    container.innerHTML = '';
+    items.forEach(item => {
+        const img = document.createElement('img');
+        img.src = `https://image.tmdb.org/t/p/original${item.poster_path}`;
+        img.alt = item.title || item.name;
+        img.onclick = () => showDetails(item);
+        container.appendChild(img);
+    });
+}
 
 // Open Modal with Item Details
 async function showDetails(item) {
@@ -41,8 +68,6 @@ async function showDetails(item) {
     document.getElementById('modal-image').src = `https://image.tmdb.org/t/p/original${item.poster_path}`;
     document.getElementById('modal-description').textContent = item.overview;
 
-    // Fetch and show servers for video
-    // Example server list (replace this with actual server fetch logic)
     const servers = ['vidsrc.me', 'vidjoy.pro', 'flixhq.to', 'gogoanime', 'mixdrop.sb'];
 
     const serverPicker = document.getElementById('server-picker');
@@ -54,12 +79,12 @@ async function showDetails(item) {
         serverPicker.appendChild(option);
     });
 
-    // Attempt to load video from the first server
+    // Try loading video from the first server
     loadVideo(servers[0], item.id);
-
+    
     // Retry button logic
     document.getElementById('retry-button').addEventListener('click', () => {
-        loadVideo(servers[0], item.id); // Retry with the first server
+        loadVideo(servers[0], item.id);
     });
 
     // Close modal when pressing close button
@@ -73,7 +98,6 @@ async function loadVideo(server, itemId) {
     const iframe = document.getElementById('modal-video');
     let videoUrl = '';
 
-    // Example server embed logic
     if (server === 'vidsrc.me') {
         videoUrl = `https://player.vidsrc.me/embed/${itemId}`;
     } else if (server === 'vidjoy.pro') {
@@ -86,45 +110,12 @@ async function loadVideo(server, itemId) {
         videoUrl = `https://mixdrop.sb/embed/${itemId}`;
     }
 
-    // Check if videoUrl is valid
     if (videoUrl) {
         iframe.src = videoUrl;
         document.getElementById('server-status').textContent = `Now playing from: ${server}`;
     } else {
         document.getElementById('server-status').textContent = 'Server not found!';
     }
-}
-
-// Example data fetch for Movies, TV Shows, and Anime (simplified)
-async function fetchMovies() {
-    const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${tmdbApiKey}`);
-    const data = await res.json();
-    displayItems(data.results, 'movies');
-}
-
-async function fetchTVShows() {
-    const res = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${tmdbApiKey}`);
-    const data = await res.json();
-    displayItems(data.results, 'tvshows');
-}
-
-async function fetchAnime() {
-    const res = await fetch('https://api.jikan.moe/v4/top/anime?type=movie');
-    const data = await res.json();
-    displayItems(data.data, 'anime');
-}
-
-// Display Items (Movies, TV Shows, or Anime) on the respective tab
-function displayItems(items, tab) {
-    const container = document.getElementById(tab);
-    container.innerHTML = '';
-    items.forEach(item => {
-        const img = document.createElement('img');
-        img.src = `https://image.tmdb.org/t/p/original${item.poster_path}`;
-        img.alt = item.title || item.name;
-        img.onclick = () => showDetails(item);
-        container.appendChild(img);
-    });
 }
 
 // Initialize the app
@@ -134,4 +125,7 @@ function init() {
     fetchAnime();
 }
 
-init();
+async function fetchMovies() {
+    const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${tmdbApiKey}`);
+    const data = await res.json();
+    displayItems(data.results, 'movies
