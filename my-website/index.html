@@ -4,7 +4,184 @@
   <meta charset="UTF-8">
   <title>Movie App</title>
   <style>
-    /* Styles remain the same as before */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+    #banner {
+      height: 400px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+    }
+    #banner-title {
+      font-size: 2em;
+    }
+    .list-section {
+      margin: 20px;
+    }
+    .list-section h2 {
+      margin-bottom: 10px;
+    }
+    .list-container {
+      display: flex;
+      overflow-x: auto;
+    }
+    .list-container img {
+      height: 200px;
+      margin-right: 10px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    /* Modal */
+    #modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding: 20px;
+      z-index: 1000;
+    }
+    .close {
+      align-self: flex-end;
+      font-size: 2em;
+      cursor: pointer;
+    }
+    #modal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+    }
+    #modal-image {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+    #modal-title {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    #modal-description {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    #modal-video {
+      width: 100%;
+      height: 400px;
+      margin-bottom: 20px;
+    }
+    #server-picker, #season-picker {
+      margin: 10px;
+      padding: 5px;
+      font-size: 1em;
+    }
+    #episode-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    #episode-buttons button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      background: lightblue;
+      cursor: pointer;
+    }
+    #episode-buttons button.selected {
+      background: lightcoral;
+    }
+    /* Spinner */
+    #loading-spinner {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 24px;
+      color: white;
+      z-index: 2000;
+    }
+    /* Toast */
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #e74c3c;
+      color: white;
+      text-align: center;
+      border-radius: 5px;
+      padding: 16px;
+      position: fixed;
+      z-index: 3000;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 17px;
+    }
+    #toast.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein {
+      from { bottom: 0; opacity: 0; } 
+      to { bottom: 30px; opacity: 1; }
+    }
+    @keyframes fadeout {
+      from { bottom: 30px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
+    #search-container {
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #search-input {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px 20px;
+      border-radius: 50px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+    #search-results {
+      margin-top: 10px;
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 0;
+    }
+    #search-results img {
+      height: 150px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    #search-results img:hover {
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -23,50 +200,47 @@
   <div id="banner-title">Banner Title</div>
 </div>
 
-<!-- Lists Section -->
+<!-- Trending Sections -->
 <div class="list-section">
-  <h2>Trending Movies</h2>
+  <h2>Movies</h2>
   <div id="movies-list" class="list-container"></div>
 </div>
 
 <div class="list-section">
-  <h2>Trending TV Shows</h2>
+  <h2>TV Shows</h2>
   <div id="tvshows-list" class="list-container"></div>
 </div>
 
 <div class="list-section">
-  <h2>Trending Anime</h2>
+  <h2>Anime</h2>
   <div id="anime-list" class="list-container"></div>
-</div>
-
-<div class="list-section">
-  <h2>Upcoming Movies</h2>
-  <div id="upcoming-movies-list" class="list-container"></div>
-</div>
-
-<div class="list-section">
-  <h2>Top Rated Movies</h2>
-  <div id="top-rated-movies-list" class="list-container"></div>
-</div>
-
-<div class="list-section">
-  <h2>Top Rated TV Shows</h2>
-  <div id="top-rated-tvshows-list" class="list-container"></div>
-</div>
-
-<div class="list-section">
-  <h2>Popular Movies</h2>
-  <div id="popular-movies-list" class="list-container"></div>
-</div>
-
-<div class="list-section">
-  <h2>Popular TV Shows</h2>
-  <div id="popular-tvshows-list" class="list-container"></div>
 </div>
 
 <!-- Modal -->
 <div id="modal">
-  <!-- Modal content remains the same -->
+  <div class="close" onclick="closeModal()">&times;</div>
+  <div id="modal-content">
+    <img id="modal-image" src="" alt="">
+    <div id="modal-title"></div>
+    <div id="modal-description"></div>
+
+    <select id="server-picker" onchange="manualServerSelect()"></select>
+
+    <div style="font-size: 14px; margin-top: 5px; color: lightgray;">
+      Please switch to other servers if default server doesn't work.
+    </div>
+
+    <div style="margin-top: 10px;">
+      <button onclick="closeModal()" style="padding:8px 15px;margin-right:10px;background:red;color:white;border:none;border-radius:5px;">Close</button>
+      <button onclick="goBack()" style="padding:8px 15px;background:gray;color:white;border:none;border-radius:5px;">Back</button>
+    </div>
+
+    <div id="season-picker-container">
+      <select id="season-picker" onchange="loadEpisodes()"></select>
+    </div>
+    <div id="episode-buttons"></div>
+    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -99,39 +273,10 @@ const servers = [
   'vidsrc.icu/embed/movie/'
 ];
 
-// Fetch functions to get data from the API
+// FETCH FUNCTIONS
+
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
-}
-
-async function fetchUpcomingMovies() {
-  const res = await fetch(`${BASE_URL}/movie/upcoming?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
-}
-
-async function fetchTopRatedMovies() {
-  const res = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
-}
-
-async function fetchTopRatedTVShows() {
-  const res = await fetch(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
-}
-
-async function fetchPopularMovies() {
-  const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
-}
-
-async function fetchPopularTVShows() {
-  const res = await fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}`);
   const data = await res.json();
   return data.results;
 }
@@ -147,7 +292,8 @@ async function fetchTrendingAnime() {
   return allResults;
 }
 
-// Displaying functions
+// DISPLAY FUNCTIONS
+
 function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
@@ -168,31 +314,20 @@ function displayList(items, containerId, forceType = null) {
   });
 }
 
-// Initialize and fetch lists
+// INIT
+
 async function init() {
   const movies = await fetchTrending('movie');
   const tvshows = await fetchTrending('tv');
   const anime = await fetchTrendingAnime();
-  const upcomingMovies = await fetchUpcomingMovies();
-  const topRatedMovies = await fetchTopRatedMovies();
-  const topRatedTVShows = await fetchTopRatedTVShows();
-  const popularMovies = await fetchPopularMovies();
-  const popularTVShows = await fetchPopularTVShows();
 
   displayBanner(movies[Math.floor(Math.random() * movies.length)]);
   displayList(movies, 'movies-list', 'movie');
   displayList(tvshows, 'tvshows-list', 'tv');
   displayList(anime, 'anime-list', 'tv');
-  displayList(upcomingMovies, 'upcoming-movies-list', 'movie');
-  displayList(topRatedMovies, 'top-rated-movies-list', 'movie');
-  displayList(topRatedTVShows, 'top-rated-tvshows-list', 'tv');
-  displayList(popularMovies, 'popular-movies-list', 'movie');
-  displayList(popularTVShows, 'popular-tvshows-list', 'tv');
 }
 
 init();
-
-// Additional code for handling search and modal remains the same.
 </script>
 
 </body>
