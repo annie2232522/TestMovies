@@ -13,7 +13,6 @@ document.getElementById('search-toggle').addEventListener('click', () => {
 // Close modal on Escape
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        document.getElementById('search-bar').classList.add('hidden');
         document.getElementById('modal').classList.add('hidden');
     }
 });
@@ -43,13 +42,11 @@ async function showDetails(item) {
     document.getElementById('modal-description').textContent = item.overview;
 
     // Fetch and show servers for video
-    // Replace the following with actual server-fetch logic for your case
-
-    // Example server list:
-    const servers = ['vidsrc.me', 'vidjoy.pro', 'flixhq.to'];
+    // Example server list (replace this with actual server fetch logic)
+    const servers = ['vidsrc.me', 'vidjoy.pro', 'flixhq.to', 'gogoanime', 'mixdrop.sb'];
 
     const serverPicker = document.getElementById('server-picker');
-    serverPicker.innerHTML = '';
+    serverPicker.innerHTML = ''; // Clear existing options
     servers.forEach(server => {
         const option = document.createElement('option');
         option.value = server;
@@ -57,11 +54,12 @@ async function showDetails(item) {
         serverPicker.appendChild(option);
     });
 
-    // Video iframe loading (simple server example)
-    loadVideo(servers[0]);
+    // Attempt to load video from the first server
+    loadVideo(servers[0], item.id);
 
+    // Retry button logic
     document.getElementById('retry-button').addEventListener('click', () => {
-        loadVideo(servers[0]); // Retry with the first server
+        loadVideo(servers[0], item.id); // Retry with the first server
     });
 
     // Close modal when pressing close button
@@ -71,9 +69,30 @@ async function showDetails(item) {
 }
 
 // Load Video on Selected Server
-function loadVideo(server) {
+async function loadVideo(server, itemId) {
     const iframe = document.getElementById('modal-video');
-    iframe.src = `https://${server}/embed/movie/${currentItem.id}`;
+    let videoUrl = '';
+
+    // Example server embed logic
+    if (server === 'vidsrc.me') {
+        videoUrl = `https://player.vidsrc.me/embed/${itemId}`;
+    } else if (server === 'vidjoy.pro') {
+        videoUrl = `https://vidjoy.pro/embed/movie/${itemId}`;
+    } else if (server === 'flixhq.to') {
+        videoUrl = `https://flixhq.to/embed/${itemId}`;
+    } else if (server === 'gogoanime') {
+        videoUrl = `https://gogoanime.to/embed/${itemId}`;
+    } else if (server === 'mixdrop.sb') {
+        videoUrl = `https://mixdrop.sb/embed/${itemId}`;
+    }
+
+    // Check if videoUrl is valid
+    if (videoUrl) {
+        iframe.src = videoUrl;
+        document.getElementById('server-status').textContent = `Now playing from: ${server}`;
+    } else {
+        document.getElementById('server-status').textContent = 'Server not found!';
+    }
 }
 
 // Example data fetch for Movies, TV Shows, and Anime (simplified)
