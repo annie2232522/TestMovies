@@ -180,12 +180,20 @@ async function searchTMDB() {
         document.getElementById('search-results').innerHTML = '';
         return;
     }
+
     try {
         const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
         const data = await res.json();
-        if (!res.ok) throw new Error(data.status_message);
+        
+        if (!res.ok) throw new Error(data.status_message); // Handle API errors
+        
         const container = document.getElementById('search-results');
         container.innerHTML = '';
+        if (data.results.length === 0) {
+            container.innerHTML = '<p>No results found.</p>'; // Display message if no results
+            return;
+        }
+        
         data.results.forEach(item => {
             if (!item.poster_path) return;
             const img = document.createElement('img');
