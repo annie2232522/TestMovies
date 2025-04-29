@@ -188,16 +188,29 @@ async function loadEpisodes() {
 
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
-    button.textContent = `E${ep.episode_number}: ${ep.name}`;
+    button.textContent = `Episode ${ep.episode_number}`;
     button.onclick = () => {
-      loadVideo(currentServer, ep.episode_number);
+      testServersForEpisode(ep.episode_number);
     };
     container.appendChild(button);
   });
 
   if (data.episodes.length > 0) {
-    loadVideo(currentServer, 1); // play first episode
+    testServersForEpisode(1); // Test for the first episode
   }
+}
+
+async function testServersForEpisode(episodeNumber) {
+  for (const server of servers) {
+    const testUrl = buildEmbedUrl(server, episodeNumber);
+    if (await isUrlAvailable(testUrl)) {
+      currentServer = server;
+      loadVideo(currentServer, episodeNumber);
+      return;
+    }
+  }
+  document.getElementById('modal-video').src = '';
+  alert('No working server found for this episode.');
 }
 
 // Manual Server Change
@@ -231,9 +244,6 @@ async function init() {
   displayList(movies, 'movies-list', 'movie');
   displayList(tvshows, 'tvshows-list', 'tv');
   displayList(anime, 'anime-list', 'tv');
-  
-  // Add event listener for close button
-  document.querySelector('.close').addEventListener('click', closeModal);
 }
 
 init();
