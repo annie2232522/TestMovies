@@ -4,7 +4,11 @@ const IMG_URL = 'https://image.tmdb.org/t/p/original';
 
 let currentItem = null;
 let currentSeason = 1;
+let currentEpisode = 1;
 let currentServer = '';
+
+// List of servers for each episode (we'll dynamically load them based on episode)
+let episodeServers = {};
 
 const servers = [
   'vidsrc.me',
@@ -16,13 +20,13 @@ const servers = [
   'vidjoy.pro',
   '2embed.cc',
   'moviesapi.club',
-  'cdn.lbryplayer.xyz', // special
+  'cdn.lbryplayer.xyz',
   'vidsrc.icu/embed/anime/',
   'vidsrc.icu/embed/tv/',
   'vidsrc.icu/embed/movie/'
 ];
 
-// ------------------------  FETCH FUNCTIONS ------------------------
+// ------------------------ FETCH FUNCTIONS ------------------------
 
 async function fetchTrending(type) {
   const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
@@ -137,7 +141,7 @@ async function autoFindServer() {
 
 function buildEmbedUrl(server, episodeNumber = 1) {
   if (server.includes('cdn.lbryplayer.xyz')) {
-    return `https://${server}/api/v3/streams/free/${currentItem.id}`; // special for lbry
+    return `https://${server}/api/v3/streams/free/${currentItem.id}`;
   }
   if (server.includes('vidsrc.icu')) {
     if (currentItem.media_type === 'movie') {
@@ -186,13 +190,22 @@ async function loadEpisodes() {
   const container = document.getElementById('episode-buttons');
   container.innerHTML = '';
 
+  episodeServers = {}; // Reset the episodeServers map
+
   data.episodes.forEach(ep => {
     const button = document.createElement('button');
     button.textContent = `Episode ${ep.episode_number}`;
     button.onclick = () => {
+      currentEpisode = ep.episode_number;
       testServersForEpisode(ep.episode_number);
     };
     container.appendChild(button);
+
+    // Store server availability for each episode
+    episodeServers[ep.episode_number] = [];
+    servers.forEach(server => {
+      episodeServers[ep.episode_number].push({ server, available: false });
+    });
   });
 
   if (data.episodes.length > 0) {
@@ -201,15 +214,20 @@ async function loadEpisodes() {
 }
 
 async function testServersForEpisode(episodeNumber) {
-  for (const server of servers) {
-    const testUrl = buildEmbedUrl(server, episodeNumber);
-    if (await isUrlAvailable(testUrl)) {
-      currentServer = server;
+  const episode = episodeServers[episodeNumber];
+
+  // Check availability of each server for the selected episode
+  for (const serverData of episode) {
+    const testUrl = buildEmbedUrl(serverData.server, episodeNumber);
+    serverData.available = await isUrlAvailable(testUrl);
+
+    if (serverData.available) {
+      currentServer = serverData.server;
       loadVideo(currentServer, episodeNumber);
       return;
     }
   }
-  document.getElementById('modal-video').src = '';
+
   alert('No working server found for this episode.');
 }
 
