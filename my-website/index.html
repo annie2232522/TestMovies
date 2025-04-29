@@ -141,7 +141,7 @@
       from { bottom: 30px; opacity: 1; }
       to { bottom: 0; opacity: 0; }
     }
-     /* Add this to your <style> section */
+    /* Add this to your <style> section */
   
   #search-container {
     position: sticky;
@@ -194,12 +194,12 @@
 
 <!-- Spinner -->
 <div id="loading-spinner">Loading...</div>
-  <!-- Add this inside <body>, above the Banner -->
+
+<!-- Add this inside <body>, above the Banner -->
 <div id="search-container">
   <input type="text" id="search-input" placeholder="Search for movies, TV shows, or anime...">
   <div id="search-results"></div>
 </div>
-
 
 <!-- Banner -->
 <div id="banner">
@@ -220,6 +220,11 @@
 <div class="list-section">
   <h2>Anime</h2>
   <div id="anime-list" class="list-container"></div>
+</div>
+
+<div class="list-section">
+  <h2>K-Drama</h2>
+  <div id="kdrama-list" class="list-container"></div>
 </div>
 
 <!-- Modal -->
@@ -293,6 +298,18 @@ async function fetchTrendingAnime() {
     const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
     const filtered = data.results.filter(item => item.original_language === 'ja' && item.genre_ids.includes(16));
+    allResults = allResults.concat(filtered);
+  }
+  return allResults;
+}
+
+// Display Kdrama (assuming it's marked under a specific genre)
+async function fetchTrendingKdrama() {
+  let allResults = [];
+  for (let page = 1; page <= 2; page++) {
+    const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
+    const data = await res.json();
+    const filtered = data.results.filter(item => item.original_language === 'ko' && item.genre_ids.includes(18)); // 18 for Kdrama genre
     allResults = allResults.concat(filtered);
   }
   return allResults;
@@ -426,120 +443,65 @@ async function loadEpisodes() {
   currentSeason = document.getElementById('season-picker').value;
   const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`);
   const data = await res.json();
-  const container = document.getElementById('episode-buttons');
-  container.innerHTML = '';
-
-  data.episodes.forEach(ep => {
+  const buttonsContainer = document.getElementById('episode-buttons');
+  buttonsContainer.innerHTML = '';
+  data.episodes.forEach((episode, index) => {
     const button = document.createElement('button');
-    button.textContent = `E${ep.episode_number}: ${ep.name}`;
-    button.onclick = async () => {
-      selectedEpisode = ep.episode_number;
-      highlightEpisodeButton(ep.episode_number);
-      await loadVideo(currentServer, selectedEpisode);
+    button.textContent = `Episode ${episode.episode_number}`;
+    button.onclick = () => {
+      selectedEpisode = episode.episode_number;
+      loadVideo(currentServer, selectedEpisode);
+      document.querySelectorAll('#episode-buttons button').forEach(b => b.classList.remove('selected'));
+      button.classList.add('selected');
     };
-    button.dataset.episode = ep.episode_number;
-    container.appendChild(button);
+    buttonsContainer.appendChild(button);
   });
-
-  if (data.episodes.length > 0) {
-    await autoFindServer();
-    highlightEpisodeButton(1);
-    await loadVideo(currentServer, 1);
-  }
 }
-
-// HELPERS
 
 function manualServerSelect() {
-  const selected = document.getElementById('server-picker').value;
-  currentServer = selected;
-  loadVideo(currentServer, selectedEpisode);
+  const server = document.getElementById('server-picker').value;
+  loadVideo(server, selectedEpisode);
 }
 
-function highlightEpisodeButton(episodeNumber) {
-  const buttons = document.querySelectorAll('#episode-buttons button');
-  buttons.forEach(btn => {
-    btn.classList.remove('selected');
-    if (parseInt(btn.dataset.episode) === episodeNumber) {
-      btn.classList.add('selected');
-    }
-  });
+function showSpinner(show) {
+  document.getElementById('loading-spinner').style.display = show ? 'block' : 'none';
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.className = "show";
+  setTimeout(() => {
+    toast.className = toast.className.replace("show", "");
+  }, 3000);
+}
+
+function showServerNotFound() {
+  alert('Server not found, please try a different one!');
 }
 
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
-  const videoContainer = document.getElementById('modal-video');
-  if (videoContainer.tagName === 'IFRAME') {
-    videoContainer.src = '';
-  } else if (videoContainer.tagName === 'VIDEO') {
-    videoContainer.pause();
-    videoContainer.src = '';
-  }
 }
 
 function goBack() {
   document.getElementById('modal').style.display = 'none';
 }
 
-function showSpinner(show) {
-  const spinner = document.getElementById('loading-spinner');
-  spinner.style.display = show ? 'block' : 'none';
-}
+// Fetch data and initialize app
 
-function showServerNotFound() {
-  const iframe = document.getElementById('modal-video');
-  iframe.outerHTML = `
-    <div id="modal-video" style="width:100%;height:400px;display:flex;align-items:center;justify-content:center;color:red;font-size:24px;background:#000;">
-      Server Not Found
-    </div>
-  `;
-}
-
-function showToast() {
-  const toast = document.getElementById('toast');
-  toast.className = "show";
-  setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-}
-
-// INIT
-
-async function init() {
+async function initialize() {
   const movies = await fetchTrending('movie');
-  const tvshows = await fetchTrending('tv');
+  const tvShows = await fetchTrending('tv');
   const anime = await fetchTrendingAnime();
+  const kdrama = await fetchTrendingKdrama();
 
-  displayBanner(movies[Math.floor(Math.random() * movies.length)]);
-  displayList(movies, 'movies-list', 'movie');
-  displayList(tvshows, 'tvshows-list', 'tv');
-  displayList(anime, 'anime-list', 'tv');
+  displayList(movies, 'movies-list');
+  displayList(tvShows, 'tvshows-list');
+  displayList(anime, 'anime-list');
+  displayList(kdrama, 'kdrama-list');
 }
 
-init();
-  // Add this below your other functions (like after showToast())
-
-  document.getElementById('search-input').addEventListener('input', async function() {
-    const query = this.value.trim();
-    const resultsContainer = document.getElementById('search-results');
-    resultsContainer.innerHTML = '';
-
-    if (query.length < 2) return;
-
-    const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-    const data = await res.json();
-
-    const filtered = data.results.filter(item => item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv'));
-
-    filtered.forEach(item => {
-      const img = document.createElement('img');
-      img.src = `${IMG_URL}${item.poster_path}`;
-      img.alt = item.title || item.name;
-      img.onclick = () => {
-        showDetails(item);
-      };
-      resultsContainer.appendChild(img);
-    });
-  });
-
+initialize();
 </script>
 
 </body>
