@@ -6,15 +6,6 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.classList.toggle('dark');
 });
 
-// Toggle Search Bar visibility
-document.getElementById('search-toggle').addEventListener('click', () => {
-    const searchBar = document.getElementById('search-bar');
-    searchBar.classList.toggle('hidden');
-    if (!searchBar.classList.contains('hidden')) {
-        searchBar.focus();
-    }
-});
-
 // Switch Tabs
 document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', () => {
@@ -26,7 +17,7 @@ document.querySelectorAll('.tab-button').forEach(button => {
     });
 });
 
-// Search Bar Functionality
+// Movie, TV Show, and Anime Search Functionality
 document.getElementById('search-bar').addEventListener('input', async () => {
     const query = document.getElementById('search-bar').value.trim();
     if (query) {
@@ -63,13 +54,13 @@ function displayItems(items, tab) {
         img.src = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/200x300?text=No+Image';
         img.alt = item.title || item.name || item.title_english;
         img.classList.add(`${tab}-poster`);
-        img.onclick = () => showDetails(item);
+        img.onclick = () => showDetails(item, tab);
         container.appendChild(img);
     });
 }
 
 // Open Modal with Item Details
-async function showDetails(item) {
+async function showDetails(item, tab) {
     const modal = document.getElementById('modal');
     modal.classList.remove('hidden');
     document.getElementById('modal-title').textContent = item.title || item.name;
@@ -89,7 +80,7 @@ async function showDetails(item) {
 
     // Try loading video from the first server
     loadVideo(servers[0], item.id);
-    
+
     // Retry button logic
     document.getElementById('retry-button').addEventListener('click', () => {
         loadVideo(servers[0], item.id);
