@@ -67,54 +67,46 @@ async function showDetails(item, tab) {
     document.getElementById('modal-image').src = item.poster_path ? `https://image.tmdb.org/t/p/original${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
     document.getElementById('modal-description').textContent = item.overview || 'No description available';
 
-    const servers = ['vidsrc.me', 'vidjoy.pro', 'flixhq.to', 'gogoanime', 'mixdrop.sb'];
+    // Servers and Player URLs (Dummy Servers for example)
+    const servers = [
+        { name: 'vidsrc.me', url: `https://player.vidsrc.me/embed/${item.id}` },
+        { name: 'vidjoy.pro', url: `https://vidjoy.pro/embed/movie/${item.id}` },
+        { name: 'mixdrop.sb', url: `https://mixdrop.sb/embed/${item.id}` }
+    ];
 
     const serverPicker = document.getElementById('server-picker');
     serverPicker.innerHTML = ''; // Clear existing options
     servers.forEach(server => {
         const option = document.createElement('option');
-        option.value = server;
-        option.textContent = server;
+        option.value = server.url;
+        option.textContent = server.name;
         serverPicker.appendChild(option);
     });
 
-    // Try loading video from the first server
-    loadVideo(servers[0], item.id);
+    // Auto-select the first server and load video
+    loadVideo(servers[0].url);
 
     // Retry button logic
     document.getElementById('retry-button').addEventListener('click', () => {
-        loadVideo(servers[0], item.id);
+        loadVideo(servers[0].url);
     });
 
     // Close modal when pressing close button
     document.getElementById('close-modal').addEventListener('click', () => {
         modal.classList.add('hidden');
     });
+
+    // Load selected video from dropdown
+    serverPicker.addEventListener('change', (e) => {
+        loadVideo(e.target.value);
+    });
 }
 
 // Load Video on Selected Server
-async function loadVideo(server, itemId) {
+function loadVideo(url) {
     const iframe = document.getElementById('modal-video');
-    let videoUrl = '';
-
-    if (server === 'vidsrc.me') {
-        videoUrl = `https://player.vidsrc.me/embed/${itemId}`;
-    } else if (server === 'vidjoy.pro') {
-        videoUrl = `https://vidjoy.pro/embed/movie/${itemId}`;
-    } else if (server === 'flixhq.to') {
-        videoUrl = `https://flixhq.to/embed/${itemId}`;
-    } else if (server === 'gogoanime') {
-        videoUrl = `https://gogoanime.to/embed/${itemId}`;
-    } else if (server === 'mixdrop.sb') {
-        videoUrl = `https://mixdrop.sb/embed/${itemId}`;
-    }
-
-    if (videoUrl) {
-        iframe.src = videoUrl;
-        document.getElementById('server-status').textContent = `Now playing from: ${server}`;
-    } else {
-        document.getElementById('server-status').textContent = 'Server not found!';
-    }
+    iframe.src = url; // Set the iframe source to the selected server's URL
+    document.getElementById('server-status').textContent = `Now playing from: ${url}`;
 }
 
 // Initialize the app
