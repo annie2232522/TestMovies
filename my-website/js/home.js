@@ -16,6 +16,30 @@ async function fetchTrending(type) {
     }
 }
 
+async function fetchTrendingAnime() {
+    try {
+        const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.status_message);
+        return data.results.filter(item => item.original_language === 'ja' && item.genre_ids.includes(16));
+    } catch (error) {
+        console.error("Error fetching trending anime:", error);
+        return [];
+    }
+}
+
+async function fetchTrendingKDrama() {
+    try {
+        const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.status_message);
+        return data.results.filter(item => item.original_language === 'ko');
+    } catch (error) {
+        console.error("Error fetching K-Drama:", error);
+        return [];
+    }
+}
+
 function displayBanner(item) {
     if (item) {
         document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
