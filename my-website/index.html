@@ -46,11 +46,17 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    #search-results img {
-      width: 80px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+  #search-results img {
+  width: 60px;
+  height: auto;
+  border-radius: 5px;
+  cursor: pointer;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+#search-results img:hover {
+  transform: scale(1.05);
+}
 
     #modal {
       position: fixed;
