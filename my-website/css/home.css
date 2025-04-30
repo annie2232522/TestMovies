@@ -72,11 +72,6 @@ header {
     flex: 1; /* Take remaining space */
 }
 
-#modal-image {
-    max-width: 100%; /* Ensures the image doesn't exceed modal width */
-    height: auto; /* Maintains aspect ratio */
-}
-
 .close {
     position: absolute;
     top: 10px;
