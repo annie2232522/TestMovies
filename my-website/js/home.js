@@ -154,7 +154,7 @@ function toggleEpisode(header) {
 }
 
 function changeServer() {
-    const server = "vidsrc.me";
+    const server = document.getElementById('server-selector').value; // Changed to get selected server
     const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
     document.getElementById('modal-video').src = `https://${server}/embed/${type}/${currentItem.id}`;
 }
@@ -162,6 +162,11 @@ function changeServer() {
 function closeModal() {
     document.getElementById('modal').style.display = 'none';
     document.getElementById('modal-video').src = '';
+}
+
+function goBack() {
+    document.getElementById('modal').style.display = 'none'; // Close modal
+    // Optionally, you can also reset selections or perform other actions
 }
 
 function openSearchModal() {
