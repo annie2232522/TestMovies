@@ -1,140 +1,140 @@
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #111;
-  color: #fff;
-  transition: background 0.3s, color 0.3s;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.light-mode {
-  background-color: #fff;
-  color: #111;
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 20px;
-  background: #222;
-  align-items: center;
+nav {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
 }
 
-.logo {
-  font-size: 20px;
-  font-weight: bold;
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #eee;
+    margin: 0 5px;
+    border-radius: 5px;
 }
 
-nav button.tab {
-  background: transparent;
-  border: none;
-  color: #fff;
-  margin: 0 10px;
-  cursor: pointer;
+.tab:hover {
+    background-color: #ddd;
 }
 
-.toggle-group {
-  display: flex;
-  align-items: center;
+.item-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px;
 }
 
-.search-bar {
-  text-align: center;
-  padding: 20px;
+.item-list img {
+    margin: 10px;
+    width: 150px;
+    cursor: pointer;
 }
 
-#search-input {
-  padding: 10px;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 25px;
-  border: none;
-}
-
-.list {
-  display: flex;
-  overflow-x: auto;
-  padding: 10px;
-}
-
-.list img {
-  height: 200px;
-  margin-right: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.list img:hover {
-  transform: scale(1.05);
+.banner {
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 2px 2px 8px #000;
 }
 
 .modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
-  background: #222;
-  padding: 20px;
-  max-width: 800px;
-  width: 90%;
-  border-radius: 10px;
-  color: white;
-  position: relative;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 800px;
 }
 
-.close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 20px;
-  background: red;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
+.search-results {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px;
+    justify-content: flex-start;
+  }
 
-.hidden {
-  display: none;
+.search-results img {
+   height: 120px;
+    border-radius: 8px;
+    cursor: pointer;
 }
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: none;
+    z-index: 9999;
+  }
 
-.note {
-  font-size: 0.9em;
-  margin: 10px 0;
-  color: lightgray;
-}
+  .toast.show {
+    display: block;
+  }
 
-.details {
-  display: flex;
-  gap: 20px;
-}
+  /* 📱 Mobile responsiveness */
+  @media (max-width: 600px) {
+    #banner {
+      height: 200px;
+    }
 
-.details img {
-  height: 150px;
-  border-radius: 5px;
-}
+    #banner-title {
+      font-size: 1.2em;
+    }
 
-#episode-buttons button {
-  margin: 5px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    #modal-image {
+      width: 120px;
+    }
 
-#toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: red;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  display: none;
-}
+    #modal-video {
+      height: 220px;
+    }
+
+    .control-button {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+
+    #episode-buttons button {
+      font-size: 12px;
+      padding: 5px 8px;
+    }
+
+    select {
+      font-size: 13px;
+    }
+  }
