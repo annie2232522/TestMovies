@@ -16,36 +16,6 @@ async function fetchTrending(type) {
     }
 }
 
-async function fetchTrendingAnime() {
-    let allResults = [];
-    for (let page = 1; page <= 5; page++) {
-        try {
-            const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}&page=${page}`);
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.status_message);
-            const filtered = data.results.filter(item =>
-                item.original_language === 'ja' && item.genre_ids.includes(16)
-            );
-            allResults = allResults.concat(filtered);
-        } catch (error) {
-            console.error("Error fetching trending anime:", error);
-        }
-    }
-    return allResults;
-}
-
-async function fetchTrendingKDrama() {
-    try {
-        const res = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.status_message);
-        return data.results.filter(item => item.original_language === 'ko');
-    } catch (error) {
-        console.error("Error fetching K-Drama:", error);
-        return [];
-    }
-}
-
 function displayBanner(item) {
     if (item) {
         document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
@@ -73,106 +43,24 @@ async function showDetails(item) {
     document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
     document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
     document.getElementById('modal').style.display = 'flex';
-    changeServer();
-    
-    // Reset season/episode pickers
-    document.getElementById('season-picker').innerHTML = '';
-    document.getElementById('episode-picker').innerHTML = '';
-    document.getElementById('episode-list').innerHTML = '';
-
-    if (item.media_type === 'tv') {
-        const show = await fetchShowDetails(item.id);
-        show.seasons.forEach(season => {
-            if (season.season_number === 0) return;
-            const option = document.createElement('option');
-            option.value = season.season_number;
-            option.textContent = `Season ${season.season_number}`;
-            document.getElementById('season-picker').appendChild(option);
-        });
-        await loadSeasonEpisodes();
-    }
 }
 
-async function fetchShowDetails(tvId) {
-    try {
-        const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.status_message);
-        return data;
-    } catch (error) {
-        console.error("Error fetching show details:", error);
-    }
-}
-
-async function fetchEpisodes(tvId, seasonNumber = 1) {
-    try {
-        const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.status_message);
-        return data.episodes;
-    } catch (error) {
-        console.error("Error fetching episodes:", error);
-        return [];
-    }
-}
-
-async function loadSeasonEpisodes() {
-    const seasonNumber = document.getElementById('season-picker').value;
-    const episodes = await fetchEpisodes(currentItem.id, seasonNumber);
-    const episodeList = document.getElementById('episode-list');
-    episodeList.innerHTML = '';
-
-    if (episodes.length > 0) {
-        episodes.forEach(ep => {
-            const episodeButton = document.createElement('button');
-            episodeButton.className = 'episode-button';
-            episodeButton.textContent = `Episode ${ep.episode_number}`;
-            episodeButton.onclick = () => {
-                changeServer(); // Ensure server is set
-                const server = document.getElementById('server-selector').value;
-                const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
-                window.open(`https://${server}/embed/${type}/${currentItem.id}/episode/${ep.episode_number}`, '_blank');
-            };
-            episodeList.appendChild(episodeButton);
-        });
-    }
+function closeModal() {
+    document.getElementById('modal').style.display = 'none';
 }
 
 function toggleMode() {
     isDarkMode = !isDarkMode;
     document.body.classList.toggle('dark-mode', isDarkMode);
-    document.getElementById('mode-toggle').textContent = isDarkMode ? '☀️' : '🌙'; // Change button icon
-}
-
-function changeServer() {
-    const server = document.getElementById('server-selector').value; // Changed to get selected server
-    const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
-    document.getElementById('modal-video').src = `https://${server}/embed/${type}/${currentItem.id}`;
-}
-
-function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-    document.getElementById('modal-video').src = '';
-}
-
-function goBack() {
-    document.getElementById('modal').style.display = 'none'; // Close modal
-}
-
-function openSearchModal() {
-    document.getElementById('search-modal').style.display = 'flex';
-    document.getElementById('search-input').focus();
-}
-
-function closeSearchModal() {
-    document.getElementById('search-modal').style.display = 'none';
-    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('mode-toggle').textContent = isDarkMode ? '☀️' : '🌙';
 }
 
 async function handleSearch(event) {
     const query = document.getElementById('search-input').value.trim();
+    const container = document.getElementById('search-results');
+    
     if (!query) {
-        document.getElementById('search-results').innerHTML = '';
+        container.innerHTML = '';
         return;
     }
 
@@ -180,12 +68,11 @@ async function handleSearch(event) {
         const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
         const data = await res.json();
         
-        if (!res.ok) throw new Error(data.status_message); // Handle API errors
+        if (!res.ok) throw new Error(data.status_message);
         
-        const container = document.getElementById('search-results');
-        container.innerHTML = '';
+        container.innerHTML = ''; // Clear previous results
         if (data.results.length === 0) {
-            container.innerHTML = '<p>No results found.</p>'; // Display message if no results
+            container.innerHTML = '<p>No results found.</p>';
             return;
         }
         
