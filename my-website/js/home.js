@@ -162,12 +162,15 @@ async function loadEpisodes() {
   const data = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`).then(res => res.json());
   const container = document.getElementById('episode-buttons');
   container.innerHTML = '';
+
   // Add the "Reset" button
   const resetBtn = document.createElement('button');
   resetBtn.textContent = 'Reset';
   resetBtn.addEventListener('click', () => {
     selectedEpisode = 1;
     loadVideo(currentServer, selectedEpisode);
+    resetBtn.classList.add('selected');
+    Array.from(container.children).forEach(btn => btn.classList.remove('selected'));
   });
   container.appendChild(resetBtn);
 
@@ -177,6 +180,8 @@ async function loadEpisodes() {
     btn.addEventListener('click', () => {
       selectedEpisode = ep.episode_number;
       loadVideo(currentServer, selectedEpisode);
+      btn.classList.add('selected');
+      resetBtn.classList.remove('selected');
     });
     if (selectedEpisode === ep.episode_number) {
       btn.classList.add('selected');
@@ -186,6 +191,7 @@ async function loadEpisodes() {
 
   await autoFindServer();
 }
+
 
 // Other Functions
 function closeModal() {
