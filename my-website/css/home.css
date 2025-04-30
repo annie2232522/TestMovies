@@ -43,7 +43,7 @@ header {
 }
 
 .modal {
-    display: none;
+    display: none; /* Hidden by default */
     position: fixed;
     top: 0;
     left: 0;
