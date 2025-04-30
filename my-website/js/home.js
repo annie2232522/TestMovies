@@ -2,6 +2,7 @@ const API_KEY = '7ee3f44e92211fe941b4243a38e99265'; // Replace with your actual 
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/original';
 let currentItem = null;
+let isDarkMode = false;
 
 async function fetchTrending(type) {
     try {
@@ -118,39 +119,29 @@ async function fetchEpisodes(tvId, seasonNumber = 1) {
 async function loadSeasonEpisodes() {
     const seasonNumber = document.getElementById('season-picker').value;
     const episodes = await fetchEpisodes(currentItem.id, seasonNumber);
-    const episodePicker = document.getElementById('episode-picker');
-    episodePicker.innerHTML = '';
     const episodeList = document.getElementById('episode-list');
     episodeList.innerHTML = '';
 
     if (episodes.length > 0) {
         episodes.forEach(ep => {
-            const option = document.createElement('option');
-            option.value = ep.episode_number;
-            option.textContent = `Episode ${ep.episode_number}: ${ep.name}`;
-            episodePicker.appendChild(option);
-
-            const epDiv = document.createElement('div');
-            epDiv.className = 'episode';
-            epDiv.innerHTML = `
-                <div class="episode-header" onclick="toggleEpisode(this)">
-                    <strong>Episode ${ep.episode_number}: ${ep.name}</strong>
-                    <span class="toggle-icon">+</span>
-                </div>
-                <div class="episode-body">
-                    <p>${ep.overview || "No description available."}</p>
-                </div>
-            `;
-            episodeList.appendChild(epDiv);
+            const episodeButton = document.createElement('button');
+            episodeButton.className = 'episode-button';
+            episodeButton.textContent = `Episode ${ep.episode_number}`;
+            episodeButton.onclick = () => {
+                changeServer(); // Ensure server is set
+                const server = document.getElementById('server-selector').value;
+                const type = currentItem.media_type === 'movie' ? 'movie' : 'tv';
+                window.open(`https://${server}/embed/${type}/${currentItem.id}/episode/${ep.episode_number}`, '_blank');
+            };
+            episodeList.appendChild(episodeButton);
         });
     }
 }
 
-function toggleEpisode(header) {
-    const body = header.nextElementSibling;
-    body.style.display = body.style.display === 'block' ? 'none' : 'block';
-    const icon = header.querySelector('.toggle-icon');
-    icon.textContent = body.style.display === 'block' ? '-' : '+';
+function toggleMode() {
+    isDarkMode = !isDarkMode;
+    document.body.classList.toggle('dark-mode', isDarkMode);
+    document.getElementById('mode-toggle').textContent = isDarkMode ? '☀️' : '🌙'; // Change button icon
 }
 
 function changeServer() {
@@ -166,7 +157,6 @@ function closeModal() {
 
 function goBack() {
     document.getElementById('modal').style.display = 'none'; // Close modal
-    // Optionally, you can also reset selections or perform other actions
 }
 
 function openSearchModal() {
