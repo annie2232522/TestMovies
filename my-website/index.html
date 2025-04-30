@@ -1,175 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Movie App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-    }
-    .tabs {
-      display: flex;
-      background: #222;
-      padding: 10px;
-      justify-content: center;
-    }
-    .tabs button {
-      background: none;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-    .tabs button.active {
-      background: #444;
-      border-radius: 5px;
-    }
-    .tab-content {
-      display: none;
-      padding: 20px;
-    }
-    .tab-content:not(.hidden) {
-      display: block;
-    }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #111;
+    color: #fff;
+  }
 
-    .list-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .list-container img {
-      width: 100px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+  #banner {
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 20px;
+  }
+
+  #banner-title {
+    font-size: 1.5em;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    border-radius: 8px;
+  }
+
+  .list-section {
+    padding: 15px;
+  }
+
+  .list-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+  }
+
+  .list-container img {
+    height: 160px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  #modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 20px;
+    z-index: 1000;
+  }
+
+  #modal-content {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #modal-image {
+    width: 150px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  #modal-video {
+    width: 100%;
+    height: 300px;
+    margin: 10px 0;
+  }
+
+  #episode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px 0;
+  }
+
+  #episode-buttons button {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    background: #3498db;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  select {
+    padding: 8px;
+    font-size: 14px;
+    margin: 10px 0;
+    width: 90%;
+    max-width: 400px;
+  }
+
+  #server-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .control-button {
+    background: #e74c3c;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .back-button {
+    background: #7f8c8d;
+  }
+
+  #server-note {
+    margin: 10px 0;
+    font-size: 14px;
+    color: #ccc;
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  #search-container {
+    padding: 15px;
+    text-align: center;
+  }
+
+  #search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 18px;
+    border-radius: 20px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+  }
+
+  #search-results {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px;
+    justify-content: flex-start;
+  }
+
   #search-results img {
-  width: 60px;
-  height: auto;
-  border-radius: 5px;
-  cursor: pointer;
-  object-fit: cover;
-  transition: transform 0.2s;
-}
-#search-results img:hover {
-  transform: scale(1.05);
-}
+    height: 120px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
 
-    #modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      color: white;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      overflow-y: auto;
-      z-index: 1000;
-    }
-    #modal img {
-      width: 150px;
-      margin-bottom: 10px;
-    }
-    #modal iframe {
-      width: 100%;
-      max-width: 800px;
-      height: 400px;
-      margin-top: 20px;
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: none;
+    z-index: 9999;
+  }
+
+  #toast.show {
+    display: block;
+  }
+
+  /* 📱 Mobile responsiveness */
+  @media (max-width: 600px) {
+    #banner {
+      height: 200px;
     }
 
-    .hidden { display: none; }
-
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #e74c3c;
-      padding: 10px 20px;
-      border-radius: 5px;
-      display: none;
+    #banner-title {
+      font-size: 1.2em;
     }
 
-    #search-input {
-      width: 100%;
-      max-width: 300px;
-      margin: 10px auto;
-      padding: 8px;
-      font-size: 16px;
-      display: block;
-      border-radius: 5px;
+    #modal-image {
+      width: 120px;
     }
 
-    .dark-mode {
-      background: #111;
-      color: white;
+    #modal-video {
+      height: 220px;
     }
-    .light-mode {
-      background: #fff;
-      color: #000;
+
+    .control-button {
+      font-size: 13px;
+      padding: 8px 12px;
     }
 
     #episode-buttons button {
-      margin: 5px;
-      padding: 5px 10px;
-      background: #444;
-      border: none;
-      border-radius: 3px;
-      color: white;
-      cursor: pointer;
+      font-size: 12px;
+      padding: 5px 8px;
     }
 
     select {
-      padding: 5px;
-      margin: 5px;
+      font-size: 13px;
     }
-  </style>
+  }
+</style>
 </head>
 <body>
 
-<div class="tabs">
-  <button onclick="switchTab('home')" class="active">Home</button>
-  <button onclick="switchTab('movies')">Movies</button>
-  <button onclick="switchTab('tv')">TV Shows</button>
-  <button onclick="toggleTheme()">🌓</button>
+<div id="search-container">
+  <input type="text" id="search-input" placeholder="Search for movies, TV shows, or anime...">
+  <div id="search-results"></div>
 </div>
 
-<input type="text" id="search-input" placeholder="Search..." />
-<div id="search-results" class="list-container"></div>
-
-<div id="home" class="tab-content">
-  <h2>Welcome to Movie App</h2>
-  <p>Use the search above or select a category.</p>
+<div id="banner">
+  <div id="banner-title">Banner Title</div>
 </div>
 
-<div id="movies" class="tab-content hidden">
-  <h2>Trending Movies</h2>
-  <div id="movies-list" class="list-container"></div>
-</div>
+<div class="list-section"><h2>Movies</h2><div id="movies-list" class="list-container"></div></div>
+<div class="list-section"><h2>TV Shows</h2><div id="tvshows-list" class="list-container"></div></div>
+<div class="list-section"><h2>Anime</h2><div id="anime-list" class="list-container"></div></div>
 
-<div id="tv" class="tab-content hidden">
-  <h2>Trending TV Shows</h2>
-  <div id="tvshows-list" class="list-container"></div>
-</div>
-
+<!-- Modal -->
 <div id="modal">
-  <button onclick="closeModal()">Close</button>
-  <img id="modal-image" src="" />
-  <h3 id="modal-title"></h3>
-  <p id="modal-description"></p>
+  <div id="modal-content">
+    <img id="modal-image" src="" alt="">
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
 
-  <select id="server-picker" onchange="manualServerSelect()"></select>
+    <div id="server-controls">
+      <button class="control-button" onclick="closeModal()">Close</button>
+      <button class="control-button back-button" onclick="closeModal()">Back</button>
+    </div>
 
-  <div id="season-picker-container" class="hidden">
-    <select id="season-picker" onchange="loadEpisodes()"></select>
+    <div id="server-note">
+      Please switch to other servers if default server doesn't work.<br>
+      If the server isn't working, try a different browser or disable your ad blocker.
+    </div>
+
+    <select id="server-picker" onchange="manualServerSelect()"></select>
+
+    <div id="season-picker-container" style="display: none;">
+      <select id="season-picker" onchange="loadEpisodes()"></select>
+    </div>
+
+    <div id="episode-buttons"></div>
+    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
   </div>
-  <div id="episode-buttons"></div>
-  <iframe id="modal-video" allowfullscreen></iframe>
 </div>
 
 <div id="toast"></div>
