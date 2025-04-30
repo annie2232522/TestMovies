@@ -20,34 +20,48 @@ const servers = [
   'vidsrc.wtf/api/1'
 ];
 
-function showToast(msg) {
+function showSpinner(state = true) {
   const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'show';
-  setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
+  toast.textContent = state ? 'Finding best server...' : '';
+  toast.className = state ? 'show' : '';
+}
+
+function showServerNotFound() {
+  document.getElementById('modal-video').outerHTML = `
+    <div id="modal-video" style="width:100%;height:400px;display:flex;align-items:center;justify-content:center;color:red;font-size:24px;background:#000;">
+      Server Not Found
+    </div>
+  `;
 }
 
 function buildEmbedUrl(server, episode = 1) {
-  const id = currentItem.id;
+  const tmdbId = currentItem.id;
   const season = currentSeason;
   const color = 'ff0000';
-  if (server.includes('vidsrc.wtf/api/')) {
-    const version = server.split('/')[2];
-    const base = `https://vidsrc.wtf/api/${version}`;
+
+  if (server.startsWith('vidsrc.wtf/api/')) {
+    const apiVersion = server.split('/')[2];
+    const base = `https://vidsrc.wtf/api/${apiVersion}`;
     if (currentItem.media_type === 'movie') {
-      return version < 3 ? `${base}/movie/?id=${id}&color=${color}` : `${base}/movie/?id=${id}`;
+      return apiVersion === '1' || apiVersion === '2'
+        ? `${base}/movie/?id=${tmdbId}&color=${color}`
+        : `${base}/movie/?id=${tmdbId}`;
     } else {
-      return version < 3 ? `${base}/tv/?id=${id}&s=${season}&e=${episode}&color=${color}` : `${base}/tv/?id=${id}&s=${season}&e=${episode}`;
+      return apiVersion === '1' || apiVersion === '2'
+        ? `${base}/tv/?id=${tmdbId}&s=${season}&e=${episode}&color=${color}`
+        : `${base}/tv/?id=${tmdbId}&s=${season}&e=${episode}`;
     }
   }
+
   if (server === 'embed.vidsrc.pk') {
     return currentItem.media_type === 'movie'
-      ? `https://embed.vidsrc.pk/movie/${id}`
-      : `https://embed.vidsrc.pk/tv/${id}/${season}-${episode}`;
+      ? `https://embed.vidsrc.pk/movie/${tmdbId}`
+      : `https://embed.vidsrc.pk/tv/${tmdbId}/${season}-${episode}`;
   }
+
   return currentItem.media_type === 'movie'
-    ? `https://${server}/embed/movie/${id}`
-    : `https://${server}/embed/tv/${id}/${season}/${episode}`;
+    ? `https://${server}/embed/movie/${tmdbId}`
+    : `https://${server}/embed/tv/${tmdbId}/${season}/${episode}`;
 }
 
 async function isUrlAvailable(url) {
@@ -61,25 +75,30 @@ async function isUrlAvailable(url) {
 
 async function loadVideo(server, episode = 1) {
   const url = buildEmbedUrl(server, episode);
-  document.getElementById('modal-video').outerHTML = `<iframe id="modal-video" src="${url}" width="100%" height="400" allowfullscreen></iframe>`;
+  document.getElementById('modal-video').outerHTML = `
+    <iframe id="modal-video" width="100%" height="400" src="${url}" frameborder="0" allowfullscreen></iframe>
+  `;
 }
 
 async function autoFindServer() {
-  showToast('Finding best server...');
-  for (let server of servers) {
-    const url = buildEmbedUrl(server, selectedEpisode);
-    if (await isUrlAvailable(url)) {
+  showSpinner(true);
+  for (const server of servers) {
+    const testUrl = buildEmbedUrl(server, selectedEpisode);
+    if (await isUrlAvailable(testUrl)) {
       currentServer = server;
       document.getElementById('server-picker').value = server;
-      loadVideo(server, selectedEpisode);
+      await loadVideo(server, selectedEpisode);
+      showSpinner(false);
       return;
     }
   }
-  document.getElementById('modal-video').outerHTML = `<div id="modal-video" style="text-align:center;padding:20px;color:red;">Server not found</div>`;
+  showSpinner(false);
+  showServerNotFound();
 }
 
 function manualServerSelect() {
-  currentServer = document.getElementById('server-picker').value;
+  const sel = document.getElementById('server-picker').value;
+  currentServer = sel;
   loadVideo(currentServer, selectedEpisode);
 }
 
@@ -87,6 +106,7 @@ async function showDetails(item) {
   currentItem = item;
   selectedEpisode = 1;
   currentSeason = 1;
+
   document.getElementById('modal').style.display = 'flex';
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
@@ -94,26 +114,27 @@ async function showDetails(item) {
   document.getElementById('episode-buttons').innerHTML = '';
   document.getElementById('season-picker').innerHTML = '';
 
-  const sel = document.getElementById('server-picker');
-  sel.innerHTML = '';
-  servers.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s;
-    opt.textContent = s;
-    sel.appendChild(opt);
+  const serverSelect = document.getElementById('server-picker');
+  serverSelect.innerHTML = '';
+  servers.forEach(server => {
+    const option = document.createElement('option');
+    option.value = server;
+    option.textContent = server;
+    serverSelect.appendChild(option);
   });
 
   if (item.media_type === 'tv') {
     document.getElementById('season-picker-container').style.display = 'block';
     const data = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(r => r.json());
-    data.seasons.forEach(s => {
-      if (s.season_number > 0) {
-        const o = document.createElement('option');
-        o.value = s.season_number;
-        o.textContent = `Season ${s.season_number}`;
-        document.getElementById('season-picker').appendChild(o);
-      }
+
+    data.seasons.forEach(season => {
+      if (season.season_number === 0) return;
+      const opt = document.createElement('option');
+      opt.value = season.season_number;
+      opt.textContent = `Season ${season.season_number}`;
+      document.getElementById('season-picker').appendChild(opt);
     });
+
     await loadEpisodes();
   } else {
     document.getElementById('season-picker-container').style.display = 'none';
@@ -123,22 +144,22 @@ async function showDetails(item) {
 
 async function loadEpisodes() {
   currentSeason = document.getElementById('season-picker').value;
-  const res = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`);
-  const data = await res.json();
+  const data = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`).then(res => res.json());
   const container = document.getElementById('episode-buttons');
   container.innerHTML = '';
 
   data.episodes.forEach(ep => {
     const btn = document.createElement('button');
-    btn.textContent = ep.episode_number;
-    btn.onclick = async () => {
+    btn.textContent = `${ep.episode_number}`;
+    btn.onclick = () => {
       selectedEpisode = ep.episode_number;
-      await autoFindServer(); // re-check for that episode
+      // 👇 Use currentServer here to respect user selection
+      loadVideo(currentServer, selectedEpisode);
     };
     container.appendChild(btn);
   });
 
-  await autoFindServer(); // Load first episode initially
+  await autoFindServer(); // only run once when loading episodes
 }
 
 function closeModal() {
@@ -146,19 +167,21 @@ function closeModal() {
   document.getElementById('modal-video').src = '';
 }
 
-document.getElementById('search-input').addEventListener('input', async e => {
-  const query = e.target.value.trim();
+document.getElementById('search-input').addEventListener('input', async function () {
+  const query = this.value.trim();
+  const resultsContainer = document.getElementById('search-results');
+  resultsContainer.innerHTML = '';
+
   if (!query) return;
   const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
   const data = await res.json();
-  const results = data.results.filter(r => r.poster_path && ['movie', 'tv'].includes(r.media_type));
-  const container = document.getElementById('movies-list');
-  container.innerHTML = '';
-  results.forEach(item => {
+  const items = data.results.filter(item => item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv'));
+
+  items.forEach(item => {
     const img = document.createElement('img');
     img.src = `${IMG_URL}${item.poster_path}`;
     img.onclick = () => showDetails(item);
-    container.appendChild(img);
+    resultsContainer.appendChild(img);
   });
 });
 
