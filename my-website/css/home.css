@@ -86,31 +86,18 @@ header {
     font-size: 24px;
 }
 
-#search-results {
+.search-results {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
 }
 
-#search-results img {
+.search-results img {
     margin: 10px;
     width: 100px; /* Set width for search result images */
     height: auto; /* Maintain aspect ratio */
     cursor: pointer;
-}
-
-.episode-button {
-    margin: 5px;
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.episode-button:hover {
-    background-color: #0056b3;
 }
 
 #mode-toggle {
