@@ -17,7 +17,9 @@ const servers = [
   'vidsrc.wtf/api/4',
   'vidsrc.wtf/api/3',
   'vidsrc.wtf/api/2',
-  'vidsrc.wtf/api/1'
+  'vidsrc.wtf/api/1',
+  'embed.fmovies0.cc',
+  'player.fmovies0.cc'
 ];
 
 // Spinner
@@ -39,45 +41,45 @@ function showServerNotFound() {
 function buildEmbedUrl(server, episode = 1) {
   const tmdbId = currentItem.id;
   const season = currentSeason;
-  const color = 'ff0000'; // Example hex color
+  const color = 'ff0000';
 
   if (server.startsWith('vidsrc.wtf/api/')) {
     const apiVersion = server.split('/')[2];
     const baseUrl = `https://vidsrc.wtf/api/${apiVersion}`;
     if (currentItem.media_type === 'movie') {
-      if (['1', '2'].includes(apiVersion)) {
-        return `${baseUrl}/movie/?id=${tmdbId}&color=${color}`;
-      } else {
-        return `${baseUrl}/movie/?id=${tmdbId}`;
-      }
+      return ['1', '2'].includes(apiVersion)
+        ? `${baseUrl}/movie/?id=${tmdbId}&color=${color}`
+        : `${baseUrl}/movie/?id=${tmdbId}`;
     } else {
-      if (['1', '2'].includes(apiVersion)) {
-        return `${baseUrl}/tv/?id=${tmdbId}&s=${season}&e=${episode}&color=${color}`;
-      } else {
-        return `${baseUrl}/tv/?id=${tmdbId}&s=${season}&e=${episode}`;
-      }
+      return ['1', '2'].includes(apiVersion)
+        ? `${baseUrl}/tv/?id=${tmdbId}&s=${season}&e=${episode}&color=${color}`
+        : `${baseUrl}/tv/?id=${tmdbId}&s=${season}&e=${episode}`;
     }
   }
 
   if (server === 'embed.vidsrc.pk') {
-    if (currentItem.media_type === 'movie') {
-      return `https://embed.vidsrc.pk/movie/${tmdbId}`;
-    } else {
-      return `https://embed.vidsrc.pk/tv/${tmdbId}/${season}-${episode}`;
-    }
+    return currentItem.media_type === 'movie'
+      ? `https://embed.vidsrc.pk/movie/${tmdbId}`
+      : `https://embed.vidsrc.pk/tv/${tmdbId}/${season}-${episode}`;
   }
 
-  if (currentItem.media_type === 'movie') {
-    return `https://${server}/embed/movie/${tmdbId}`;
-  } else {
-    return `https://${server}/embed/tv/${tmdbId}/${season}/${episode}`;
+  if (server === 'embed.fmovies0.cc') {
+    return `https://embed.fmovies0.cc/embed/movie/${tmdbId}`;
   }
+
+  if (server === 'player.fmovies0.cc') {
+    return `https://player.fmovies0.cc/embed/tv/${tmdbId}/${season}/${episode}`;
+  }
+
+  return currentItem.media_type === 'movie'
+    ? `https://${server}/embed/movie/${tmdbId}`
+    : `https://${server}/embed/tv/${tmdbId}/${season}/${episode}`;
 }
 
 // Check if URL loads
 async function isUrlAvailable(url) {
   try {
-    const res = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+    await fetch(url, { method: 'HEAD', mode: 'no-cors' });
     return true;
   } catch {
     return false;
@@ -138,7 +140,6 @@ async function showDetails(item) {
     serverSelect.appendChild(option);
   });
 
-  // TV logic
   if (item.media_type === 'tv') {
     document.getElementById('season-picker-container').style.display = 'block';
     const data = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(r => r.json());
@@ -167,7 +168,7 @@ async function loadEpisodes() {
 
   data.episodes.forEach(ep => {
     const btn = document.createElement('button');
-    btn.textContent = `E${ep.episode_number}: ${ep.name}`;
+    btn.textContent = `E${ep.episode_number}`;
     btn.onclick = () => {
       selectedEpisode = ep.episode_number;
       loadVideo(currentServer, selectedEpisode);
