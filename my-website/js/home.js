@@ -40,10 +40,11 @@ function buildEmbedUrl(server, episode = 1) {
   const season = currentSeason;
   const color = 'ff0000';
 
-  if (server.startsWith('vidsrc.wtf/api/')) {
+  if (server.includes('/')) {
     const apiVersion = server.split('/')[2];
-    const baseUrl = `https://vidsrc.wtf/api/${apiVersion}`;
-    if (currentItem.media_type === 'movie') {
+    const baseUrl = `/${apiVersion}`;
+
+    if (currentItem._type === 'movie') {
       return ['1', '2'].includes(apiVersion)
         ? `${baseUrl}/movie/?id=${tmdbId}&color=${color}`
         : `${baseUrl}/movie/?id=${tmdbId}`;
@@ -54,21 +55,21 @@ function buildEmbedUrl(server, episode = 1) {
     }
   }
 
-  if (server === 'embed.vidsrc.pk') {
-    return currentItem.media_type === 'movie'
-      ? `https://embed.vidsrc.pk/movie/${tmdbId}`
-      : `https://embed.vidsrc.pk/tv/${tmdbId}/${season}-${episode}`;
+  if (server === ' ') {
+    return currentItem._type === 'movie'
+      ? `/${tmdbId}`
+      : `/${tmdbId}/${season}-${episode}`;
   }
 
-  if (server === 'embed.fmovies0.cc') {
-    return `https://embed.fmovies0.cc/embed/movie/${tmdbId}`;
+  if (server === ' 0.cc') {
+    return `0.cc/embed/movie/${tmdbId}`;
   }
 
-  if (server === 'player.fmovies0.cc') {
-    return `https://player.fmovies0.cc/embed/tv/${tmdbId}/${season}/${episode}`;
+  if (server === ' 0.cc') {
+    return `0.cc/embed/tv/${tmdbId}/${season}/${episode}`;
   }
 
-  return currentItem.media_type === 'movie'
+  return currentItem._type === 'movie'
     ? `https://${server}/embed/movie/${tmdbId}`
     : `https://${server}/embed/tv/${tmdbId}/${season}/${episode}`;
 }
@@ -87,12 +88,13 @@ async function isUrlAvailable(url) {
 async function loadVideo(server, episode = 1) {
   const url = buildEmbedUrl(server, episode);
   const iframe = document.getElementById('modal-video');
-  iframe.outerHTML = `<iframe id="modal-video" width="100%" height="400" src="${url}" frameborder="0" allowfullscreen></iframe>`;
+  iframe.src = url;
 }
 
 // Automatically test and pick best server
 async function autoFindServer() {
   showSpinner(true);
+
   for (const server of servers) {
     const testUrl = buildEmbedUrl(server, selectedEpisode);
     if (await isUrlAvailable(testUrl)) {
@@ -103,6 +105,7 @@ async function autoFindServer() {
       return;
     }
   }
+
   showSpinner(false);
   showServerNotFound();
 }
@@ -117,19 +120,20 @@ function manualServerSelect() {
 // Show details
 async function showDetails(item) {
   currentItem = item;
-  selectedEpisode = 1;
-  currentSeason = 1;
+  selectedEpisode = 1; // Reset selected episode
+  currentSeason = 1; // Reset season
 
   document.getElementById('modal').style.display = 'flex';
   document.getElementById('modal-title').textContent = item.title || item.name;
   document.getElementById('modal-description').textContent = item.overview;
   document.getElementById('modal-image').src = `${IMG_URL}${item.poster_path}`;
-  document.getElementById('episode-buttons').innerHTML = '';
-  document.getElementById('season-picker').innerHTML = '';
+  document.getElementById('episode-buttons').innerHTML = ''; // Clear episode buttons
+  document.getElementById('season-picker').innerHTML = ''; // Clear season picker
 
   // Server picker
   const serverSelect = document.getElementById('server-picker');
   serverSelect.innerHTML = '';
+
   servers.forEach(server => {
     const option = document.createElement('option');
     option.value = server;
@@ -137,7 +141,7 @@ async function showDetails(item) {
     serverSelect.appendChild(option);
   });
 
-  if (item.media_type === 'tv') {
+  if (item._type === 'tv') {
     document.getElementById('season-picker-container').style.display = 'block';
     const data = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(r => r.json());
 
@@ -161,7 +165,7 @@ async function loadEpisodes() {
   currentSeason = document.getElementById('season-picker').value;
   const data = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`).then(res => res.json());
   const container = document.getElementById('episode-buttons');
-  container.innerHTML = '';
+  container.innerHTML = ''; // Clear existing episode buttons
 
   // Add the "Reset" button
   const resetBtn = document.createElement('button');
@@ -169,8 +173,9 @@ async function loadEpisodes() {
   resetBtn.addEventListener('click', () => {
     selectedEpisode = 1;
     loadVideo(currentServer, selectedEpisode);
-    resetBtn.classList.add('selected');
+    // Highlight the reset button
     Array.from(container.children).forEach(btn => btn.classList.remove('selected'));
+    resetBtn.classList.add('selected');
   });
   container.appendChild(resetBtn);
 
@@ -180,9 +185,11 @@ async function loadEpisodes() {
     btn.addEventListener('click', () => {
       selectedEpisode = ep.episode_number;
       loadVideo(currentServer, selectedEpisode);
+      // Highlight the selected episode button
+      Array.from(container.children).forEach(btn => btn.classList.remove('selected'));
       btn.classList.add('selected');
-      resetBtn.classList.remove('selected');
     });
+
     if (selectedEpisode === ep.episode_number) {
       btn.classList.add('selected');
     }
@@ -192,7 +199,6 @@ async function loadEpisodes() {
   await autoFindServer();
 }
 
-
 // Other Functions
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
@@ -200,11 +206,12 @@ function closeModal() {
 }
 
 document.getElementById('search-input').addEventListener('input', async function () {
-  const query = this.value.trim();
+  const query = this.value;
   const resultsContainer = document.getElementById('search-results');
   resultsContainer.innerHTML = '';
 
   if (!query) return;
+
   const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
   const data = await res.json();
   const items = data.results.filter(item => item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv'));
@@ -212,7 +219,7 @@ document.getElementById('search-input').addEventListener('input', async function
   items.forEach(item => {
     const img = document.createElement('img');
     img.src = `${IMG_URL}${item.poster_path}`;
-    img.onclick = () => showDetails(item);
+    img.addEventListener('click', () => showDetails(item));
     resultsContainer.appendChild(img);
   });
 });
@@ -232,11 +239,12 @@ async function init() {
 function displayList(items, containerId, type) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
+
   items.forEach(item => {
-    item.media_type = type;
+    item._type = type;
     const img = document.createElement('img');
     img.src = `${IMG_URL}${item.poster_path}`;
-    img.onclick = () => showDetails(item);
+    img.addEventListener('click', () => showDetails(item));
     container.appendChild(img);
   });
 }
