@@ -4,11 +4,53 @@
   <meta charset="UTF-8">
   <title>Movie App</title>
   <style>
+  :root {
+    --bg: #111;
+    --text: #fff;
+    --card-bg: #222;
+    --highlight: #3498db;
+  }
+
+  body.light {
+    --bg: #f5f5f5;
+    --text: #111;
+    --card-bg: #fff;
+    --highlight: #2980b9;
+  }
+
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #111;
-    color: #fff;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+  }
+
+  #header {
+    background: var(--card-bg);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  #app-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--highlight);
+  }
+
+  #toggle-theme {
+    background: var(--highlight);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
   }
 
   #banner {
@@ -42,6 +84,7 @@
     height: 160px;
     border-radius: 10px;
     flex-shrink: 0;
+    cursor: pointer;
   }
 
   #modal {
@@ -89,7 +132,7 @@
     padding: 6px 10px;
     font-size: 14px;
     border-radius: 5px;
-    background: #3498db;
+    background: var(--highlight);
     border: none;
     color: white;
     cursor: pointer;
@@ -156,8 +199,8 @@
   }
 
   #search-results img {
-    height: 120px;
-    border-radius: 8px;
+    height: 100px;
+    border-radius: 6px;
     cursor: pointer;
   }
 
@@ -179,7 +222,6 @@
     display: block;
   }
 
-  /* 📱 Mobile responsiveness */
   @media (max-width: 600px) {
     #banner {
       height: 200px;
@@ -211,18 +253,22 @@
       font-size: 13px;
     }
   }
-</style>
+  </style>
 </head>
 <body>
+
+<!-- Header Bar -->
+<div id="header">
+  <div id="app-title" onclick="location.reload()">Movie App</div>
+  <button id="toggle-theme" onclick="toggleTheme()">🌙 Theme</button>
+</div>
 
 <div id="search-container">
   <input type="text" id="search-input" placeholder="Search for movies, TV shows, or anime...">
   <div id="search-results"></div>
 </div>
 
-<div id="banner">
-  <div id="banner-title">Banner Title</div>
-</div>
+<div id="banner"><div id="banner-title">Banner Title</div></div>
 
 <div class="list-section"><h2>Movies</h2><div id="movies-list" class="list-container"></div></div>
 <div class="list-section"><h2>TV Shows</h2><div id="tvshows-list" class="list-container"></div></div>
@@ -257,6 +303,25 @@
 </div>
 
 <div id="toast"></div>
+
+<script>
+  // THEME
+  const themeBtn = document.getElementById('toggle-theme');
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    themeBtn.textContent = document.body.classList.contains('light') ? '🌚 Dark' : '🌙 Light';
+    localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  }
+
+  // Load theme
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      document.body.classList.add('light');
+      themeBtn.textContent = '🌚 Dark';
+    }
+  });
+</script>
 
 <script src="js/home.js"></script>
 </body>
