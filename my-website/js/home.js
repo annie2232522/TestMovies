@@ -182,7 +182,7 @@ async function searchTMDB() {
     }
 
     try {
-        const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
+        const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
         const data = await res.json();
         
         if (!res.ok) throw new Error(data.status_message); // Handle API errors
