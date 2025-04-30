@@ -28,9 +28,20 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modal-title"></h2>
-            <img id="modal-image" src="" alt="">
-            <p id="modal-description"></p>
-            <div id="modal-rating"></div>
+            <div class="player-container">
+                <img id="modal-image" src="" alt="" class="player-poster">
+                <div class="description-container">
+                    <p id="modal-description"></p>
+                    <div id="modal-rating"></div>
+                    <button onclick="closeModal()">Close</button>
+                    <button onclick="goBack()">Back</button>
+                    <select id="server-selector" onchange="changeServer()">
+                        <option value="vidsrc.me">Vidsrc</option>
+                        <option value="another_server.com">Another Server</option>
+                        <!-- Add more server options as needed -->
+                    </select>
+                </div>
+            </div>
             <select id="season-picker" onchange="loadSeasonEpisodes()"></select>
             <select id="episode-picker"></select>
             <div id="episode-list"></div>
