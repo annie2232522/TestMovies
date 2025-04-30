@@ -6,16 +6,29 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-body.dark-mode {
-    background-color: #181818;
-    color: #ffffff;
-}
-
 header {
     background-color: #333;
     color: #fff;
     padding: 10px 20px;
     text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #eee;
+    margin: 0 5px;
+    border-radius: 5px;
+}
+
+.tab:hover {
+    background-color: #ddd;
 }
 
 .item-list {
@@ -43,7 +56,7 @@ header {
 }
 
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -59,31 +72,7 @@ header {
     padding: 20px;
     border-radius: 5px;
     width: 80%;
-    max-width: 800px; /* Increased width for better layout */
-    position: relative;
-}
-
-.player-container {
-    display: flex;
-    align-items: flex-start;
-}
-
-.player-poster {
-    width: 150px; /* Smaller poster size */
-    height: auto; /* Maintain aspect ratio */
-    margin-right: 20px; /* Space between poster and description */
-}
-
-.description-container {
-    flex: 1; /* Take remaining space */
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 24px;
+    max-width: 800px;
 }
 
 .search-results {
@@ -95,12 +84,7 @@ header {
 
 .search-results img {
     margin: 10px;
-    width: 100px; /* Set width for search result images */
-    height: auto; /* Maintain aspect ratio */
-    cursor: pointer;
-}
-
-#mode-toggle {
-    margin-left: 10px;
+    width: 100px;
+    height: auto;
     cursor: pointer;
 }
