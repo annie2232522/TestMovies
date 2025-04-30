@@ -1,55 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CornHub</title>
+  <meta charset="UTF-8">
+  <title>MovieHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
-  <div class="navbar">
-    <div class="logo">CornHub</div>
-    <input id="search-input" class="search-bar" placeholder="Search..." />
+
+  <!-- Search Bar -->
+  <div class="search-bar-wrapper">
+    <input type="text" id="search-input" placeholder="Search for movies, shows or anime..." />
+    <div id="search-results"></div>
   </div>
 
-  <div class="banner" id="banner">
-    <h1 id="banner-title">Welcome to CornHub</h1>
+  <!-- Banner -->
+  <div id="banner">
+    <h1 id="banner-title"></h1>
   </div>
 
-  <div class="row"><h2>Trending Movies</h2><div class="list" id="movies-list"></div></div>
-  <div class="row"><h2>TV Shows</h2><div class="list" id="tvshows-list"></div></div>
-  <div class="row"><h2>Anime</h2><div class="list" id="anime-list"></div></div>
+  <!-- Lists -->
+  <section>
+    <h2>Trending Movies</h2>
+    <div id="movies-list" class="list"></div>
+  </section>
+  <section>
+    <h2>Trending TV Shows</h2>
+    <div id="tvshows-list" class="list"></div>
+  </section>
+  <section>
+    <h2>Trending Anime</h2>
+    <div id="anime-list" class="list"></div>
+  </section>
 
-  <div class="modal" id="modal">
+  <!-- Modal -->
+  <div id="modal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <div class="modal-body">
-        <img id="modal-image" />
-        <div class="modal-text">
-          <h2 id="modal-title"></h2>
-          <p id="modal-description"></p>
-        </div>
+      <div class="modal-header">
+        <button onclick="closeModal()">✖</button>
+        <h2 id="modal-title"></h2>
+      </div>
+      <img id="modal-image" src="" alt="" />
+      <p id="modal-description"></p>
+
+      <!-- Server Selector -->
+      <label for="server-picker">Choose Server:</label>
+      <select id="server-picker" onchange="manualServerSelect()"></select>
+      <p class="server-tip">Please switch to other servers if default server doesn't work.<br>If the server isn't working, try a different browser or disable your ad blocker.</p>
+
+      <!-- Season Picker -->
+      <div id="season-picker-container">
+        <label for="season-picker">Season:</label>
+        <select id="season-picker" onchange="loadEpisodes()"></select>
       </div>
 
-      <div>
-        <button class="control-button" onclick="closeModal()">Close</button>
-      <button class="control-button back-button" onclick="closeModal()">Back</button>
-        <select id="server-picker" onchange="manualServerSelect()"></select>
-        <p style="font-size: 13px; color: #ccc;">
-          Please switch to other servers if default server doesn't work.<br>
-          If the server isn't working, try a different browser or disable your ad blocker.
-        </p>
-        <div id="season-picker-container" style="display:none;">
-          <label>Season:</label>
-          <select id="season-picker" onchange="loadEpisodes()"></select>
-        </div>
-        <div id="episode-buttons" class="episode-buttons"></div>
-        <iframe id="modal-video" width="100%" height="400" allowfullscreen></iframe>
-      </div>
+      <!-- Episodes -->
+      <div id="episode-buttons" class="episode-buttons"></div>
+
+      <!-- Video -->
+      <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast"></div>
+
+  <!-- Script -->
   <script src="js/home.js"></script>
 </body>
 </html>
