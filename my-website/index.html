@@ -1,69 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Movie App</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Movie App</title>
+  <style>
+  :root {
+    --bg: #111;
+    --text: #fff;
+    --card-bg: #222;
+    --highlight: #3498db;
+  }
+
+  body.light {
+    --bg: #f5f5f5;
+    --text: #111;
+    --card-bg: #fff;
+    --highlight: #2980b9;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+  }
+
+  #header {
+    background: var(--card-bg);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  #app-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--highlight);
+  }
+
+  #toggle-theme {
+    background: var(--highlight);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  #banner {
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 20px;
+  }
+
+  #banner-title {
+    font-size: 1.5em;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    border-radius: 8px;
+  }
+
+  .list-section {
+    padding: 15px;
+  }
+
+  .list-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+  }
+
+  .list-container img {
+    height: 160px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  #modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 20px;
+    z-index: 1000;
+  }
+
+  #modal-content {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #modal-image {
+    width: 150px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  #modal-video {
+    width: 100%;
+    height: 300px;
+    margin: 10px 0;
+  }
+
+  #episode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px 0;
+  }
+
+  #episode-buttons button {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    background: var(--highlight);
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  select {
+    padding: 8px;
+    font-size: 14px;
+    margin: 10px 0;
+    width: 90%;
+    max-width: 400px;
+  }
+
+  #server-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .control-button {
+    background: #e74c3c;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .back-button {
+    background: #7f8c8d;
+  }
+
+  #server-note {
+    margin: 10px 0;
+    font-size: 14px;
+    color: #ccc;
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  #search-container {
+    padding: 15px;
+    text-align: center;
+  }
+
+  #search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 18px;
+    border-radius: 20px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+  }
+
+  #search-results {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px;
+    justify-content: flex-start;
+  }
+
+  #search-results img {
+    height: 100px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: none;
+    z-index: 9999;
+  }
+
+  #toast.show {
+    display: block;
+  }
+
+  @media (max-width: 600px) {
+    #banner {
+      height: 200px;
+    }
+
+    #banner-title {
+      font-size: 1.2em;
+    }
+
+    #modal-image {
+      width: 120px;
+    }
+
+    #modal-video {
+      height: 220px;
+    }
+
+    .control-button {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+
+    #episode-buttons button {
+      font-size: 12px;
+      padding: 5px 8px;
+    }
+
+    select {
+      font-size: 13px;
+    }
+  }
+  </style>
 </head>
 <body>
 
-  <div class="navbar">
-    <div class="logo" onclick="window.location.reload()">SmartMovie</div>
-    <button id="theme-toggle">Toggle Theme</button>
-    <input type="text" id="search-input" placeholder="Search movies or shows..." />
-  </div>
+<!-- Header Bar -->
+<div id="header">
+  <div id="app-title" onclick="location.reload()">Movie App</div>
+  <button id="toggle-theme" onclick="toggleTheme()">🌙 Theme</button>
+</div>
 
-  <div class="banner" id="banner">
-    <h1 id="banner-title"></h1>
-  </div>
+<div id="search-container">
+  <input type="text" id="search-input" placeholder="Search for movies, TV shows, or anime...">
+  <div id="search-results"></div>
+</div>
 
-  <div class="list-section">
-    <h2>Trending Movies</h2>
-    <div class="list" id="movies-list"></div>
-  </div>
+<div id="banner"><div id="banner-title">Banner Title</div></div>
 
-  <div class="list-section">
-    <h2>Trending TV Shows</h2>
-    <div class="list" id="tvshows-list"></div>
-  </div>
+<div class="list-section"><h2>Movies</h2><div id="movies-list" class="list-container"></div></div>
+<div class="list-section"><h2>TV Shows</h2><div id="tvshows-list" class="list-container"></div></div>
+<div class="list-section"><h2>Anime</h2><div id="anime-list" class="list-container"></div></div>
 
-  <div class="list-section">
-    <h2>Anime</h2>
-    <div class="list" id="anime-list"></div>
-  </div>
+<!-- Modal -->
+<div id="modal">
+  <div id="modal-content">
+    <img id="modal-image" src="" alt="">
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
 
-  <!-- Modal -->
-  <div id="modal">
-    <div id="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <img id="modal-image" alt="Poster">
-      <h2 id="modal-title"></h2>
-      <p id="modal-description"></p>
-
-      <div>
-        <label for="server-picker">Change Server:</label>
-        <select id="server-picker" onchange="manualServerSelect()"></select>
-      </div>
-
-      <div id="server-note">
-        Please switch to other servers if default server doesn't work.<br>
-        If the server isn't working, try a different browser or disable your ad blocker.
-      </div>
-
-      <div id="season-picker-container" style="display: none;">
-        <label for="season-picker">Season:</label>
-        <select id="season-picker" onchange="loadEpisodes()"></select>
-      </div>
-
-      <div id="episode-buttons"></div>
-
-      <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+    <div id="server-controls">
+      <button class="control-button" onclick="closeModal()">Close</button>
+      <button class="control-button back-button" onclick="closeModal()">Back</button>
     </div>
+
+    <div id="server-note">
+      Please switch to other servers if default server doesn't work.<br>
+      If the server isn't working, try a different browser or disable your ad blocker.
+    </div>
+
+    <select id="server-picker" onchange="manualServerSelect()"></select>
+
+    <div id="season-picker-container" style="display: none;">
+      <select id="season-picker" onchange="loadEpisodes()"></select>
+    </div>
+
+    <div id="episode-buttons"></div>
+    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe><br><br><br><br><br><br><br>
   </div>
+</div>
 
-  <div id="toast"></div>
+<div id="toast"></div>
 
-  <script src="script.js"></script>
+<script>
+  // THEME
+  const themeBtn = document.getElementById('toggle-theme');
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    themeBtn.textContent = document.body.classList.contains('light') ? '🌚 Dark' : '🌙 Light';
+    localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  }
+
+  // Load theme
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      document.body.classList.add('light');
+      themeBtn.textContent = '🌚 Dark';
+    }
+  });
+</script>
+
+<script src="js/home.js"></script>
 </body>
 </html>
