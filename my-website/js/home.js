@@ -180,9 +180,7 @@ function closeSearchModal() {
 }
 
 function handleSearch(event) {
-    if (event.key === "Enter") {
-        searchTMDB();
-    }
+    searchTMDB(); // Trigger search on every input
 }
 
 async function searchTMDB() {
