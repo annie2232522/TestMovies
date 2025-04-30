@@ -2,456 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Movie App</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #fff;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.light {
-      background-color: #fff;
-      color: #111;
-    }
-
-    #search-container {
-      padding: 20px;
-      text-align: center;
-    }
-
-    #search-input {
-      width: 90%;
-      max-width: 500px;
-      padding: 12px 20px;
-      border-radius: 30px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
-
-    #search-results {
-      display: flex;
-      overflow-x: auto;
-      padding: 10px;
-      gap: 10px;
-      justify-content: flex-start;
-    }
-
-    #search-results img {
-      height: 120px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #banner {
-      height: 300px;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: flex-end;
-      padding: 20px;
-      cursor: pointer;
-    }
-
-    #banner-title {
-      font-size: 24px;
-      background: rgba(0,0,0,0.5);
-      padding: 10px 20px;
-      border-radius: 10px;
-      color: #fff;
-    }
-
-    .list-section {
-      padding: 15px;
-    }
-
-    .list-container {
-      display: flex;
-      overflow-x: auto;
-      gap: 10px;
-    }
-
-    .list-container img {
-      height: 160px;
-      border-radius: 8px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-
-   #modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    overflow-y: auto;
-    z-index: 1000;
-    padding: 20px;
-}
-
-#modal-content {
-    max-width: 800px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: auto;
-}
-
-#modal-video {
-    width: 100%;
-    height: 400px;
-    margin-bottom: 10px;
-}
-
-#episode-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
-    justify-content: center;
-}
-
-#episode-buttons button {
-    padding: 6px 12px;
-    border: none;
-    background: #3498db;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-select {
-    padding: 10px;
-    width: 100%;
-    max-width: 400px;
-    margin: 10px auto;
-    display: block;
-}
-
-.server-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-    justify-content: center;
-    width: 100%;
-}
-
-.server-controls button {
-    background: #e74c3c;
-    color: white;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.back-button {
-    background: #7f8c8d !important;
-}
-
-#season-picker-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-    #toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      display: none;
-      z-index: 9999;
-    }
-
-    #toast.show {
-      display: block;
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    body.light .theme-toggle {
-      background: #ddd;
-      color: #000;
-    }
-    .server-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Movie App</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
-
-<div id="search-container">
-  <input type="text" id="search-input" placeholder="Search for Movies or Shows..." />
-  <div id="search-results"></div><br/>
-</div>
-
-<div id="banner" onclick="window.location.reload()">
-  <div id="banner-title">Home</div>
-</div>
-
-<div class="list-section"><h2>Movies</h2><div id="movies-list" class="list-container"></div></div>
-<div class="list-section"><h2>TV Shows</h2><div id="tvshows-list" class="list-container"></div></div>
-<div class="list-section"><h2>Anime</h2><div id="anime-list" class="list-container"></div></div>
-
-<div id="modal">
-  <div id="modal-content">
-    <iframe id="modal-video" frameborder="0" allowfullscreen></iframe>
-
-    <div class="server-controls">
-      <button onclick="closeModal()">Close</button>
-      <button class="back-button" onclick="closeModal()">Back</button>
-    </div>
-
-    <div style="margin-top: 10px; color: #ccc; text-align: center; font-size: 14px;">
-      Please switch to other servers if default doesn't work.<br/>
-      If the server fails, try a different browser or disable ad blocker.
-    </div>
-
-    <select id="server-picker" onchange="manualServerSelect()"></select>
-
-    <div id="season-picker-container" style="display:none;">
-      <select id="season-picker" onchange="loadEpisodes()"></select>
-    </div>
-
-    <div id="episode-buttons"></div><br/><br/><br/><br/>
+  <div class="navbar">
+    <div class="logo" onclick="window.location.reload()">SmartMovie</div>
+    <button id="theme-toggle">Toggle Theme</button>
+    <input type="text" id="search-input" placeholder="Search movies or shows..." />
   </div>
-</div>
 
-<div id="toast"></div>
+  <div class="banner" id="banner">
+    <h1 id="banner-title"></h1>
+  </div>
 
-<script>
-const API_KEY = '7ee3f44e92211fe941b4243a38e99265';
-const BASE_URL = 'https://api.themoviedb.org/3';
-const IMG_URL = 'https://image.tmdb.org/t/p/original';
+  <div class="list-section">
+    <h2>Trending Movies</h2>
+    <div class="list" id="movies-list"></div>
+  </div>
 
-let currentItem = null;
-let currentSeason = 1;
-let currentServer = '';
-let selectedEpisode = 1;
+  <div class="list-section">
+    <h2>Trending TV Shows</h2>
+    <div class="list" id="tvshows-list"></div>
+  </div>
 
-const servers = [
-  { value: 'vidsrc.me', label: 'Vidsrc.me' },
-  { value: 'embed.vidsrc.pk', label: 'Vidsrc.pk' },
-  { value: 'moviesapi.club', label: 'MoviesAPI' },
-  { value: '2embed.cc', label: '2Embed' },
-  { value: 'superembed.stream', label: 'SuperEmbed' },
-  { value: 'vidsrc.xyz', label: 'Vidsrc.xyz' },
-  { value: 'vidsrc.wtf/api/4', label: 'Vidsrc API 4' },
-  { value: 'vidsrc.wtf/api/3', label: 'Vidsrc API 3' },
-  { value: 'vidsrc.wtf/api/2', label: 'Vidsrc API 2' },
-  { value: 'vidsrc.wtf/api/1', label: 'Vidsrc API 1' },
-  { value: 'embed.fmovies0.cc', label: 'FMovies (Movies)' },
-  { value: 'player.fmovies0.cc', label: 'FMovies (TV)' }
-];
+  <div class="list-section">
+    <h2>Anime</h2>
+    <div class="list" id="anime-list"></div>
+  </div>
 
-function toggleTheme() {
-  document.body.classList.toggle('light');
-}
+  <!-- Modal -->
+  <div id="modal">
+    <div id="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <img id="modal-image" alt="Poster">
+      <h2 id="modal-title"></h2>
+      <p id="modal-description"></p>
 
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'show';
-  setTimeout(() => toast.className = '', 3000);
-}
+      <div>
+        <label for="server-picker">Change Server:</label>
+        <select id="server-picker" onchange="manualServerSelect()"></select>
+      </div>
 
-function buildEmbedUrl(server, episode = 1) {
-  const id = currentItem.id;
-  const season = currentSeason;
-  const color = 'ff0000';
+      <div id="server-note">
+        Please switch to other servers if default server doesn't work.<br>
+        If the server isn't working, try a different browser or disable your ad blocker.
+      </div>
 
-  if (server.includes('vidsrc.wtf')) {
-    const v = server.split('/')[2];
-    const base = `https://vidsrc.wtf/api/${v}`;
-    return currentItem.media_type === 'movie'
-      ? `${base}/movie/?id=${id}&color=${color}`
-      : `${base}/tv/?id=${id}&s=${season}&e=${episode}&color=${color}`;
-  }
+      <div id="season-picker-container" style="display: none;">
+        <label for="season-picker">Season:</label>
+        <select id="season-picker" onchange="loadEpisodes()"></select>
+      </div>
 
-  if (server === 'embed.vidsrc.pk')
-    return currentItem.media_type === 'movie'
-      ? `https://embed.vidsrc.pk/movie/${id}`
-      : `https://embed.vidsrc.pk/tv/${id}/${season}-${episode}`;
+      <div id="episode-buttons"></div>
 
-  if (server === 'embed.fmovies0.cc')
-    return `https://embed.fmovies0.cc/embed/movie/${id}`;
+      <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
 
-  if (server === 'player.fmovies0.cc')
-    return `https://player.fmovies0.cc/embed/tv/${id}/${season}/${episode}`;
+  <div id="toast"></div>
 
-  return currentItem.media_type === 'movie'
-    ? `https://${server}/embed/movie/${id}`
-    : `https://${server}/embed/tv/${id}/${season}/${episode}`;
-}
-
-async function isUrlAvailable(url) {
-  try {
-    await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-    return true;
-  } catch { return false; }
-}
-
-async function loadVideo(server, episode = 1) {
-  const url = buildEmbedUrl(server, episode);
-  document.getElementById('modal-video').outerHTML =
-    `<iframe id="modal-video" width="100%" height="400" src="${url}" frameborder="0" allowfullscreen></iframe>`;
-}
-
-async function autoFindServer() {
-  for (const s of servers) {
-    const url = buildEmbedUrl(s.value, selectedEpisode);
-    if (await isUrlAvailable(url)) {
-      currentServer = s.value;
-      document.getElementById('server-picker').value = s.value;
-      await loadVideo(s.value, selectedEpisode);
-      return;
-    }
-  }
-  showToast("No working server found.");
-}
-
-function manualServerSelect() {
-  currentServer = document.getElementById('server-picker').value;
-  loadVideo(currentServer, selectedEpisode);
-}
-
-async function showDetails(item) {
-  currentItem = item;
-  selectedEpisode = 1;
-  currentSeason = 1;
-
-  document.getElementById('modal').style.display = 'flex';
-  document.getElementById('server-picker').innerHTML = '';
-  servers.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s.value;
-    opt.textContent = s.label;
-    document.getElementById('server-picker').appendChild(opt);
-  });
-
-  if (item.media_type === 'tv') {
-    document.getElementById('season-picker-container').style.display = 'block';
-    const data = await fetch(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`).then(r => r.json());
-    const sel = document.getElementById('season-picker');
-    sel.innerHTML = '';
-    data.seasons.forEach(s => {
-      if (s.season_number === 0) return;
-      const opt = document.createElement('option');
-      opt.value = s.season_number;
-      opt.textContent = `Season ${s.season_number}`;
-      sel.appendChild(opt);
-    });
-    await loadEpisodes();
-  } else {
-    document.getElementById('season-picker-container').style.display = 'none';
-    await autoFindServer();
-  }
-}
-
-async function loadEpisodes() {
-  currentSeason = document.getElementById('season-picker').value;
-  const data = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`).then(res => res.json());
-  const container = document.getElementById('episode-buttons');
-  container.innerHTML = '';
-  data.episodes.forEach(ep => {
-    const btn = document.createElement('button');
-    btn.textContent = ep.episode_number;
-    btn.onclick = () => {
-      selectedEpisode = ep.episode_number;
-      loadVideo(currentServer, selectedEpisode);
-    };
-    container.appendChild(btn);
-  });
-  await autoFindServer();
-}
-function resetEpisodes() {
-  // Reset the episode counter or any related variables
-  currentEpisode = 1;
-  episodeProgress.textContent = `Episode ${currentEpisode}`;
-}
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-  document.getElementById('modal-video').src = '';
-}
-
-document.getElementById('search-input').addEventListener('input', async function () {
-  const query = this.value.trim();
-  const resultsContainer = document.getElementById('search-results');
-  resultsContainer.innerHTML = '';
-  if (!query) return;
-  const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  data.results.filter(i => i.poster_path).forEach(item => {
-    const img = document.createElement('img');
-    img.src = `${IMG_URL}${item.poster_path}`;
-    img.onclick = () => showDetails(item);
-    resultsContainer.appendChild(img);
-  });
-});
-
-async function fetchTrending(type) {
-  const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${API_KEY}`);
-  const data = await res.json();
-  return data.results;
-}
-
-function displayList(items, id, type) {
-  const container = document.getElementById(id);
-  container.innerHTML = '';
-  items.forEach(item => {
-    item.media_type = type;
-    const img = document.createElement('img');
-    img.src = `${IMG_URL}${item.poster_path}`;
-    img.onclick = () => showDetails(item);
-    container.appendChild(img);
-  });
-}
-
-function displayBanner(item) {
-  document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
-  document.getElementById('banner-title').textContent = item.title || item.name;
-}
-
-async function init() {
-  const movies = await fetchTrending('movie');
-  const tv = await fetchTrending('tv');
-  const animeRaw = await fetchTrending('tv');
-  const anime = animeRaw.filter(i => i.original_language === 'ja' && i.genre_ids.includes(16));
-  displayBanner(movies[Math.floor(Math.random() * movies.length)]);
-  displayList(movies, 'movies-list', 'movie');
-  displayList(tv, 'tvshows-list', 'tv');
-  displayList(anime, 'anime-list', 'tv');
-}
-init();
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
