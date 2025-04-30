@@ -174,6 +174,16 @@ function closeSearchModal() {
     document.getElementById('search-results').innerHTML = '';
 }
 
+function handleSearch(event) {
+    if (event.key === "Enter") {
+        searchTMDB();
+    } else if (event.key === "Escape") {
+        closeSearchModal();
+    } else if (event.key === "Backspace") {
+        document.getElementById('search-results').innerHTML = ''; // Clear results on backspace
+    }
+}
+
 async function searchTMDB() {
     const query = document.getElementById('search-input').value.trim();
     if (!query) {
