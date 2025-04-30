@@ -169,11 +169,7 @@ function closeSearchModal() {
     document.getElementById('search-results').innerHTML = '';
 }
 
-function handleSearch(event) {
-    searchTMDB(); // Trigger search on every input
-}
-
-async function searchTMDB() {
+async function handleSearch(event) {
     const query = document.getElementById('search-input').value.trim();
     if (!query) {
         document.getElementById('search-results').innerHTML = '';
