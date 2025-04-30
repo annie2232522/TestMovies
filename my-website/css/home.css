@@ -53,13 +53,28 @@ header {
     padding: 20px;
     border-radius: 5px;
     width: 80%;
-    max-width: 600px;
+    max-width: 800px; /* Increased width for better layout */
     position: relative;
+}
+
+.player-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.player-poster {
+    width: 150px; /* Smaller poster size */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 20px; /* Space between poster and description */
+}
+
+.description-container {
+    flex: 1; /* Take remaining space */
 }
 
 #modal-image {
     max-width: 100%; /* Ensures the image doesn't exceed modal width */
-    height: auto;    /* Maintains aspect ratio */
+    height: auto; /* Maintains aspect ratio */
 }
 
 .close {
