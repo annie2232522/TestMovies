@@ -1,130 +1,140 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background-color: #111;
-  color: white;
-  transition: background 0.3s, color 0.3s;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-body.light {
-  background-color: #f4f4f4;
-  color: black;
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
 }
 
-.navbar {
-  padding: 10px;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  justify-content: space-between;
-  background: #222;
+nav {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
 }
 
-.logo {
-  font-size: 24px;
-  cursor: pointer;
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #eee;
+    margin: 0 5px;
+    border-radius: 5px;
 }
 
-input[type="text"] {
-  padding: 8px 14px;
-  font-size: 16px;
-  width: 250px;
-  border-radius: 5px;
-  border: none;
+.tab:hover {
+    background-color: #ddd;
+}
+
+.item-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px;
+}
+
+.item-list img {
+    margin: 10px;
+    width: 150px;
+    cursor: pointer;
 }
 
 .banner {
-  height: 300px;
-  background-size: cover;
-  display: flex;
-  align-items: end;
-  padding: 20px;
-  color: white;
-  background-position: center;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 2px 2px 8px #000;
 }
 
-.banner h1 {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  border-radius: 6px;
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
 }
 
-.list-section {
-  padding: 15px;
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 800px;
 }
 
-.list {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-}
+.search-results {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px;
+    justify-content: flex-start;
+  }
 
-.list img {
-  height: 160px;
-  border-radius: 10px;
-  cursor: pointer;
+.search-results img {
+   height: 120px;
+    border-radius: 8px;
+    cursor: pointer;
 }
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: none;
+    z-index: 9999;
+  }
 
-#modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.95);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  z-index: 999;
-}
+  .toast.show {
+    display: block;
+  }
 
-#modal-content {
-  width: 100%;
-  max-width: 800px;
-  text-align: center;
-}
+  /* 📱 Mobile responsiveness */
+  @media (max-width: 600px) {
+    #banner {
+      height: 200px;
+    }
 
-#modal-image {
-  width: 150px;
-  border-radius: 8px;
-  margin: 10px 0;
-}
+    #banner-title {
+      font-size: 1.2em;
+    }
 
-#episode-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
+    #modal-image {
+      width: 120px;
+    }
 
-#episode-buttons button {
-  padding: 6px 12px;
-  font-size: 14px;
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    #modal-video {
+      height: 220px;
+    }
 
-#server-note {
-  font-size: 14px;
-  margin: 10px;
-  color: #ccc;
-}
+    .control-button {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
 
-#toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: red;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
-  display: none;
-}
+    #episode-buttons button {
+      font-size: 12px;
+      padding: 5px 8px;
+    }
 
-#toast.show {
-  display: block;
-}
+    select {
+      font-size: 13px;
+    }
+  }
