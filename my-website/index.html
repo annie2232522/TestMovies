@@ -10,16 +10,36 @@
     <header>
         <h1>Trending Movies & Shows</h1>
         <input type="text" id="search-input" placeholder="Search..." oninput="handleSearch(event)">
-        <button id="mode-toggle" onclick="toggleMode()">🌙</button> <!-- Dark/Light Mode Toggle -->
+        <button id="mode-toggle" onclick="toggleMode()">🌙</button>
     </header>
+    
+    <nav>
+        <div class="tab" onclick="showTab('movies')">Trending Movies</div>
+        <div class="tab" onclick="showTab('tvshows')">Trending TV Shows</div>
+        <div class="tab" onclick="showTab('anime')">Trending Anime</div>
+        <div class="tab" onclick="showTab('kdrama')">Trending K-Dramas</div>
+    </nav>
+
     <main>
-        <div id="banner" class="banner">
-            <h2 id="banner-title"></h2>
+        <div id="movies" class="content-section">
+            <h2>Trending Movies</h2>
+            <section id="movies-list" class="item-list"></section>
         </div>
-        <section id="movies-list" class="item-list"></section>
-        <section id="tvshows-list" class="item-list"></section>
-        <section id="anime-list" class="item-list"></section>
-        <section id="kdrama-list" class="item-list"></section>
+        
+        <div id="tvshows" class="content-section" style="display: none;">
+            <h2>Trending TV Shows</h2>
+            <section id="tvshows-list" class="item-list"></section>
+        </div>
+        
+        <div id="anime" class="content-section" style="display: none;">
+            <h2>Trending Anime</h2>
+            <section id="anime-list" class="item-list"></section>
+        </div>
+        
+        <div id="kdrama" class="content-section" style="display: none;">
+            <h2>Trending K-Dramas</h2>
+            <section id="kdrama-list" class="item-list"></section>
+        </div>
     </main>
 
     <div id="modal" class="modal">
@@ -32,17 +52,8 @@
                     <p id="modal-description"></p>
                     <div id="modal-rating"></div>
                     <button onclick="closeModal()">Close</button>
-                    <button onclick="goBack()">Back</button>
-                    <select id="server-selector" onchange="changeServer()">
-                        <option value="vidsrc.me">Vidsrc</option>
-                        <option value="another_server.com">Another Server</option>
-                    </select>
                 </div>
             </div>
-            <select id="season-picker" onchange="loadSeasonEpisodes()"></select>
-            <select id="episode-picker"></select>
-            <div id="episode-list"></div>
-            <iframe id="modal-video" width="100%" height="315" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
 
