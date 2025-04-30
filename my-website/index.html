@@ -8,32 +8,36 @@
 </head>
 <body>
 
-  <!-- Search Bar -->
+  <header class="navbar">
+    <div class="logo">🎬 MovieHub</div>
+    <nav class="tabs">
+      <button onclick="switchTab('home')">Home</button>
+      <button onclick="switchTab('movies')">Movies</button>
+      <button onclick="switchTab('tvshows')">TV Shows</button>
+    </nav>
+    <button id="toggle-theme">🌓</button>
+  </header>
+
   <div class="search-bar-wrapper">
     <input type="text" id="search-input" placeholder="Search for movies, shows or anime..." />
     <div id="search-results"></div>
   </div>
 
-  <!-- Banner -->
-  <div id="banner">
-    <h1 id="banner-title"></h1>
-  </div>
+  <div id="banner"><h1 id="banner-title"></h1></div>
 
-  <!-- Lists -->
-  <section>
-    <h2>Trending Movies</h2>
-    <div id="movies-list" class="list"></div>
-  </section>
-  <section>
-    <h2>Trending TV Shows</h2>
-    <div id="tvshows-list" class="list"></div>
-  </section>
-  <section>
+  <section id="home-tab">
     <h2>Trending Anime</h2>
     <div id="anime-list" class="list"></div>
   </section>
+  <section id="movies-tab" style="display:none;">
+    <h2>Trending Movies</h2>
+    <div id="movies-list" class="list"></div>
+  </section>
+  <section id="tvshows-tab" style="display:none;">
+    <h2>Trending TV Shows</h2>
+    <div id="tvshows-list" class="list"></div>
+  </section>
 
-  <!-- Modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -43,31 +47,22 @@
       <img id="modal-image" src="" alt="" />
       <p id="modal-description"></p>
 
-      <!-- Server Selector -->
       <label for="server-picker">Choose Server:</label>
       <select id="server-picker" onchange="manualServerSelect()"></select>
-      <p class="server-tip">Please switch to other servers if default server doesn't work.<br>If the server isn't working, try a different browser or disable your ad blocker.</p>
+      <p class="server-tip">Switch servers if default doesn't work. Try a different browser or disable your ad blocker.</p>
 
-      <!-- Season Picker -->
       <div id="season-picker-container">
         <label for="season-picker">Season:</label>
         <select id="season-picker" onchange="loadEpisodes()"></select>
       </div>
 
-      <!-- Episodes -->
       <div id="episode-buttons" class="episode-buttons"></div>
-
-      <!-- Video -->
-      <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe><br>
-      <button class="control-button" onclick="closeModal()">Close</button>
-      <button class="control-button back-button" onclick="closeModal()">Back</button><br><br>
+      <iframe id="modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Script -->
   <script src="js/home.js"></script>
 </body>
 </html>
