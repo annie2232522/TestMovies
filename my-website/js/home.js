@@ -217,5 +217,13 @@ function displayBanner(item) {
   document.getElementById('banner').style.backgroundImage = `url(${IMG_URL}${item.backdrop_path})`;
   document.getElementById('banner-title').textContent = item.title || item.name;
 }
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  document.body.classList.toggle("light");
+  localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+});
 
+window.onload = () => {
+  const theme = localStorage.getItem("theme");
+  if (theme === "light") document.body.classList.add("light");
+};
 init();
