@@ -11,7 +11,11 @@ const servers = ['vidsrc.me', 'embed.vidsrc.pk', '2embed.cc', 'vidsrc.wtf/api/4'
 
 function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
   document.getElementById(tab).classList.remove('hidden');
+  event.target.classList.add('active');
+  if (tab === 'movies') fetchTrending('movie').then(res => displayList(res, 'movies-list', 'movie'));
+  if (tab === 'tv') fetchTrending('tv').then(res => displayList(res, 'tvshows-list', 'tv'));
 }
 
 function toggleTheme() {
