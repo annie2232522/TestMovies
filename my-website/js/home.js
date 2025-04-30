@@ -167,7 +167,7 @@ async function loadEpisodes() {
 
   data.episodes.forEach(ep => {
     const btn = document.createElement('button');
-    btn.textContent = `E${ep.episode_number}: ${ep.name}`;
+    btn.textContent = ep.episode_number; // Just the number
     btn.onclick = () => {
       selectedEpisode = ep.episode_number;
       loadVideo(currentServer, selectedEpisode);
