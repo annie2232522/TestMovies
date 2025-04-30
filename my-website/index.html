@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="TestMovies/manifest.json">
+<meta name="theme-color" content="#111111" />
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
   <meta charset="UTF-8">
   <title>MovieHub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -64,5 +68,15 @@
   <div id="toast"></div>
 
   <script src="js/home.js"></script>
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log("✅ Service Worker registered"))
+      .catch(err => console.error("Service Worker error", err));
+  }
+</script>
+
 </body>
 </html>
