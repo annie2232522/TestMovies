@@ -179,17 +179,16 @@ async function showDetails(item) {
 }
 
 async function loadEpisodes() {
-  currentSeason = document.getElementById('season-picker').value;
+ currentSeason = document.getElementById('season-picker').value;
   const data = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`).then(res => res.json());
   const container = document.getElementById('episode-buttons');
   container.innerHTML = '';
 
   data.episodes.forEach(ep => {
     const btn = document.createElement('button');
-    btn.textContent = ep.episode_number;
+    btn.textContent = ep.episode_number; // Just the number
     btn.onclick = () => {
       selectedEpisode = ep.episode_number;
-      highlightEpisodeButton(ep.episode_number);
       loadVideo(currentServer, selectedEpisode);
     };
     btn.dataset.episode = ep.episode_number;
