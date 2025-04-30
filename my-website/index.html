@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Database</title>
-    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <h1>Trending Movies & Shows</h1>
         <input type="text" id="search-input" placeholder="Search..." oninput="handleSearch(event)">
+        <button id="mode-toggle" onclick="toggleMode()">🌙</button> <!-- Dark/Light Mode Toggle -->
     </header>
     <main>
         <div id="banner" class="banner">
@@ -38,7 +39,6 @@
                     <select id="server-selector" onchange="changeServer()">
                         <option value="vidsrc.me">Vidsrc</option>
                         <option value="another_server.com">Another Server</option>
-                        <!-- Add more server options as needed -->
                     </select>
                 </div>
             </div>
@@ -57,6 +57,6 @@
         </div>
     </div>
 
-    <script src="js/home.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
