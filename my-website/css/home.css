@@ -84,8 +84,57 @@ nav {
   }
 
 .search-results img {
-    margin: 10px;
-    width: 100px;
-    height: auto;
+   height: 120px;
+    border-radius: 8px;
     cursor: pointer;
 }
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: none;
+    z-index: 9999;
+  }
+
+  .toast.show {
+    display: block;
+  }
+
+  /* 📱 Mobile responsiveness */
+  @media (max-width: 600px) {
+    #banner {
+      height: 200px;
+    }
+
+    #banner-title {
+      font-size: 1.2em;
+    }
+
+    #modal-image {
+      width: 120px;
+    }
+
+    #modal-video {
+      height: 220px;
+    }
+
+    .control-button {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+
+    #episode-buttons button {
+      font-size: 12px;
+      padding: 5px 8px;
+    }
+
+    select {
+      font-size: 13px;
+    }
+  }
