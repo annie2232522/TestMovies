@@ -392,7 +392,11 @@ async function loadEpisodes() {
   });
   await autoFindServer();
 }
-
+function resetEpisodes() {
+  // Reset the episode counter or any related variables
+  currentEpisode = 1;
+  episodeProgress.textContent = `Episode ${currentEpisode}`;
+}
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
   document.getElementById('modal-video').src = '';
