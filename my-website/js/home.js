@@ -167,14 +167,16 @@ async function loadEpisodes() {
 
   data.episodes.forEach(ep => {
     const btn = document.createElement('button');
-    btn.textContent = `E${ep.episode_number}: ${ep.name}`;
+    btn.textContent = `E${ep.episode_number}`;
     btn.onclick = () => {
       selectedEpisode = ep.episode_number;
+      highlightEpisodeButton(ep.episode_number)
       loadVideo(currentServer, selectedEpisode);
     };
+     btn.dataset.episode = ep.episode_number;
     container.appendChild(btn);
   });
-
+ highlightEpisodeButton(1)
   await autoFindServer();
 }
 
