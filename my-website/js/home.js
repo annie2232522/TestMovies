@@ -165,14 +165,25 @@ async function loadEpisodes() {
   const data = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${currentSeason}?api_key=${API_KEY}`).then(res => res.json());
   const container = document.getElementById('episode-buttons');
   container.innerHTML = '';
+  // Add the "Reset" button
+  const resetBtn = document.createElement('button');
+  resetBtn.textContent = 'Reset';
+  resetBtn.addEventListener('click', () => {
+    selectedEpisode = 1;
+    loadVideo(currentServer, selectedEpisode);
+  });
+  container.appendChild(resetBtn);
 
   data.episodes.forEach(ep => {
     const btn = document.createElement('button');
     btn.textContent = `E${ep.episode_number}`;
-    btn.onclick = () => {
+    btn.addEventListener('click', () => {
       selectedEpisode = ep.episode_number;
       loadVideo(currentServer, selectedEpisode);
-    };
+    });
+    if (selectedEpisode === ep.episode_number) {
+      btn.classList.add('selected');
+    }
     container.appendChild(btn);
   });
 
