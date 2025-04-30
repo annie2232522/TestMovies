@@ -3,6 +3,12 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: #181818;
+    color: #ffffff;
 }
 
 header {
@@ -90,5 +96,24 @@ header {
     margin: 10px;
     width: 100px; /* Set width for search result images */
     height: auto; /* Maintain aspect ratio */
+    cursor: pointer;
+}
+
+.episode-button {
+    margin: 5px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.episode-button:hover {
+    background-color: #0056b3;
+}
+
+#mode-toggle {
+    margin-left: 10px;
     cursor: pointer;
 }
