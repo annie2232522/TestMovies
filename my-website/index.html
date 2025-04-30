@@ -326,15 +326,19 @@ async function loadVideo(server, episode = 1) {
 }
 
 async function autoFindServer() {
+  showSpinner(true);
   for (const s of servers) {
     const url = buildEmbedUrl(s.value, selectedEpisode);
     if (await isUrlAvailable(url)) {
       currentServer = s.value;
       document.getElementById('server-picker').value = s.value;
       await loadVideo(s.value, selectedEpisode);
+      showSpinner(false);
       return;
     }
   }
+  showSpinner(false);
+  showServerNotFound();
   showToast("No working server found.");
 }
 
