@@ -10,9 +10,6 @@ let selectedEpisode = 1;
 const servers = [
   'vidsrc.me',
   'embed.vidsrc.pk',
-  'moviesapi.club',
-  '2embed.cc',
-  'superembed.stream',
   'vidsrc.xyz',
   'vidsrc.wtf/api/4',
   'vidsrc.wtf/api/3',
